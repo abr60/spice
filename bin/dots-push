@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 source "$HOME/.config/hypr/assets/lib/helpers.sh"
 
 # 1. Clear the screen first
@@ -50,20 +51,20 @@ sync_repo() {
 
 # Define options based on your aliases
 choice=$(gum choose --header "Select a repository to sync" \
-    "󰣇 spice" \
+    "󰣇 Archer" \
     "󰸉 Walls" \
-    " Dotfiles" \
+    " omarchy-overlay" \
     " Waybar Config" \
     "󰔎 Assets" \
     " Open Lazygit" \
     "󱎘 Cancel")
 
 case "$choice" in
-    " Dotfiles")
-        sync_repo "Dotfiles" "$HOME/dots" "sync: $(date +%Y-%m-%d)"
+    " omarchy-overlay")
+        sync_repo "omarchy-overlay" "$HOME/spice" "sync: $(date +%Y-%m-%d)"
         ;;
-    "󰣇 spice")
-        sync_repo "spice" "$HOME/spice" "sync: $(date +%Y-%m-%d)"
+    "󰣇 Archer")
+        sync_repo "Archer" "$HOME/Archer" "sync: $(date +%Y-%m-%d)"
         ;;
     "󰸉 Walls")
         sync_repo "Walls" "$HOME/Walls" "sync: $(date +%Y-%m-%d)"
