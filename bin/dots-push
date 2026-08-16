@@ -51,9 +51,9 @@ sync_repo() {
 
 # Define options based on your aliases
 choice=$(gum choose --header "Select a repository to sync" \
-    "󰣇 Archer" \
-    "󰸉 Walls" \
     " omarchy-overlay" \
+    "󰸉 Walls" \
+    "󰣇 Archer" \
     " Waybar Config" \
     "󰔎 Assets" \
     " Open Lazygit" \
