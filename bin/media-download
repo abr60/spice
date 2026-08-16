@@ -1,0 +1,263 @@
+#!/bin/bash
+source "$HOME/.config/hypr/assets/lib/helpers.sh"
+clear
+
+# ── Logo ────────────────────────────────────────────────────────────────────
+cat "$HOME/.config/hypr/assets/ANSI LOGO/media-downloader.txt" 2>/dev/null || echo "Media Downloader"
+
+# ── Info Box ────────────────────────────────────────────────────────────────
+gum style --border rounded --border-foreground 6 --padding "1 2" \
+  "" \
+  "• Ensure you have enough disk space" \
+  "• Music mode embeds Cover Art & Tags" \
+  "• Large playlists may take a while" \
+  "" \
+  "$(gum style --foreground 8 "Powered by yt-dlp")"
+
+echo
+
+# ── Folder Picker ───────────────────────────────────────────────────────────
+# Rooted at ~/Videos/Downloaded Videos/
+# Arrow-key navigation + create new folder on the fly.
+# Sets global $picked_dir on success.
+pick_video_dir() {
+  local root="$HOME/Videos/Downloaded Videos"
+  local NEW_FOLDER_LABEL="[ + Create new folder ]"
+  mkdir -p "$root"
+
+  while true; do
+    local entries=()
+    while IFS= read -r d; do
+      entries+=("$(basename "$d")/")
+    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d | sort)
+    entries+=("$NEW_FOLDER_LABEL")
+
+    local choice
+    choice=$(printf '%s\n' "${entries[@]}" | gum choose --header "Select download folder  ($root)")
+    [[ -z "$choice" ]] && return 1
+
+    if [[ "$choice" == "$NEW_FOLDER_LABEL" ]]; then
+      local new_name
+      new_name=$(gum input --prompt "New folder name: " --placeholder "e.g. Lectures")
+      [[ -z "$new_name" ]] && continue
+      mkdir -p "$root/$new_name"
+      picked_dir="$root/$new_name"
+      return 0
+    else
+      picked_dir="$root/${choice%/}"
+      return 0
+    fi
+  done
+}
+
+# ── URL Input ───────────────────────────────────────────────────────────────
+clip_url=$(wl-paste 2>/dev/null || true)
+[[ "$clip_url" != http* ]] && clip_url=""
+
+url=$(gum input --prompt "URL: " --placeholder "YouTube, SoundCloud, Reddit, Instagram..." --value "$clip_url")
+[[ -z "$url" ]] && { log_info "Cancelled"; exit 0; }
+
+# ── Validate ─────────────────────────────────────────────────────────────────
+echo
+if ! spinner "Validating URL..." yt-dlp --dump-json --quiet --no-warnings --playlist-items 1 "$url" > /dev/null 2>&1; then
+  log_error "URL not supported or invalid"
+  show_done
+  exit 1
+fi
+
+title=$(yt-dlp --get-title --quiet --no-warnings --playlist-items 1 "$url" 2>/dev/null || echo "Unknown Title")
+log_success "Found: $title"
+
+# ── Playlist Detection ───────────────────────────────────────────────────────
+echo
+is_playlist=false
+if echo "$url" | grep -q "list="; then
+  playlist_title=$(yt-dlp --flat-playlist --dump-single-json --quiet --no-warnings "$url" 2>/dev/null \
+    | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('title','Playlist'))" 2>/dev/null)
+  playlist_count=$(yt-dlp --flat-playlist --dump-single-json --quiet --no-warnings "$url" 2>/dev/null \
+    | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('entries',[])))" 2>/dev/null)
+  log_info "Playlist detected: $playlist_title ($playlist_count items)"
+  echo
+  playlist_choice=$(gum choose --header "What would you like to download?" "This item only" "Entire playlist")
+  [[ -z "$playlist_choice" ]] && exit 0
+  [[ "$playlist_choice" == "Entire playlist" ]] && is_playlist=true
+fi
+
+# ── Download Type ────────────────────────────────────────────────────────────
+echo
+type=$(gum choose --header "Select download type" "Video" "Music")
+[[ -z "$type" ]] && exit 0
+
+# ── VIDEO ────────────────────────────────────────────────────────────────────
+if [[ "$type" == "Video" ]]; then
+
+  # Folder picker
+  echo
+  picked_dir=""
+  if ! pick_video_dir; then
+    log_info "Cancelled"
+    exit 0
+  fi
+
+  # Resolve download directory
+  if $is_playlist; then
+    safe_playlist_title=$(echo "$playlist_title" | tr '/:*?"<>|\\' '_')
+    download_dir="$picked_dir/$safe_playlist_title"
+    mkdir -p "$download_dir"
+    log_info "Playlist folder: $download_dir"
+  else
+    download_dir="$picked_dir"
+  fi
+
+  # Quality selection
+  echo
+  quality=$(gum choose --header "Select video quality" \
+    "Preferred Quality (1080p)" \
+    "Best Quality" \
+    "720p" \
+    "480p" \
+    "360p")
+  [[ -z "$quality" ]] && { log_info "Cancelled"; exit 0; }
+
+  case "$quality" in
+    "Preferred Quality (1080p)") format_spec="bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080]" ;;
+    "Best Quality")              format_spec="bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" ;;
+    "720p")                      format_spec="bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]" ;;
+    "480p")                      format_spec="bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]" ;;
+    "360p")                      format_spec="bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360]" ;;
+  esac
+
+  # Subtitles — always English, moved to .subtitles/ after download
+  sub_dir="$download_dir/.subtitles"
+  mkdir -p "$sub_dir"
+  sub_flags="--write-subs --write-auto-subs --sub-langs en"
+
+  # Download
+  echo
+  if $is_playlist; then
+    log_step "Downloading playlist: $playlist_title ($playlist_count videos @ $quality) [en subs]..."
+    echo
+    yt-dlp -f "$format_spec" \
+      $sub_flags \
+      --no-warnings --yes-playlist \
+      --newline \
+      --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      --ignore-errors \
+      -o "$download_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url" 2>/dev/null \
+      | grep --line-buffered "download:" \
+      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+    mv "$download_dir"/*.vtt "$sub_dir/" 2>/dev/null || true
+    echo
+    log_success "Playlist saved to $download_dir"
+  else
+    log_step "Downloading video ($quality) [en subs]..."
+    yt-dlp -f "$format_spec" \
+      $sub_flags \
+      --no-warnings --playlist-items 1 \
+      --newline \
+      --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      -o "$download_dir/%(title)s.%(ext)s" "$url" 2>/dev/null \
+      | grep --line-buffered "%" \
+      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+    echo
+    if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+      log_error "Download failed"
+      show_done
+      exit 1
+    fi
+    mv "$download_dir"/*.vtt "$sub_dir/" 2>/dev/null || true
+    log_success "Video saved to $download_dir"
+  fi
+
+# ── MUSIC ────────────────────────────────────────────────────────────────────
+elif [[ "$type" == "Music" ]]; then
+
+  # Audio format
+  echo
+  audio_format=$(gum choose --header "Select audio format" "FLAC (Lossless)" "Opus" "M4A" "MP3")
+  [[ -z "$audio_format" ]] && { log_info "Cancelled"; exit 0; }
+
+  case "$audio_format" in
+    "FLAC (Lossless)") audio_format_lower="flac" ;;
+    *)                 audio_format_lower=$(echo "$audio_format" | tr '[:upper:]' '[:lower:]') ;;
+  esac
+
+  # Quality selection
+  echo
+  if [[ "$audio_format_lower" == "flac" ]]; then
+    audio_quality="0"
+    log_info "FLAC: Preset locked to maximum compression (0)"
+  else
+    quality_choice=$(gum choose --header "Select target bitrate" "320k (Excellent)" "192k (Standard)" "128k (Compact)")
+    [[ -z "$quality_choice" ]] && quality_choice="192k (Standard)"
+    case "$quality_choice" in
+      "320k (Excellent)") audio_quality="320k" ;;
+      "192k (Standard)")  audio_quality="192k" ;;
+      "128k (Compact)")   audio_quality="128k" ;;
+    esac
+  fi
+
+  # Metadata flags
+  audio_root="$HOME/Music"
+  mkdir -p "$audio_root"
+
+  metadata_flags=(
+    --extract-audio
+    --audio-format "$audio_format_lower"
+    --audio-quality "$audio_quality"
+    --embed-thumbnail
+    --embed-metadata
+    --add-metadata
+    --parse-metadata "%(uploader)s:%(artist)s"
+    --parse-metadata "%(title)s:%(title)s"
+  )
+
+  # Download
+  echo
+  if $is_playlist; then
+    out_template="$audio_root/%(playlist_title)s/%(title)s.%(ext)s"
+    log_step "Downloading playlist: $playlist_title ($playlist_count items @ $audio_format)..."
+    echo
+    yt-dlp "${metadata_flags[@]}" \
+      --no-warnings --yes-playlist --ignore-errors \
+      --newline \
+      --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      -o "$out_template" "$url" 2>/dev/null \
+      | grep --line-buffered "download:" \
+      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+    echo
+    log_success "Playlist downloaded and mapped to library under $audio_root"
+  else
+    out_template="$audio_root/%(title)s.%(ext)s"
+    log_step "Downloading track ($audio_format)..."
+    yt-dlp "${metadata_flags[@]}" \
+      --no-warnings --playlist-items 1 \
+      --newline \
+      --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      -o "$out_template" "$url" 2>/dev/null \
+      | grep --line-buffered "%" \
+      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+    echo
+    if [[ $? -ne 0 ]]; then
+      log_error "Audio extraction failed"
+      exit 1
+    fi
+    log_success "Track saved to $audio_root"
+  fi
+
+  # ── Sync Hook ──────────────────────────────────────────────────────────────
+  echo
+  log_step "Signaling MPD daemon to update library index..."
+  mpc update
+
+fi
+
+# ── Auto-close Countdown ─────────────────────────────────────────────────────
+echo
+gum style --foreground 2 "  ✓ Done!"
+echo
+for i in $(seq 10 -1 1); do
+  printf "\r  Closing in %d seconds... (press any key to close now)  " "$i"
+  read -r -s -n1 -t1 key && break
+done
+echo

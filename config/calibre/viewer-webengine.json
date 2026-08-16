@@ -1,0 +1,228 @@
+{
+  "auto_update_lookup": true,
+  "geometry-of-llm-settings-dialog-geometry": {
+    "frame_geometry": {
+      "height": 566,
+      "width": 576,
+      "x": 342,
+      "y": 37
+    },
+    "full_screened": false,
+    "geometry": {
+      "height": 566,
+      "width": 576,
+      "x": 342,
+      "y": 37
+    },
+    "maximized": true,
+    "normal_geometry": {
+      "height": 566,
+      "width": 576,
+      "x": 342,
+      "y": 37
+    },
+    "qt": {
+      "__class__": "bytearray",
+      "__value__": "AdnQywADAAAAAAFWAAAAJQAAA5UAAAJaAAABVgAAACUAAAOVAAACWgAAAAACAAAABgAAAAFWAAAAJQAAA5UAAAJa"
+    },
+    "screen": {
+      "depth": 32,
+      "device_pixel_ratio": 2.0,
+      "geometry_in_logical_pixels": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      },
+      "index_in_screens_list": 0,
+      "manufacturer": "AU Optronics",
+      "model": "0x323D",
+      "name": "eDP-1",
+      "serial": "",
+      "size_in_logical_pixels": {
+        "height": 864,
+        "width": 1536
+      },
+      "virtual_geometry": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  "geometry-of-main_window_geometry": {
+    "frame_geometry": {
+      "height": 810,
+      "width": 1512,
+      "x": 0,
+      "y": 0
+    },
+    "full_screened": false,
+    "geometry": {
+      "height": 810,
+      "width": 1512,
+      "x": 0,
+      "y": 0
+    },
+    "maximized": true,
+    "normal_geometry": {
+      "height": 834,
+      "width": 768,
+      "x": 0,
+      "y": 0
+    },
+    "qt": {
+      "__class__": "bytearray",
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAABecAAAMpAAAAAAAAAAAAAAL/AAADQQAAAAACAAAABgAAAAAAAAAAAAAABecAAAMp"
+    },
+    "screen": {
+      "depth": 32,
+      "device_pixel_ratio": 2.0,
+      "geometry_in_logical_pixels": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      },
+      "index_in_screens_list": 0,
+      "manufacturer": "AU Optronics",
+      "model": "0x323D",
+      "name": "eDP-1",
+      "serial": "",
+      "size_in_logical_pixels": {
+        "height": 864,
+        "width": 1536
+      },
+      "virtual_geometry": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  "llm_lookup_tab_index": 0,
+  "local_storage": {
+    "search-bar-history-search-for-sc": [
+      "toggle",
+      "full",
+      "table of",
+      "profile"
+    ]
+  },
+  "lookup_location": "Google search",
+  "main_window_state": {
+    "__class__": "bytearray",
+    "__value__": "AAAA/wAAAAH9AAAAAgAAAAAAAAEOAAADQvwCAAAAAvsAAAAQAHQAbwBjAC0AZABvAGMAawAAAAAAAAADQgAAAIwA////+wAAABYAcwBlAGEAcgBjAGgALQBkAG8AYwBrAAAAAAAAAALQAAAAnQD///8AAAABAAABDgAAA2D8AgAAAAT7AAAAFgBsAG8AbwBrAHUAcAAtAGQAbwBjAGsCAAAAAAAAAAAAAAUAAAAC0PsAAAAcAGIAbwBvAGsAbQBhAHIAawBzAC0AZABvAGMAawgAAAAAAAADYAAAAPgA////+wAAABwAaQBuAHMAcABlAGMAdABvAHIALQBkAG8AYwBrAAAAAAAAAALQAAAAFQD////7AAAAHgBoAGkAZwBoAGwAaQBnAGgAdABzAC0AZABvAGMAawAAAAAAAAAC0AAAANsA////AAAF6AAAAyoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAAAAAAAAQAAAB4AYQBjAHQAaQBvAG4AcwBfAHQAbwBvAGwAYgBhAHICAAAAAP////8AAAAAAAAAAA=="
+  },
+  "old_prefs_migrated": true,
+  "saved-search-settings": {
+    "glint": {
+      "case_sensitive": false,
+      "mode": "normal"
+    }
+  },
+  "session_data": {
+    "base_font_size": 35,
+    "columns_per_screen": {
+      "landscape": 2,
+      "portrait": 0
+    },
+    "controls_help_shown_count": 2,
+    "current_color_scheme": "*adnan",
+    "keyboard_shortcuts": {
+      "show_profiles": [
+        {
+          "altKey": false,
+          "ctrlKey": false,
+          "key": "p",
+          "metaKey": false,
+          "shiftKey": false
+        }
+      ],
+      "toggle_full_screen": [
+        {
+          "altKey": false,
+          "ctrlKey": false,
+          "key": "F11",
+          "metaKey": false,
+          "shiftKey": false
+        },
+        {
+          "altKey": false,
+          "ctrlKey": false,
+          "key": "f",
+          "metaKey": false,
+          "shiftKey": false
+        }
+      ],
+      "toggle_toc": [
+        {
+          "altKey": false,
+          "ctrlKey": false,
+          "key": "t",
+          "metaKey": false,
+          "shiftKey": false
+        }
+      ]
+    },
+    "margin_bottom": 60,
+    "margin_left": 60,
+    "margin_right": 60,
+    "margin_top": 60,
+    "standalone_font_settings": {
+      "standard_font": "mono"
+    },
+    "standalone_recently_opened": [
+      {
+        "authors": [
+          "Gu Zhen Ren"
+        ],
+        "key": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (2)/Reverend Insanity - Gu Zhen Ren.epub",
+        "pathtoebook": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (2)/Reverend Insanity - Gu Zhen Ren.epub",
+        "timestamp": "2026-08-15T15:25:56.056Z",
+        "title": "Reverend Insanity"
+      },
+      {
+        "authors": [
+          "Er Gen"
+        ],
+        "key": "/home/abr/Calibre Library/Er Gen/I Shall Seal the Heavens (3)/I Shall Seal the Heavens - Er Gen.epub",
+        "pathtoebook": "/home/abr/Calibre Library/Er Gen/I Shall Seal the Heavens (3)/I Shall Seal the Heavens - Er Gen.epub",
+        "timestamp": "2026-08-11T19:30:34.167Z",
+        "title": "I Shall Seal the Heavens"
+      },
+      {
+        "authors": [
+          "Er Gen"
+        ],
+        "key": "/home/pseudo/Calibre Library/Er Gen/I Shall Seal the Heavens (6)/I Shall Seal the Heavens - Er Gen.epub",
+        "pathtoebook": "/home/pseudo/Calibre Library/Er Gen/I Shall Seal the Heavens (6)/I Shall Seal the Heavens - Er Gen.epub",
+        "timestamp": "2026-03-24T00:15:13.673Z",
+        "title": "I Shall Seal the Heavens"
+      },
+      {
+        "authors": [
+          "Translator: Johnchen & DoubleDD; Author: Wang Yu 忘语; Licensed From: Qidian"
+        ],
+        "key": "/home/pseudo/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (3)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
+        "pathtoebook": "/home/pseudo/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (3)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
+        "timestamp": "2026-01-15T15:51:12.971Z",
+        "title": "A Record of a Mortal’s Journey to Immortality c1-2248"
+      }
+    ],
+    "user_color_schemes": {
+      "*adnan": {
+        "background": "#000000",
+        "foreground": "#878787",
+        "is_dark_theme": true,
+        "link": "#8a4819",
+        "name": "adnan"
+      }
+    },
+    "user_stylesheet": "body {\n    font-family: \"Alegreya\", \"EB Garamond\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+  },
+  "viewer-search-case-sensitive": false,
+  "viewer-search-mode": "normal"
+}

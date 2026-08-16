@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+TMPIMG="/tmp/comic_ocr_$$.png"
+
+# 1. Take the screenshot snippet
+grim -g "$(slurp)" "$TMPIMG" || exit 1
+
+# 2. Try clean scanning with Latin scripts first (Prevents background art artifacts)
+RAW=$(tesseract "$TMPIMG" stdout -l eng+tur+spa 2>/dev/null)
+
+# 3. Fallback: If text is short/empty, retry with East Asian scripts enabled
+if [ -z "$RAW" ] || [ ${#RAW} -lt 2 ]; then
+    RAW=$(tesseract "$TMPIMG" stdout -l jpn+kor+chi_sim+spa+tur+eng 2>/dev/null)
+fi
+
+# 4. Final verification block
+if [ -z "$RAW" ] || [ ${#RAW} -lt 2 ]; then
+    notify-send "Comic Translate" "❌ No text detected" -t 3000
+    rm -f "$TMPIMG"
+    exit 1
+fi
+
+# 5. Strip disruptive line breaks and compress duplicate whitespaces
+CLEAN_RAW=$(echo "$RAW" | tr '\n' ' ' | sed 's/  */ /g')
+
+# 6. Translate the unified context block using translate-shell
+TRANSLATED=$(echo "$CLEAN_RAW" | trans -b :en 2>/dev/null)
+
+# 7. Display cleanly formatted text inside SwayNC
+notify-send "📖 Comic Translate" "$TRANSLATED" -t 8000
+
+# 8. Housekeeping
+rm -f "$TMPIMG"

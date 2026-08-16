@@ -1,0 +1,71 @@
+#!/bin/bash
+source "$HOME/.config/hypr/assets/lib/helpers.sh"
+clear
+
+# ── Logo ────────────────────────────────────────────────────────────────────
+cat "$HOME/.config/hypr/assets/ANSI LOGO/media-downloader.txt" 2>/dev/null || echo "Spotify Downloader"
+
+# ── Info Box ────────────────────────────────────────────────────────────────
+gum style --border rounded --border-foreground 6 --padding "1 2" \
+  "" \
+  "• Paste a Spotify track, album, or playlist URL" \
+  "• Cover art & lyrics embedded into MP3" \
+  "• Downloads to ~/Music/Spotify" \
+  "" \
+  "$(gum style --foreground 8 "Powered by spotifydl")"
+
+echo
+
+# ── URL Input ────────────────────────────────────────────────────────────────
+clip_url=$(wl-paste 2>/dev/null || true)
+[[ "$clip_url" != https://open.spotify.com* ]] && clip_url=""
+
+url=$(gum input --prompt "URL: " --placeholder "Spotify track / album / playlist URL" --value "$clip_url")
+[[ -z "$url" ]] && { log_info "Cancelled"; exit 0; }
+
+if [[ "$url" != https://open.spotify.com/* ]]; then
+  log_error "Not a valid Spotify URL"
+  show_done; exit 1
+fi
+
+# ── Download ──────────────────────────────────────────────────────────────────
+download_dir="$HOME/Music/Spotify"
+mkdir -p "$download_dir"
+
+echo
+log_step "Downloading (embedded)..."
+echo
+
+spotifydl embedded "$url"
+status=$?
+
+# ── Move files ────────────────────────────────────────────────────────────────
+echo
+log_step "Moving files to $download_dir..."
+find "$HOME/Music" -maxdepth 1 -type f \( \
+  -iname "*.mp3" -o -iname "*.flac" -o \
+  -iname "*.opus" -o -iname "*.m4a"  -o \
+  -iname "*.ogg" \) \
+  -exec mv -v {} "$download_dir/" \;
+
+echo
+if [[ $status -eq 0 ]]; then
+  log_success "Saved to $download_dir"
+else
+  log_error "spotifydl exited with errors"
+fi
+
+# ── MPD sync ──────────────────────────────────────────────────────────────────
+echo
+log_step "Updating MPD library..."
+mpc update
+
+# ── Auto-close ────────────────────────────────────────────────────────────────
+echo
+gum style --foreground 2 "  ✓ Done!"
+echo
+for i in $(seq 10 -1 1); do
+  printf "\r  Closing in %d seconds... (press any key to close now)  " "$i"
+  read -r -s -n1 -t1 key && break
+done
+echo

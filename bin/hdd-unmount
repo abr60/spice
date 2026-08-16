@@ -1,0 +1,44 @@
+#!/bin/bash
+
+UUID="56bad8bd-ec6d-4f9c-8c01-8b49f476ce6e"
+LABEL="Storage"
+MOUNT_PATH="/run/media/pseudo/$LABEL"
+
+# Resolve device from UUID — stable regardless of plug-in order
+DEVICE=$(blkid -U "$UUID" 2>/dev/null)
+
+is_connected() {
+    [ -n "$DEVICE" ] && lsblk "$DEVICE" &>/dev/null
+}
+
+is_mounted() {
+    mountpoint -q "$MOUNT_PATH" 2>/dev/null || \
+    grep -q "^$DEVICE " /proc/mounts
+}
+
+if ! is_connected; then
+    notify-send -u normal -i drive-harddisk "HDD Not Connected" "The storage drive is not plugged in."
+    exit 0
+fi
+
+if ! is_mounted; then
+    notify-send -u normal -i drive-harddisk "HDD Not Mounted" "Storage is already unmounted."
+    exit 0
+fi
+
+# Check for processes using the mount path — inform, do NOT kill
+BUSY_PROCS=$(lsof +D "$MOUNT_PATH" 2>/dev/null | awk 'NR>1 {print $1}' | sort -u | tr '\n' ' ')
+
+if [ -n "$BUSY_PROCS" ]; then
+    notify-send -u critical -i dialog-warning "HDD Busy — Cannot Unmount" "Close these first: $BUSY_PROCS"
+    exit 1
+fi
+
+# Attempt unmount
+udisksctl unmount -b "$DEVICE" --no-user-interaction 2>/dev/null
+
+if ! is_mounted; then
+    notify-send -u normal -i drive-harddisk "HDD Unmounted ✓" "Safe to unplug your storage drive."
+else
+    notify-send -u critical -i dialog-error "Unmount Failed" "Could not unmount Storage. Try closing any open files manually."
+fi

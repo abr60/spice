@@ -1,0 +1,321 @@
+{
+  "viewer:": {
+    "Chronicle": {
+      "__timestamp__": "2026-08-11T06:06:54.963951+00:00",
+      "base_font_size": 37,
+      "columns_per_screen": {
+        "landscape": 2,
+        "portrait": 0
+      },
+      "current_color_scheme": "*Vintage",
+      "keyboard_shortcuts": {
+        "show_profiles": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "p",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_full_screen": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "F11",
+            "metaKey": false,
+            "shiftKey": false
+          },
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "f",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_toc": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "t",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ]
+      },
+      "margin_bottom": 60,
+      "margin_left": 60,
+      "margin_right": 60,
+      "margin_top": 60,
+      "user_color_schemes": {
+        "*Vintage": {
+          "background": "#f0e9d8",
+          "foreground": "#0c0c14",
+          "is_dark_theme": false,
+          "name": "Vintage"
+        },
+        "*adnan": {
+          "background": "#000000",
+          "foreground": "#878787",
+          "is_dark_theme": true,
+          "link": "#8a4819",
+          "name": "adnan"
+        }
+      },
+      "user_stylesheet": "body {\n    font-family: \"EB Garamond\", \"Alegreya\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+    },
+    "Dark_Alegreya": {
+      "__timestamp__": "2026-08-13T16:00:00.569234+00:00",
+      "base_font_size": 35,
+      "columns_per_screen": {
+        "landscape": 2,
+        "portrait": 0
+      },
+      "current_color_scheme": "*adnan",
+      "keyboard_shortcuts": {
+        "show_profiles": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "p",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_full_screen": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "F11",
+            "metaKey": false,
+            "shiftKey": false
+          },
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "f",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_toc": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "t",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ]
+      },
+      "margin_bottom": 60,
+      "margin_left": 60,
+      "margin_right": 60,
+      "margin_top": 60,
+      "standalone_font_settings": {
+        "standard_font": "mono"
+      },
+      "user_color_schemes": {
+        "*adnan": {
+          "background": "#000000",
+          "foreground": "#878787",
+          "is_dark_theme": true,
+          "link": "#8a4819",
+          "name": "adnan"
+        }
+      },
+      "user_stylesheet": "body {\n    font-family: \"Alegreya\", \"EB Garamond\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+    },
+    "Paper": {
+      "__timestamp__": "2026-08-11T05:07:14.791950+00:00",
+      "background_image": "clbr://internal.invalid/reader-background-63616c696272652e6a7067",
+      "base_font_size": 31,
+      "columns_per_screen": {
+        "landscape": 2,
+        "portrait": 0
+      },
+      "current_color_scheme": "sepia-light",
+      "keyboard_shortcuts": {
+        "show_profiles": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "p",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_full_screen": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "F11",
+            "metaKey": false,
+            "shiftKey": false
+          },
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "f",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_toc": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "t",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ]
+      },
+      "margin_bottom": 60,
+      "margin_left": 60,
+      "margin_right": 60,
+      "margin_top": 60,
+      "standalone_font_settings": {
+        "standard_font": "mono"
+      },
+      "user_color_schemes": {
+        "*adnan": {
+          "background": "#000000",
+          "foreground": "#878787",
+          "is_dark_theme": true,
+          "link": "#8a4819",
+          "name": "adnan"
+        }
+      },
+      "user_stylesheet": "body{\nbackground-image:url('file:///path/to/background.jpg') !important;  /* adjust this line to point to where the background is stored */\nbackground-size:1600px 900px;  /* adjust this line to suit your screen resolution */\nbackground-repeat:no-repeat;\nbackground-attachment:fixed;\nbackground-position:center; \n}\n\np{\nmargin-bottom:0.5em !important; /* change this if you don't want a gap after each paragraph */"
+    },
+    "dark": {
+      "__timestamp__": "2026-02-21T14:44:03.842832+00:00",
+      "base_font_size": 31,
+      "columns_per_screen": {
+        "landscape": 2,
+        "portrait": 0
+      },
+      "current_color_scheme": "*adnan",
+      "keyboard_shortcuts": {
+        "show_profiles": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "p",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_full_screen": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "F11",
+            "metaKey": false,
+            "shiftKey": false
+          },
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "f",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_toc": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "t",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ]
+      },
+      "margin_bottom": 60,
+      "margin_left": 60,
+      "margin_right": 60,
+      "margin_top": 60,
+      "standalone_font_settings": {
+        "standard_font": "mono"
+      },
+      "user_color_schemes": {
+        "*adnan": {
+          "background": "#000000",
+          "foreground": "#878787",
+          "is_dark_theme": true,
+          "link": "#8a4819",
+          "name": "adnan"
+        }
+      },
+      "user_stylesheet": "body{\nbackground-image:url('file:///path/to/background.jpg') !important;  /* adjust this line to point to where the background is stored */\nbackground-size:1600px 900px;  /* adjust this line to suit your screen resolution */\nbackground-repeat:no-repeat;\nbackground-attachment:fixed;\nbackground-position:center; \n}\n\np{\nmargin-bottom:0.5em !important; /* change this if you don't want a gap after each paragraph */"
+    },
+    "whitegold": {
+      "__timestamp__": "2026-08-11T06:17:08.940154+00:00",
+      "base_font_size": 37,
+      "columns_per_screen": {
+        "landscape": 2,
+        "portrait": 0
+      },
+      "current_color_scheme": "*Vintage",
+      "keyboard_shortcuts": {
+        "show_profiles": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "p",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_full_screen": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "F11",
+            "metaKey": false,
+            "shiftKey": false
+          },
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "f",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ],
+        "toggle_toc": [
+          {
+            "altKey": false,
+            "ctrlKey": false,
+            "key": "t",
+            "metaKey": false,
+            "shiftKey": false
+          }
+        ]
+      },
+      "margin_bottom": 60,
+      "margin_left": 60,
+      "margin_right": 60,
+      "margin_top": 60,
+      "user_color_schemes": {
+        "*Vintage": {
+          "background": "#dedbc8",
+          "foreground": "#0c0c14",
+          "is_dark_theme": false,
+          "name": "Vintage"
+        },
+        "*adnan": {
+          "background": "#000000",
+          "foreground": "#878787",
+          "is_dark_theme": true,
+          "link": "#8a4819",
+          "name": "adnan"
+        }
+      },
+      "user_stylesheet": "body {\n    font-family: \"Alegreya\", \"EB Garamond\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+    }
+  }
+}

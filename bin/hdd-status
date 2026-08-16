@@ -1,0 +1,27 @@
+#!/bin/bash
+
+UUID="56bad8bd-ec6d-4f9c-8c01-8b49f476ce6e"
+LABEL="Storage"
+MOUNT_PATH="/run/media/pseudo/$LABEL"
+
+# Resolve device from UUID — stable regardless of plug-in order
+DEVICE=$(blkid -U "$UUID" 2>/dev/null)
+
+is_connected() {
+    [ -n "$DEVICE" ] && lsblk "$DEVICE" &>/dev/null
+}
+
+is_mounted() {
+    mountpoint -q "$MOUNT_PATH" 2>/dev/null || \
+    grep -q "^$DEVICE " /proc/mounts
+}
+
+if ! is_connected; then
+    exit 0
+fi
+
+if is_mounted; then
+    echo '{"text":" Storage","tooltip":"HDD mounted — click to unmount","class":"hdd-mounted"}'
+else
+    echo '{"text":" Storage","tooltip":"HDD connected but not mounted","class":"hdd-unmounted"}'
+fi

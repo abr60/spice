@@ -1,0 +1,290 @@
+#!/bin/bash
+source "$HOME/.config/hypr/assets/lib/helpers.sh"
+clear
+
+# ── Logo ────────────────────────────────────────────────────────────────────
+cat "$HOME/.config/hypr/assets/ANSI LOGO/mp4-to-gif.txt" 2>/dev/null || \
+  gum style --foreground 5 --bold "  ▶ MP4 → GIF Converter"
+
+echo
+
+# ── Dep Check ────────────────────────────────────────────────────────────────
+missing=()
+for dep in ffmpeg gifsicle gum; do
+  command -v "$dep" &>/dev/null || missing+=("$dep")
+done
+
+if [[ ${#missing[@]} -gt 0 ]]; then
+  gum style --border rounded --border-foreground 1 --padding "1 2" \
+    "$(gum style --foreground 1 --bold "  ✗ Missing dependencies:")" \
+    "" \
+    "$(printf '  • %s\n' "${missing[@]}")" \
+    "" \
+    "$(gum style --foreground 8 "  Install with: sudo pacman -S ${missing[*]}")"
+  exit 1
+fi
+
+# ── Info Box ─────────────────────────────────────────────────────────────────
+gum style --border rounded --border-foreground 5 --padding "1 2" \
+  "" \
+  "• Clips & converts MP4/MKV/WebM → optimized GIF" \
+  "• gifsicle compresses output automatically" \
+  "• Higher FPS & resolution = larger file size" \
+  "" \
+  "$(gum style --foreground 8 "Powered by ffmpeg + gifsicle")"
+
+echo
+
+# ── Input File ───────────────────────────────────────────────────────────────
+clip_path=$(wl-paste 2>/dev/null || true)
+[[ -f "$clip_path" ]] || clip_path=""
+
+input_file=$(gum input \
+  --prompt "Input file: " \
+  --placeholder "/path/to/video.mp4" \
+  --value "$clip_path")
+
+[[ -z "$input_file" ]] && { log_info "Cancelled"; exit 0; }
+input_file="${input_file/#\~/$HOME}"
+
+if [[ ! -f "$input_file" ]]; then
+  log_error "File not found: $input_file"
+  exit 1
+fi
+
+if ! ffprobe -v error -select_streams v:0 -show_entries stream=codec_type \
+     -of csv=p=0 "$input_file" 2>/dev/null | grep -q "video"; then
+  log_error "Not a valid video file"
+  exit 1
+fi
+
+# Probe duration + resolution
+duration=$(ffprobe -v error -show_entries format=duration \
+  -of default=noprint_wrappers=1:nokey=1 "$input_file" 2>/dev/null | cut -d. -f1)
+res=$(ffprobe -v error -select_streams v:0 \
+  -show_entries stream=width,height -of csv=p=0:s=x "$input_file" 2>/dev/null)
+orig_width=$(echo "$res" | cut -dx -f1)
+
+log_success "Loaded: $(basename "$input_file")  [${res} · ${duration}s]"
+echo
+
+# ── Clip Range ───────────────────────────────────────────────────────────────
+clip_choice=$(gum choose --header "Clip range" \
+  "Full video" \
+  "Custom start / duration")
+[[ -z "$clip_choice" ]] && { log_info "Cancelled"; exit 0; }
+
+start_time="0"
+clip_duration="$duration"
+
+if [[ "$clip_choice" == "Custom start / duration" ]]; then
+  echo
+  start_time=$(gum input --prompt "Start time (HH:MM:SS or seconds): " --placeholder "0")
+  [[ -z "$start_time" ]] && start_time="0"
+
+  clip_duration=$(gum input --prompt "Duration (seconds): " --placeholder "5")
+  [[ -z "$clip_duration" ]] && clip_duration="5"
+
+  log_info "Clip: from ${start_time}s for ${clip_duration}s"
+  echo
+fi
+
+# ── Output Resolution ─────────────────────────────────────────────────────────
+echo
+width_choice=$(gum choose --header "Output width  (height auto-scaled)" \
+  "Original  ($res)" \
+  "640px  (web-safe)" \
+  "480px  (compact)" \
+  "320px  (tiny / Discord)" \
+  "Custom")
+[[ -z "$width_choice" ]] && { log_info "Cancelled"; exit 0; }
+
+case "$width_choice" in
+  "Original"*)
+    out_width="$orig_width"   # real pixel value for display
+    scale_filter=""           # no scaling needed — skip filter entirely
+    ;;
+  "640px"*)   out_width=640 ;;
+  "480px"*)   out_width=480 ;;
+  "320px"*)   out_width=320 ;;
+  "Custom")
+    out_width=$(gum input --prompt "Width in px: " --placeholder "800")
+    [[ -z "$out_width" ]] && out_width=640
+    ;;
+esac
+
+# Build scale filter only when we actually want to resize
+# Uses -2 instead of -1 so output dimensions are always divisible by 2 (ffmpeg req)
+if [[ -z "$scale_filter" ]]; then
+  scale_filter=""   # Original — no scale
+else
+  scale_filter="scale=${out_width}:-2:flags=lanczos"
+fi
+
+# ── FPS ───────────────────────────────────────────────────────────────────────
+echo
+fps_choice=$(gum choose --header "Frame rate" \
+  "24 fps  (smooth)" \
+  "15 fps  (balanced)" \
+  "10 fps  (small file)" \
+  "Custom")
+[[ -z "$fps_choice" ]] && { log_info "Cancelled"; exit 0; }
+
+case "$fps_choice" in
+  "24 fps"*) gif_fps=24 ;;
+  "15 fps"*) gif_fps=15 ;;
+  "10 fps"*) gif_fps=10 ;;
+  "Custom")
+    gif_fps=$(gum input --prompt "FPS: " --placeholder "15")
+    [[ -z "$gif_fps" ]] && gif_fps=15
+    ;;
+esac
+
+# ── gifsicle Optimization Level ───────────────────────────────────────────────
+echo
+opt_choice=$(gum choose --header "Compression level" \
+  "O3  (smallest file, slower)" \
+  "O2  (balanced  — recommended)" \
+  "O1  (fast, larger file)" \
+  "None")
+[[ -z "$opt_choice" ]] && { log_info "Cancelled"; exit 0; }
+
+case "$opt_choice" in
+  "O3"*) opt_flag="-O3" ;;
+  "O2"*) opt_flag="-O2" ;;
+  "O1"*) opt_flag="-O1" ;;
+  "None") opt_flag="" ;;
+esac
+
+# ── Output Path ───────────────────────────────────────────────────────────────
+echo
+default_out="${input_file%.*}.gif"
+out_file=$(gum input \
+  --prompt "Save GIF to: " \
+  --placeholder "$default_out" \
+  --value "$default_out")
+[[ -z "$out_file" ]] && out_file="$default_out"
+out_file="${out_file/#\~/$HOME}"
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo
+gum style --border rounded --border-foreground 6 --padding "1 2" \
+  "$(gum style --foreground 6 --bold "  Conversion plan")" \
+  "" \
+  "  Input   : $(basename "$input_file")" \
+  "  Range   : ${start_time}s → +${clip_duration}s" \
+  "  Size    : ${out_width}px wide  @  ${gif_fps} fps" \
+  "  Compress: ${opt_flag:-none}" \
+  "  Output  : $out_file"
+
+echo
+gum confirm "Start conversion?" || { log_info "Cancelled"; exit 0; }
+echo
+
+# ── Temp files + cleanup ──────────────────────────────────────────────────────
+tmp_palette="/tmp/gif_palette_$$.png"
+tmp_raw_gif="/tmp/gif_raw_$$.gif"
+ffmpeg_log="/tmp/gif_ffmpeg_$$.log"
+trap 'rm -f "$tmp_palette" "$tmp_raw_gif" "$ffmpeg_log"' EXIT
+
+# ── Build vf chains ───────────────────────────────────────────────────────────
+# Palette pass: [scale,] fps, palettegen
+if [[ -n "$scale_filter" ]]; then
+  vf_palette="${scale_filter},fps=${gif_fps},palettegen=stats_mode=diff"
+  vf_render="${scale_filter},fps=${gif_fps} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
+else
+  vf_palette="fps=${gif_fps},palettegen=stats_mode=diff"
+  vf_render="fps=${gif_fps} [x]; [x][1:v] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle"
+fi
+
+# ── Palette generation ────────────────────────────────────────────────────────
+log_step "Building palette..."
+
+spinner "Analyzing colors..." ffmpeg -y \
+  -ss "$start_time" -t "$clip_duration" \
+  -i "$input_file" \
+  -vf "$vf_palette" \
+  -update 1 \
+  "$tmp_palette" >"$ffmpeg_log" 2>&1
+
+if [[ ! -f "$tmp_palette" ]]; then
+  log_error "Palette generation failed"
+  # Show last few lines of ffmpeg output so user knows why
+  echo
+  gum style --foreground 1 "  ffmpeg said:"
+  tail -5 "$ffmpeg_log" | while IFS= read -r line; do
+    gum style --foreground 8 "  $line"
+  done
+  echo
+  show_done 2>/dev/null || true
+  exit 1
+fi
+log_success "Palette ready"
+
+# ── GIF render ────────────────────────────────────────────────────────────────
+echo
+log_step "Rendering GIF frames..."
+
+spinner "Rendering frames..." ffmpeg -y \
+  -ss "$start_time" -t "$clip_duration" \
+  -i "$input_file" \
+  -i "$tmp_palette" \
+  -lavfi "$vf_render" \
+  "$tmp_raw_gif" >"$ffmpeg_log" 2>&1
+
+if [[ ! -f "$tmp_raw_gif" ]]; then
+  log_error "GIF render failed"
+  echo
+  gum style --foreground 1 "  ffmpeg said:"
+  tail -5 "$ffmpeg_log" | while IFS= read -r line; do
+    gum style --foreground 8 "  $line"
+  done
+  echo
+  show_done 2>/dev/null || true
+  exit 1
+fi
+log_success "Frames rendered"
+
+# ── Optimize ──────────────────────────────────────────────────────────────────
+echo
+if [[ -n "$opt_flag" ]]; then
+  log_step "Optimizing with gifsicle ${opt_flag}..."
+  gifsicle $opt_flag "$tmp_raw_gif" -o "$out_file" 2>"$ffmpeg_log"
+  if [[ ! -f "$out_file" ]]; then
+    log_error "gifsicle failed"
+    echo
+    gum style --foreground 1 "  gifsicle said:"
+    tail -5 "$ffmpeg_log" | while IFS= read -r line; do
+      gum style --foreground 8 "  $line"
+    done
+    echo
+    show_done 2>/dev/null || true
+    exit 1
+  fi
+else
+  cp "$tmp_raw_gif" "$out_file"
+fi
+
+# ── Result ────────────────────────────────────────────────────────────────────
+final_size=$(du -sh "$out_file" | cut -f1)
+echo
+gum style --border rounded --border-foreground 2 --padding "1 2" \
+  "$(gum style --foreground 2 --bold "  ✓ GIF created!")" \
+  "" \
+  "  File : $out_file" \
+  "  Size : $final_size"
+
+echo
+
+# ── Open? ─────────────────────────────────────────────────────────────────────
+if gum confirm "Open with mpv to preview?"; then
+  mpv --loop "$out_file" &
+fi
+
+# ── Auto-close Countdown ──────────────────────────────────────────────────────
+echo
+for i in $(seq 10 -1 1); do
+  printf "\r  Closing in %d seconds... (press any key to close now)  " "$i"
+  read -r -s -n1 -t1 key && break
+done
+echo
