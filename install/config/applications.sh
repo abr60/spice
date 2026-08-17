@@ -4,59 +4,51 @@
 # =============================================================================
 
 set -euo pipefail
-source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
-section "Applications"
+# Path Definitions
+SPICE_DIR="${SPICE_DIR:-$HOME/spice}"
+APP_SRC="$SPICE_DIR/applications"
+ICON_SRC="$APP_SRC/icons"
 
-ARCHER_DIR="${ARCHER_DIR:-$HOME/Archer}"
+APP_DEST="$HOME/.local/share/applications"
+ICON_DEST="$HOME/.local/share/icons/hicolor/256x256/apps"
 
-SRC="$ARCHER_DIR/applications"
-DEST="$HOME/.local/share/applications"
+WEBAPPS_SCRIPT="$SPICE_DIR/install/packaging/webapps.sh"
 
-BIN_SOURCE="$ARCHER_DIR/bin/batty"
-BIN_DEST="$HOME/.cargo/bin"
+# ─── 1. Copy Icons ────────────────────────────────────────────────────────────
 
-# ─── batty binary ─────────────────────────────────────────────────────────────
-
-if [[ -f "$BIN_SOURCE" ]]; then
-    mkdir -p "$BIN_DEST"
-    cp -f "$BIN_SOURCE" "$BIN_DEST/"
-    chmod +x "$BIN_DEST/batty"
-    ok "batty installed to $BIN_DEST"
+if [[ -d "$ICON_SRC" ]]; then
+    mkdir -p "$ICON_DEST"
+    # Copy all .png files directly into hicolor/256x256/apps
+    cp -f "$ICON_SRC"/*.png "$ICON_DEST/" 2>/dev/null || true
+    echo "Synced webapp icons to $ICON_DEST"
 else
-    warn "batty binary not found at $BIN_SOURCE — skipping"
+    echo "Warning: Icon directory not found at $ICON_SRC"
 fi
 
-# ─── Applications ─────────────────────────────────────────────────────────────
+# ─── 2. Copy Applications ─────────────────────────────────────────────────────
 
-if [[ ! -d "$SRC" ]]; then
-    warn "Applications directory not found: $SRC"
+if [[ -d "$APP_SRC" ]]; then
+    mkdir -p "$APP_DEST"
+    
+    # Copy desktop files into .local/share/applications
+    find "$APP_SRC" -maxdepth 1 -type f -name "*.desktop" -exec cp -f {} "$APP_DEST/" \;
+    echo "Synced .desktop files to $APP_DEST"
+else
+    echo "Warning: Applications directory not found at $APP_SRC"
     exit 0
 fi
 
-mkdir -p "$DEST"
+# ─── 3. Run Webapps Installation Script ────────────────────────────────────────
 
-# Copy everything exactly as-is
-cp -a "$SRC"/. "$DEST"/
-ok "Copied Archer applications"
-
-# Remove any top-level desktop files that also exist in hidden/
-HIDDEN_DIR="$DEST/hidden"
-
-if [[ -d "$HIDDEN_DIR" ]]; then
-    while IFS= read -r -d '' hidden_file; do
-        name="$(basename "$hidden_file")"
-        target="$DEST/$name"
-
-        if [[ -f "$target" ]]; then
-            rm -f "$target"
-            ok "Removed hidden application: $name"
-        fi
-    done < <(find "$HIDDEN_DIR" -type f -name '*.desktop' -print0)
+if [[ -x "$WEBAPPS_SCRIPT" ]]; then
+    echo "Executing webapps installer..."
+    "$WEBAPPS_SCRIPT"
+elif [[ -f "$WEBAPPS_SCRIPT" ]]; then
+    echo "Executing webapps installer via bash..."
+    bash "$WEBAPPS_SCRIPT"
+else
+    echo "Warning: Webapps installer script not found at $WEBAPPS_SCRIPT"
 fi
 
-# ─── Update caches ────────────────────────────────────────────────────────────
-
-update-desktop-database "$DEST" 2>/dev/null \
-    && ok "Desktop database updated" \
-    || true
+echo "Application and icon sync complete!"
