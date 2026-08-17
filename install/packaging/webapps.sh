@@ -19,7 +19,7 @@ omarchy-webapp-install "Vive" "https://chat.mistral.ai/chat" ""
 omarchy-webapp-install "EconGraphs" "https://www.econgraphs.org/" ""
 omarchy-webapp-install "Macro Econ" "https://saylordotorg.github.io/text_macroeconomics-theory-through-applications/" "$ICON_DIR/macro-econ.png"
 omarchy-webapp-install "Micro Econ" "https://saylordotorg.github.io/text_microeconomics-theory-through-applications/index.html" "$ICON_DIR/micro-econ.png"
-omarchy-webapp-install "OpenCourseWare (MIT)" "https://ocw.mit.edu/" "$ICON_DIR/opencourseware-mit.png"
+omarchy-webapp-install "OpenCourseWare (MIT)" "https://ocw.mit.edu/" ""
 
 # ==============================================================================
 # Office & Productivity
