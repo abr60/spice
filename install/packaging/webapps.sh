@@ -25,7 +25,7 @@ omarchy-webapp-install "OpenCourseWare (MIT)" "https://ocw.mit.edu/" ""
 # Office & Productivity
 # ==============================================================================
 omarchy-webapp-install "Excel" "https://excel.cloud.microsoft/" ""
-omarchy-webapp-install "MS Word" "https://word.cloud.microsoft/" "$ICON_DIR/ms-word.png"
+omarchy-webapp-install "MS Word" "https://word.cloud.microsoft/" ""
 omarchy-webapp-install "GitHub" "https://github.com/drunk-particles/spice" ""
 
 # ==============================================================================
