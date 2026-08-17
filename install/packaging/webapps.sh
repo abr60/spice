@@ -1,15 +1,39 @@
-omarchy-webapp-install "HEY" https://app.hey.com HEY.png "omarchy-webapp-handler-hey %u" "x-scheme-handler/mailto"
-omarchy-webapp-install "Basecamp" https://launchpad.37signals.com Basecamp.png
-omarchy-webapp-install "WhatsApp" https://web.whatsapp.com/ WhatsApp.png
-omarchy-webapp-install "Google Photos" https://photos.google.com/ "Google Photos.png"
-omarchy-webapp-install "Google Contacts" https://contacts.google.com/ "Google Contacts.png"
-omarchy-webapp-install "Google Messages" https://messages.google.com/web/conversations "Google Messages.png"
-omarchy-webapp-install "Google Maps" https://maps.google.com "Google Maps.png"
-omarchy-webapp-install "ChatGPT" https://chatgpt.com/ ChatGPT.png
-omarchy-webapp-install "YouTube" https://youtube.com/ YouTube.png
-omarchy-webapp-install "GitHub" https://github.com/ GitHub.png
-omarchy-webapp-install "X" https://x.com/ X.png
-omarchy-webapp-install "Figma" https://figma.com/ Figma.png
-omarchy-webapp-install "Discord" https://discord.com/channels/@me Discord.png
-omarchy-webapp-install "Zoom" https://app.zoom.us/wc/home Zoom.png "omarchy-webapp-handler-zoom %u" "x-scheme-handler/zoommtg;x-scheme-handler/zoomus"
-omarchy-webapp-install "Fizzy" https://app.fizzy.do/ Fizzy.png
+#!/usr/bin/env bash
+
+# ==============================================================================
+# AI & LLM Services
+# ==============================================================================
+omarchy-webapp-install "Claude" "https://claude.ai/" ""
+omarchy-webapp-install "DeepSeek" "https://chat.deepseek.com/" ""
+omarchy-webapp-install "Gemini" "https://gemini.google.com/app" ""
+omarchy-webapp-install "Grok" "https://grok.com/" ""
+omarchy-webapp-install "Notebook LLM" "https://notebooklm.google.com/" ""
+omarchy-webapp-install "Vive" "https://chat.mistral.ai/chat" ""
+
+# ==============================================================================
+# Economics & Education
+# ==============================================================================
+omarchy-webapp-install "EconGraphs" "https://www.econgraphs.org/" ""
+omarchy-webapp-install "Macro Econ" "https://saylordotorg.github.io/text_macroeconomics-theory-through-applications/" ""
+omarchy-webapp-install "Micro Econ" "https://saylordotorg.github.io/text_microeconomics-theory-through-applications/index.html" ""
+omarchy-webapp-install "OpenCourseWare (MIT)" "https://ocw.mit.edu/" ""
+
+# ==============================================================================
+# Office & Productivity
+# ==============================================================================
+omarchy-webapp-install "Excel" "https://excel.cloud.microsoft/" ""
+omarchy-webapp-install "MS Word" "https://word.cloud.microsoft/" ""
+omarchy-webapp-install "GitHub" "https://github.com/drunk-particles/spice" ""
+
+# ==============================================================================
+# Social & Communication
+# ==============================================================================
+omarchy-webapp-install "Facebook" "https://www.facebook.com/" ""
+omarchy-webapp-install "Messenger" "https://www.facebook.com/messages/e2ee/t/7674688255962884" ""
+omarchy-webapp-install "Reddit" "https://www.reddit.com/" 
+
+# ==============================================================================
+# Media & Entertainment
+# ==============================================================================
+omarchy-webapp-install "Wallhaven" "https://wallhaven.cc/" ""
+omarchy-webapp-install "YT Music" "https://music.youtube.com/" ""
