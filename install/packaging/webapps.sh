@@ -30,7 +30,7 @@ omarchy-webapp-install "GitHub" "https://github.com/drunk-particles/spice" ""
 # ==============================================================================
 omarchy-webapp-install "Facebook" "https://www.facebook.com/" ""
 omarchy-webapp-install "Messenger" "https://www.facebook.com/messages/e2ee/t/7674688255962884" ""
-omarchy-webapp-install "Reddit" "https://www.reddit.com/" 
+omarchy-webapp-install "Reddit" "https://www.reddit.com/" ""
 
 # ==============================================================================
 # Media & Entertainment
