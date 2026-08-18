@@ -68,13 +68,13 @@
     "maximized": true,
     "normal_geometry": {
       "height": 826,
-      "width": 837,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAAAAAAAAAAABfcAAAM5AAAAAAAAAAAAAANEAAADOQAAAAACAAAABgAAAAAAAAAAAAAABfcAAAM5"
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAABfcAAAM5AAAAAAAAAAAAAAX3AAADOQAAAAACAAAABgAAAAAAAAAAAAAABfcAAAM5"
     },
     "screen": {
       "depth": 32,
@@ -114,7 +114,7 @@
   "lookup_location": "Google search",
   "main_window_state": {
     "__class__": "bytearray",
-    "__value__": "AAAA/wAAAAH9AAAAAgAAAAAAAAEOAAADYPwCAAAAAvsAAAAQAHQAbwBjAC0AZABvAGMAawgAAAAAAAADYAAAAIwA////+wAAABYAcwBlAGEAcgBjAGgALQBkAG8AYwBrAAAAAAAAAALQAAAAnQD///8AAAABAAABDgAAA2D8AgAAAAT7AAAAFgBsAG8AbwBrAHUAcAAtAGQAbwBjAGsCAAAAAAAAAAAAAAUAAAAC0PsAAAAcAGIAbwBvAGsAbQBhAHIAawBzAC0AZABvAGMAawgAAAAAAAADYAAAAPgA////+wAAABwAaQBuAHMAcABlAGMAdABvAHIALQBkAG8AYwBrAAAAAAAAAALQAAAAFQD////7AAAAHgBoAGkAZwBoAGwAaQBnAGgAdABzAC0AZABvAGMAawAAAAAAAAAC0AAAANsA////AAAF+AAAAzoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAAAAAAAAQAAAB4AYQBjAHQAaQBvAG4AcwBfAHQAbwBvAGwAYgBhAHICAAAAAP////8AAAAAAAAAAA=="
+    "__value__": "AAAA/wAAAAH9AAAAAgAAAAAAAAEOAAADOvwCAAAAAvsAAAAQAHQAbwBjAC0AZABvAGMAawgAAAAAAAADOgAAAIwA////+wAAABYAcwBlAGEAcgBjAGgALQBkAG8AYwBrAAAAAAAAAALQAAAAnQD///8AAAABAAABDgAAA2D8AgAAAAT7AAAAFgBsAG8AbwBrAHUAcAAtAGQAbwBjAGsCAAAAAAAAAAAAAAUAAAAC0PsAAAAcAGIAbwBvAGsAbQBhAHIAawBzAC0AZABvAGMAawgAAAAAAAADYAAAAPgA////+wAAABwAaQBuAHMAcABlAGMAdABvAHIALQBkAG8AYwBrAAAAAAAAAALQAAAAFQD////7AAAAHgBoAGkAZwBoAGwAaQBnAGgAdABzAC0AZABvAGMAawAAAAAAAAAC0AAAANsA////AAAF+AAAAzoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAAAAAAAAQAAAB4AYQBjAHQAaQBvAG4AcwBfAHQAbwBvAGwAYgBhAHICAAAAAP////8AAAAAAAAAAA=="
   },
   "old_prefs_migrated": true,
   "saved-search-settings": {
@@ -178,58 +178,13 @@
         ],
         "key": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
         "pathtoebook": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
-        "timestamp": "2026-08-17T17:41:11.578Z",
+        "timestamp": "2026-08-18T14:36:59.900Z",
         "title": "Reverend Insanity"
-      },
-      {
-        "authors": [
-          "Translator: Johnchen & DoubleDD; Author: Wang Yu 忘语; Licensed From: Qidian"
-        ],
-        "key": "/home/abr/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (2)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
-        "pathtoebook": "/home/abr/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (2)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
-        "timestamp": "2026-08-17T17:40:06.368Z",
-        "title": "A Record of a Mortal’s Journey to Immortality c1-2248"
-      },
-      {
-        "authors": [
-          "Gu Zhen Ren"
-        ],
-        "key": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (2)/Reverend Insanity - Gu Zhen Ren.epub",
-        "pathtoebook": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (2)/Reverend Insanity - Gu Zhen Ren.epub",
-        "timestamp": "2026-08-15T15:25:56.056Z",
-        "title": "Reverend Insanity"
-      },
-      {
-        "authors": [
-          "Er Gen"
-        ],
-        "key": "/home/abr/Calibre Library/Er Gen/I Shall Seal the Heavens (3)/I Shall Seal the Heavens - Er Gen.epub",
-        "pathtoebook": "/home/abr/Calibre Library/Er Gen/I Shall Seal the Heavens (3)/I Shall Seal the Heavens - Er Gen.epub",
-        "timestamp": "2026-08-11T19:30:34.167Z",
-        "title": "I Shall Seal the Heavens"
-      },
-      {
-        "authors": [
-          "Er Gen"
-        ],
-        "key": "/home/pseudo/Calibre Library/Er Gen/I Shall Seal the Heavens (6)/I Shall Seal the Heavens - Er Gen.epub",
-        "pathtoebook": "/home/pseudo/Calibre Library/Er Gen/I Shall Seal the Heavens (6)/I Shall Seal the Heavens - Er Gen.epub",
-        "timestamp": "2026-03-24T00:15:13.673Z",
-        "title": "I Shall Seal the Heavens"
-      },
-      {
-        "authors": [
-          "Translator: Johnchen & DoubleDD; Author: Wang Yu 忘语; Licensed From: Qidian"
-        ],
-        "key": "/home/pseudo/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (3)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
-        "pathtoebook": "/home/pseudo/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (3)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
-        "timestamp": "2026-01-15T15:51:12.971Z",
-        "title": "A Record of a Mortal’s Journey to Immortality c1-2248"
       }
     ],
     "user_color_schemes": {
       "*Vintage": {
-        "background": "#dedbc8",
+        "background": "#f0e9d8",
         "foreground": "#0c0c14",
         "is_dark_theme": false,
         "name": "Vintage"
@@ -242,7 +197,7 @@
         "name": "adnan"
       }
     },
-    "user_stylesheet": "body {\n    font-family: \"Alegreya\", \"EB Garamond\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+    "user_stylesheet": "body {\n    font-family: \"EB Garamond\", \"Alegreya\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
   },
   "viewer-search-case-sensitive": false,
   "viewer-search-mode": "normal"

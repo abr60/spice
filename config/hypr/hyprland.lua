@@ -28,7 +28,7 @@ require("hypr.overlay_init")
 
 -- Add any other personal Hyprland configuration below.
 -- o.window("qemu", { workspace = "5" })
-hl.env("XCURSOR_THEME", "Bibata-Original-Classic")
-hl.env("HYPRCURSOR_THEME", "Bibata-Original-Classic")
+hl.env("XCURSOR_THEME", "Bibata-Original-Ice")
+hl.env("HYPRCURSOR_THEME", "Bibata-Original-Ice")
 hl.env("XCURSOR_SIZE", "28")
 hl.env("HYPRCURSOR_SIZE", "28")

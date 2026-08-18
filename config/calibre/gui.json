@@ -1,9 +1,17 @@
 {
+  "book_info_dialog_splitter_state": {
+    "__class__": "bytearray",
+    "__value__": "AAAA/wAAAAEAAAACAAABXgAAAV4B/////wEAAAABAA=="
+  },
   "book_list_pin_splitter_state": {
     "__class__": "bytearray",
     "__value__": "AAAA/wAAAAEAAAACAAABAAAAAEYA/////wEAAAABAA=="
   },
   "bookshelf view visible": false,
+  "choose-merge-dialog-splitter-state": {
+    "__class__": "bytearray",
+    "__value__": "AAAA/wAAAAEAAAACAAABvAAAAQAA/////wEAAAABAA=="
+  },
   "cover_grid_background": {
     "dark": [
       45,
@@ -117,6 +125,57 @@
       255
     ]
   ],
+  "geometry-of-book_info_dialog_geometry": {
+    "frame_geometry": {
+      "height": 764,
+      "width": 718,
+      "x": 49,
+      "y": 0
+    },
+    "full_screened": false,
+    "geometry": {
+      "height": 764,
+      "width": 718,
+      "x": 49,
+      "y": 0
+    },
+    "maximized": true,
+    "normal_geometry": {
+      "height": 764,
+      "width": 718,
+      "x": 49,
+      "y": 0
+    },
+    "qt": {
+      "__class__": "bytearray",
+      "__value__": "AdnQywADAAAAAAAxAAAAAAAAAv4AAAL7AAAAMQAAAAAAAAL+AAAC+wAAAAACAAAABgAAAAAxAAAAAAAAAv4AAAL7"
+    },
+    "screen": {
+      "depth": 32,
+      "device_pixel_ratio": 2.0,
+      "geometry_in_logical_pixels": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      },
+      "index_in_screens_list": 0,
+      "manufacturer": "AU Optronics",
+      "model": "0x323D",
+      "name": "eDP-1",
+      "serial": "",
+      "size_in_logical_pixels": {
+        "height": 864,
+        "width": 1536
+      },
+      "virtual_geometry": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
   "geometry-of-calibre_main_window_geometry": {
     "frame_geometry": {
       "height": 826,
@@ -168,30 +227,81 @@
       }
     }
   },
+  "geometry-of-choose-merge-dialog-geometry": {
+    "frame_geometry": {
+      "height": 655,
+      "width": 722,
+      "x": 393,
+      "y": 46
+    },
+    "full_screened": false,
+    "geometry": {
+      "height": 655,
+      "width": 722,
+      "x": 393,
+      "y": 46
+    },
+    "maximized": true,
+    "normal_geometry": {
+      "height": 655,
+      "width": 722,
+      "x": 393,
+      "y": 46
+    },
+    "qt": {
+      "__class__": "bytearray",
+      "__value__": "AdnQywADAAAAAAGJAAAALgAABFoAAAK8AAABiQAAAC4AAARaAAACvAAAAAACAAAABgAAAAGJAAAALgAABFoAAAK8"
+    },
+    "screen": {
+      "depth": 32,
+      "device_pixel_ratio": 2.0,
+      "geometry_in_logical_pixels": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      },
+      "index_in_screens_list": 0,
+      "manufacturer": "AU Optronics",
+      "model": "0x323D",
+      "name": "eDP-1",
+      "serial": "",
+      "size_in_logical_pixels": {
+        "height": 864,
+        "width": 1536
+      },
+      "virtual_geometry": {
+        "height": 864,
+        "width": 1536,
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
   "geometry-of-duplicates-question-dialog-geometry": {
     "frame_geometry": {
       "height": 378,
-      "width": 532,
-      "x": 90,
+      "width": 590,
+      "x": 0,
       "y": 0
     },
     "full_screened": false,
     "geometry": {
       "height": 378,
-      "width": 532,
-      "x": 90,
+      "width": 590,
+      "x": 0,
       "y": 0
     },
     "maximized": true,
     "normal_geometry": {
       "height": 378,
-      "width": 532,
-      "x": 90,
+      "width": 590,
+      "x": 0,
       "y": 0
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAABaAAAAAAAAAm0AAAF5AAAAWgAAAAAAAAJtAAABeQAAAAACAAAABgAAAABaAAAAAAAAAm0AAAF5"
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAAAk0AAAF5AAAAAAAAAAAAAAJNAAABeQAAAAACAAAABgAAAAAAAAAAAAAAAk0AAAF5"
     },
     "screen": {
       "depth": 32,
@@ -272,7 +382,7 @@
   },
   "grid view visible": false,
   "library_usage_stats": {
-    "/home/abr/Calibre Library": 60
+    "/home/abr/Calibre Library": 78
   },
   "main_window_central_widget_state": {
     "layout": "wide",
@@ -290,7 +400,7 @@
       "tag_browser": true
     },
     "wide_desires": {
-      "book_details_width": 0.3,
+      "book_details_width": 0.18782722513089006,
       "cover_browser_height": 0.28586278586278585,
       "quick_view_height": 0.23804573804573806,
       "tag_browser_width": 0.3
