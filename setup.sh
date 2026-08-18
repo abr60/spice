@@ -1,153 +1,224 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Archer - Setup Entry Point
-# Run after: git clone https://github.com/drunk-particles/Archer.git ~/Archer
-# Usage: bash ~/Archer/setup.sh
+# spice - Unified Setup Script
+# https://github.com/drunk-particles/spice.git
+# Usage: bash ~/spice/setup.sh
 # =============================================================================
 
-set -euo pipefail
+set -uo pipefail
 
-DOTS_DIR="$HOME/Archer"
-export ARCHER_DIR="$HOME/.local/share/Archer"
-export INSTALL_DIR="$DOTS_DIR/install"
+SPICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$SPICE_DIR/install"
+LOG_DIR="$HOME/.local/state/spice/logs"
+LOG_FILE="$LOG_DIR/setup-$(date '+%Y%m%d-%H%M%S').log"
+STATE_DIR="$HOME/.local/state/spice/setup"
+
+mkdir -p "$LOG_DIR" "$STATE_DIR"
 
 source "$INSTALL_DIR/lib/helpers.sh"
 
-# ==========================================
-# 1. DEPENDENCY CHECK
-# ==========================================
-ensure_installed gum
+# =============================================================================
+# LOGGING (borrowed from Omarchy)
+# =============================================================================
 
-# ==========================================
-# 2. SPLASH — colored, centered logo
-# ==========================================
-# Set TTY background to deep forest shadow
-printf "\e]P0$C_TTY_BG"
+log_line() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
 
-print_logo
+run_logged() {
+    local script="$1"
+    local label="$2"
+    local full_path="$INSTALL_DIR/$script"
 
-# ==========================================
-# 3. WARNING & CONFIRMATION
-# ==========================================
+    log_line "Starting: $label"
+
+    if [[ ! -f "$full_path" ]]; then
+        log_line "SKIPPED: $label — script not found ($full_path)"
+        warn "$label — script not found, skipping"
+        return
+    fi
+
+    chmod +x "$full_path"
+
+    if bash "$full_path" 2>&1 | tee -a "$LOG_FILE"; then
+        log_line "Completed: $label"
+        ok "$label done"
+    else
+        log_line "Failed: $label"
+        warn "$label had errors — check $LOG_FILE"
+    fi
+}
+
+# =============================================================================
+# SPLASH
+# =============================================================================
+clear
+[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
+
 gum style \
-    --foreground "$C_ERROR" --border-foreground "$C_ERROR" --border double \
-    --align center --width "$TERM_WIDTH" --padding "0 1" \
-    "WARNING: SYSTEM MODIFICATION" \
-    "This script will make changes to your system."
+    --foreground 117 --border-foreground 117 --border rounded \
+    --align center --width 50 --padding "0 1" \
+    "SPICE SETUP" \
+    "github.com/drunk-particles/spice"
 
 echo ""
-gum style \
-    --foreground "$C_ACCENT" \
-    --padding "0 0 0 $PADDING_LEFT" \
-    "  • Symlink dotfiles into ~/.config via Stow" \
-    "  • Install core packages via pacman and yay" \
-    "  • Set up fonts, binaries, and desktop apps" \
-    "  • Configure system settings and services" \
-    "  • Set up SDDM, Plymouth, and Limine" \
-    "  • Change your default shell to Zsh"
+
+# =============================================================================
+# MULTI-SELECT
+# =============================================================================
+ITEMS=(
+    "Packages	Install all packages from pkgs-extra.txt"
+    "Configs	Symlink config/ → ~/.config via Stow"
+    "Applications	Set up desktop applications"
+    "Services	Enable and start system/user services"
+    "Fonts	Install fonts"
+    "Zsh	Set up Zsh shell"
+    "GPU Drivers	Install drivers for your hardware"
+    "Howdy	Face recognition for sudo/login"
+    "Thinkfan	Fan curve control (ThinkPad)"
+    "EasyEffects	Audio presets and plugins"
+    "Waydroid	Android container"
+    "Wallpapers	Clone wallpapers to ~/Wallpapers"
+)
 
 echo ""
-gum style \
-    --foreground "$C_MUTED" \
-    --padding "0 0 0 $PADDING_LEFT" \
-    "  Optional steps (GPU drivers, plugins, wallpapers," \
-    "  Git identity, Howdy, Spicetify etc.) run on first login."
+SELECTED=$(printf '%s\n' "${ITEMS[@]}" | gum choose \
+    --no-limit \
+    --header "  space to toggle  ·  enter to confirm" \
+    --height 20)
 
-echo ""
-gum confirm "Proceed?" || { msg "Aborted."; exit 0; }
-
-# ==========================================
-# 4. LINK ARCHER INTO ~/.local/share/Archer
-# ==========================================
-msg "Linking Archer to $ARCHER_DIR..."
-mkdir -p "$HOME/.local/share"
-ln -snf "$DOTS_DIR" "$ARCHER_DIR"
-mkdir -p "$HOME/.local/state/Archer/toggles/hypr"
-ok "Archer linked"
-
-# ==========================================
-# 5. MAKE ALL SCRIPTS EXECUTABLE
-# ==========================================
-msg "Setting permissions..."
-find "$DOTS_DIR" -type f \( \
-    -name "*.sh" \
-    -o -name "*.bash" \
-    -o -path "*/bin/*" \
-    -o -path "*/scripts/*" \
-\) -exec chmod +x {} +
-chmod +x "$DOTS_DIR/setup.sh" "$DOTS_DIR/update.sh" "$DOTS_DIR/post-install.sh"
-ok "Permissions set"
-
-# ==========================================
-# 6. RUN INSTALL STEPS
-# ==========================================
-START_TIME=$SECONDS
-
-# ── Packages ──────────────────────────────────────────────────────────────────
-run_step "packaging/packages"             "Installing core packages"        true
-
-# ── Shell ─────────────────────────────────────────────────────────────────────
-run_step "config/zsh.sh"                  "Setting up Zsh"                  false
-
-# ── Configs & dotfiles ────────────────────────────────────────────────────────
-run_step "config/dotfiles.sh"             "Symlinking config files"         true
-
-echo ""
-section "Cleaning plugin configs"
-if [[ -f "$INSTALL_DIR/extras/plugins.sh" ]]; then
-    bash "$INSTALL_DIR/extras/plugins.sh" --clean
-else
-    warn "plugins.sh not found — skipping"
+if [[ -z "$SELECTED" ]]; then
+    msg "Nothing selected — exiting."
+    exit 0
 fi
 
-run_step "config/fonts.sh"                "Installing fonts"                false
-run_step "config/applications.sh"         "Setting up applications"         false
+# =============================================================================
+# SUMMARY
+# =============================================================================
+clear
+[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
 
-# ── System tweaks ─────────────────────────────────────────────────────────────
-run_step "system/fd-limit.sh"             "File descriptor limits"          false
-run_step "system/file-watchers.sh"        "File watchers"                   false
-run_step "system/sudo-tries.sh"           "Sudo tries"                      false
-run_step "system/input-group.sh"          "Input group"                     false
-run_step "system/ssh-flakiness.sh"        "SSH flakiness fix"               false
-run_step "system/network.sh"              "Network config"                  false
-run_step "system/user-dirs.sh"            "User directories"                false
-run_step "system/firewall.sh"             "Firewall"                        false
-run_step "system/mimetypes.sh"            "Default apps"                    false
+gum style --foreground 117 --padding "0 0 0 2" "  Selected steps:"
+echo ""
+echo "$SELECTED" | while IFS=$'\t' read -r name desc; do
+    gum style --foreground 245 "    • $name — $desc"
+done
 
-# ── Hardware ──────────────────────────────────────────────────────────────────
-run_step "hardware/bluetooth.sh"          "Bluetooth"                       false
-run_step "hardware/wifi-powersave.sh"     "WiFi powersave"                  false
-run_step "hardware/fast-shutdown.sh"      "Fast shutdown"                   false
-run_step "hardware/unmount-fuse.sh"       "FUSE unmount hook"               false
-run_step "hardware/swayosd.sh"            "SwayOSD"                         false
-run_step "hardware/recover-monitor.sh"    "Monitor recovery"                false
+echo ""
+gum confirm "Run it?" || { msg "Aborted."; exit 0; }
 
-# ── Services ──────────────────────────────────────────────────────────────────
-run_step "services/all.sh"    "services"                 false
+# =============================================================================
+# EXECUTE
+# =============================================================================
+clear
+[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
 
-# ── Login / Boot Stack ────────────────────────────────────────────────────────
-run_step "login/sddm.sh"                  "SDDM"                            false
-run_step "login/limine.sh"                "Limine bootloader"               false
-run_step "login/plymouth.sh"              "Plymouth"                        false
+TOTAL=$(echo "$SELECTED" | wc -l)
+STEP=0
+START_TIME=$(date +%s)
+NEEDS_REBOOT=false
 
-# ==========================================
-# 7. DONE
-# ==========================================
-DURATION=$(( SECONDS - START_TIME ))
+log_line "=== Spice Setup Started ==="
+log_line "Selected: $(echo "$SELECTED" | awk -F'\t' '{print $1}' | tr '\n' ' ')"
+
+step_header() {
+    (( STEP++ ))
+    echo ""
+    gum style --foreground 117 --padding "0 0 0 2" \
+        "  [$STEP/$TOTAL] $1"
+    log_line "--- $1 ---"
+}
+
+grep -q "^Packages"     <<< "$SELECTED" && {
+    step_header "Packages"
+    run_logged "packaging/packages" "Packages"
+}
+
+grep -q "^Configs"      <<< "$SELECTED" && {
+    step_header "Configs"
+    run_logged "config/configs.sh" "Configs"
+}
+
+grep -q "^Applications" <<< "$SELECTED" && {
+    step_header "Applications"
+    run_logged "config/applications.sh" "Applications"
+}
+
+grep -q "^Services"     <<< "$SELECTED" && {
+    step_header "Services"
+    run_logged "services/all.sh" "Services"
+}
+
+grep -q "^Fonts"        <<< "$SELECTED" && {
+    step_header "Fonts"
+    run_logged "config/fonts.sh" "Fonts"
+}
+
+grep -q "^Zsh"          <<< "$SELECTED" && {
+    step_header "Zsh"
+    run_logged "config/zsh.sh" "Zsh"
+}
+
+grep -q "^GPU Drivers"  <<< "$SELECTED" && {
+    step_header "GPU Drivers"
+    run_logged "extras/gpu-driver.sh" "GPU Drivers"
+    NEEDS_REBOOT=true
+}
+
+grep -q "^Howdy"        <<< "$SELECTED" && {
+    step_header "Howdy"
+    run_logged "extras/howdy.sh" "Howdy"
+}
+
+grep -q "^Thinkfan"     <<< "$SELECTED" && {
+    step_header "Thinkfan"
+    run_logged "extras/thinkfan.sh" "Thinkfan"
+}
+
+grep -q "^EasyEffects"  <<< "$SELECTED" && {
+    step_header "EasyEffects"
+    run_logged "extras/easyeffects.sh" "EasyEffects"
+}
+
+grep -q "^Waydroid"     <<< "$SELECTED" && {
+    step_header "Waydroid"
+    run_logged "extras/waydroid.sh" "Waydroid"
+    NEEDS_REBOOT=true
+}
+
+grep -q "^Wallpapers"   <<< "$SELECTED" && {
+    step_header "Wallpapers"
+    run_logged "extras/wallpapers.sh" "Wallpapers"
+}
+
+# =============================================================================
+# DONE
+# =============================================================================
+END_TIME=$(date +%s)
+DURATION=$(( END_TIME - START_TIME ))
+MINS=$(( DURATION / 60 ))
+SECS=$(( DURATION % 60 ))
+
+log_line "=== Spice Setup Completed in ${MINS}m ${SECS}s ==="
+
 echo ""
 gum style \
-    --foreground "$C_SUCCESS" --border-foreground "$C_SUCCESS" --border rounded \
-    --align center --width "$TERM_WIDTH" --padding "1 2" \
-    "✓ BASE INSTALL DONE!" \
-    "Finished in ${DURATION}s"
+    --foreground 82 --border-foreground 82 --border rounded \
+    --align center --width 50 --padding "1 2" \
+    "✓ SETUP COMPLETE" \
+    "Finished in ${MINS}m $(printf "%02d" "$SECS")s"
 
 echo ""
-gum style \
-    --foreground "$C_TEAL" \
-    --padding "0 0 0 $PADDING_LEFT" \
-    "  Post-install wizard runs on first login." \
-    "  Git, timezone, plugins, wallpapers, GPU drivers," \
-    "  Howdy, Spicetify and more."
+gum style --foreground 245 --padding "0 0 0 2" \
+    "  Log saved to: $LOG_FILE" \
+    "  Re-run anytime: bash ~/spice/setup.sh"
+
+if [[ "$NEEDS_REBOOT" == true ]]; then
+    echo ""
+    gum style --foreground 214 --padding "0 0 0 2" \
+        "  ↻  Reboot recommended to apply GPU/Waydroid changes."
+    echo ""
+    gum confirm "Reboot now?" && sudo reboot || msg "Reboot skipped."
+fi
 
 echo ""
-gum confirm "Reboot now?" && sudo reboot || msg "Reboot skipped — reboot manually when ready."
