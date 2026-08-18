@@ -53,28 +53,28 @@
   },
   "geometry-of-main_window_geometry": {
     "frame_geometry": {
-      "height": 810,
-      "width": 1512,
+      "height": 826,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "full_screened": false,
     "geometry": {
-      "height": 810,
-      "width": 1512,
+      "height": 826,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "maximized": true,
     "normal_geometry": {
-      "height": 834,
-      "width": 768,
+      "height": 826,
+      "width": 837,
       "x": 0,
       "y": 0
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAAAAAAAAAAABecAAAMpAAAAAAAAAAAAAAL/AAADQQAAAAACAAAABgAAAAAAAAAAAAAABecAAAMp"
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAABfcAAAM5AAAAAAAAAAAAAANEAAADOQAAAAACAAAABgAAAAAAAAAAAAAABfcAAAM5"
     },
     "screen": {
       "depth": 32,
@@ -114,7 +114,7 @@
   "lookup_location": "Google search",
   "main_window_state": {
     "__class__": "bytearray",
-    "__value__": "AAAA/wAAAAH9AAAAAgAAAAAAAAEOAAADQvwCAAAAAvsAAAAQAHQAbwBjAC0AZABvAGMAawAAAAAAAAADQgAAAIwA////+wAAABYAcwBlAGEAcgBjAGgALQBkAG8AYwBrAAAAAAAAAALQAAAAnQD///8AAAABAAABDgAAA2D8AgAAAAT7AAAAFgBsAG8AbwBrAHUAcAAtAGQAbwBjAGsCAAAAAAAAAAAAAAUAAAAC0PsAAAAcAGIAbwBvAGsAbQBhAHIAawBzAC0AZABvAGMAawgAAAAAAAADYAAAAPgA////+wAAABwAaQBuAHMAcABlAGMAdABvAHIALQBkAG8AYwBrAAAAAAAAAALQAAAAFQD////7AAAAHgBoAGkAZwBoAGwAaQBnAGgAdABzAC0AZABvAGMAawAAAAAAAAAC0AAAANsA////AAAF6AAAAyoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAAAAAAAAQAAAB4AYQBjAHQAaQBvAG4AcwBfAHQAbwBvAGwAYgBhAHICAAAAAP////8AAAAAAAAAAA=="
+    "__value__": "AAAA/wAAAAH9AAAAAgAAAAAAAAEOAAADYPwCAAAAAvsAAAAQAHQAbwBjAC0AZABvAGMAawgAAAAAAAADYAAAAIwA////+wAAABYAcwBlAGEAcgBjAGgALQBkAG8AYwBrAAAAAAAAAALQAAAAnQD///8AAAABAAABDgAAA2D8AgAAAAT7AAAAFgBsAG8AbwBrAHUAcAAtAGQAbwBjAGsCAAAAAAAAAAAAAAUAAAAC0PsAAAAcAGIAbwBvAGsAbQBhAHIAawBzAC0AZABvAGMAawgAAAAAAAADYAAAAPgA////+wAAABwAaQBuAHMAcABlAGMAdABvAHIALQBkAG8AYwBrAAAAAAAAAALQAAAAFQD////7AAAAHgBoAGkAZwBoAGwAaQBnAGgAdABzAC0AZABvAGMAawAAAAAAAAAC0AAAANsA////AAAF+AAAAzoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAAAAAAAAQAAAB4AYQBjAHQAaQBvAG4AcwBfAHQAbwBvAGwAYgBhAHICAAAAAP////8AAAAAAAAAAA=="
   },
   "old_prefs_migrated": true,
   "saved-search-settings": {
@@ -124,13 +124,13 @@
     }
   },
   "session_data": {
-    "base_font_size": 35,
+    "base_font_size": 37,
     "columns_per_screen": {
       "landscape": 2,
       "portrait": 0
     },
     "controls_help_shown_count": 2,
-    "current_color_scheme": "*adnan",
+    "current_color_scheme": "*Vintage",
     "keyboard_shortcuts": {
       "show_profiles": [
         {
@@ -171,10 +171,25 @@
     "margin_left": 60,
     "margin_right": 60,
     "margin_top": 60,
-    "standalone_font_settings": {
-      "standard_font": "mono"
-    },
     "standalone_recently_opened": [
+      {
+        "authors": [
+          "Gu Zhen Ren"
+        ],
+        "key": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
+        "pathtoebook": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
+        "timestamp": "2026-08-17T17:41:11.578Z",
+        "title": "Reverend Insanity"
+      },
+      {
+        "authors": [
+          "Translator: Johnchen & DoubleDD; Author: Wang Yu 忘语; Licensed From: Qidian"
+        ],
+        "key": "/home/abr/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (2)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
+        "pathtoebook": "/home/abr/Calibre Library/Translator_ Johnchen/A Record of a Mortal's Journey to Immortality c1-2248 (2)/A Record of a Mortal's Journey to Immortal - Translator_ Johnchen.epub",
+        "timestamp": "2026-08-17T17:40:06.368Z",
+        "title": "A Record of a Mortal’s Journey to Immortality c1-2248"
+      },
       {
         "authors": [
           "Gu Zhen Ren"
@@ -213,6 +228,12 @@
       }
     ],
     "user_color_schemes": {
+      "*Vintage": {
+        "background": "#dedbc8",
+        "foreground": "#0c0c14",
+        "is_dark_theme": false,
+        "name": "Vintage"
+      },
       "*adnan": {
         "background": "#000000",
         "foreground": "#878787",

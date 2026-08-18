@@ -119,28 +119,28 @@
   ],
   "geometry-of-calibre_main_window_geometry": {
     "frame_geometry": {
-      "height": 810,
-      "width": 749,
+      "height": 826,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "full_screened": false,
     "geometry": {
-      "height": 810,
-      "width": 749,
+      "height": 826,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "maximized": true,
     "normal_geometry": {
-      "height": 810,
-      "width": 1512,
+      "height": 826,
+      "width": 1528,
       "x": 0,
       "y": 0
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAAAAAAAAAAAAuwAAAMpAAAAAAAAAAAAAAXnAAADKQAAAAACAAAABgAAAAAAAAAAAAAAAuwAAAMp"
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAABfcAAAM5AAAAAAAAAAAAAAX3AAADOQAAAAACAAAABgAAAAAAAAAAAAAABfcAAAM5"
     },
     "screen": {
       "depth": 32,
@@ -272,7 +272,7 @@
   },
   "grid view visible": false,
   "library_usage_stats": {
-    "/home/abr/Calibre Library": 52
+    "/home/abr/Calibre Library": 60
   },
   "main_window_central_widget_state": {
     "layout": "wide",
