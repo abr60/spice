@@ -87,7 +87,7 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 - Added `.gitignore` (logs, state, editor files, secrets).
 - Wrote proper `README.md` (was just `# spice`).
 
-**Archer -> Spice rename:** Already complete across codebase. Only stale entries in `mpv/memo-history.log` (historical, not worth changing).
+**Archer -> Spice rename:** Complete across the codebase (last references cleaned up on 2026-08-20: `archer-hub` binding removed, skills updated). Only remaining "Archer" strings are historical playback paths in `mpv/memo-history.log` (kept as-is).
 
 ### 2026-08-19 -- media-download + spotify-music-download fixes
 
@@ -192,7 +192,7 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 - `bin/lib/helpers.sh` -- duplicate, now unused after write-iso fix.
 
 **Stow flow:**
-- `setup.sh` calls `run_logged "config/configs.sh"` which runs `stow --target=~/.config config`
+- `setup.sh` calls `run_logged "config/stow.sh"` which runs `stow --target=~/.config config`
 - `update.sh` runs `stow --restow --target=~/.config config`
 - Both clean existing targets first from `STOW_DIRS` list
 

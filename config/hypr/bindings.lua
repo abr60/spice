@@ -1,7 +1,6 @@
 o.bind("ALT + SPACE", "Select theme",  "rofi-set-theme")
 o.bind("ALT + B",     "Set wallpaper", "rofi-set-bg")
 
-o.bind("ALT + M",     "Toolbox",   "[float; size 845 600] archer-hub")
 o.bind("ALT + comma", "Unmount",   "hdd-unmount")
 
 o.bind("XF86NotificationCenter", "WhatsApp", { webapp = "https://web.whatsapp.com/", focus = true })

@@ -36,8 +36,7 @@ Interactive **force-push** of the user's dotfiles repos to GitHub.
 - **Behavior:**
   - Shows a guard screen warning about force-pushing, requires `gum confirm`.
   - `gum choose` menu: **spice (dotfiles)**, **Walls**, **Assets**,
-    **Open Lazygit**, **Cancel** (older repos — Archer, Waybar — were removed
-    from the menu).
+    **Open Lazygit**, **Cancel** (older repos were removed from the menu).
   - For each repo: `git add .`, commit (prompted, default message), then
     `git push --force origin main`.
   - Skips commit if nothing changed (still pushes).
@@ -134,7 +133,8 @@ Interactive video → GIF converter (ffmpeg + gifsicle).
     to preview with `mpv --loop`.
 - **Dependencies:** ffmpeg, gifsicle, gum (verified with a dependency check).
 - **Helpers:** `bin/lib/helpers.sh`; logo from
-  `config/hypr/assets/branding/mp4-to-gif.txt`.
+  `config/hypr/assets/branding/mp4-to-gif.txt` (missing file — falls back to a
+  plain title; only `grabber.txt` and `push.txt` exist in `branding/`).
 - **Usage:** interactive; run from terminal.
 
 ---

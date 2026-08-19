@@ -53,7 +53,9 @@ the Spice repo that provisions that state.
 - Managing Omarchy shell plugins, themes, or hooks **as stored in the repo**
 - Package management via `install/packaging/` (`packages.txt`,
   `install-packages.sh`)
-- The opencode agent config at `config/opencode/opencode.json`
+- The opencode agent config at `config/opencode/` (`opencode.json`, `tui.json`,
+  `dcp.jsonc`, `smart-title.jsonc`, `plugin/vision-bridge.ts`)
+- Editing the agent skills themselves (`agents/skills/spice/`)
 
 **If you are about to touch a live config in `~/.config/`, that is the
 `omarchy` skill's territory. If the request is about the repo that provisions
@@ -85,8 +87,10 @@ those configs, this is the `spice` skill's territory.**
    `~/.local/state/spice/logs/setup-*.log`. Package install logs:
    `~/.local/state/spice/logs/install-packages*.log`. Update report:
    `~/.local/state/spice/update-report.txt`.
-7. **`config/opencode/opencode.json` is a real opencode config** (stowed to
-   `~/.config/opencode/`). Changes there need an opencode restart. See the
+7. **`config/opencode/` is the real opencode config** (stowed to
+   `~/.config/opencode/`): `opencode.json` (agents, models, plugins),
+   `tui.json`, `dcp.jsonc`, `smart-title.jsonc`, `plugin/vision-bridge.ts`,
+   `package.json`. Changes need an opencode restart. See the
    `customize-opencode` skill before editing.
 
 ## Project Structure
@@ -97,6 +101,8 @@ spice/                      # ~/spice — SOURCE OF TRUTH
 ├── update.sh               # Remote-first update: reset --hard + re-apply scripts
 ├── install.sh              # Bootstrap installer (curl | bash entry point)
 ├── CONTEXT.md              # Session log: fixes, architecture notes, known issues
+├── agents/                 # Agent skills (this skill, installed at ~/.agents/skills)
+│   └── skills/spice/       #   SKILL.md, config.md, scripts.md, setup.md
 ├── applications/           # Desktop entries + icons
 │   ├── cliamp.desktop
 │   └── icons/
@@ -115,7 +121,7 @@ spice/                      # ~/spice — SOURCE OF TRUTH
 ├── config/                 # Deployed to ~/.config/ (stow, omarchy = copy)
 │   ├── hypr/               #   Hyprland config (hyprland.lua + requires)
 │   ├── omarchy/            #   shell.json, plugins, hooks, themed, branding
-│   ├── opencode/           #   opencode.json (agent config)
+│   ├── opencode/           #   opencode.json, tui.json, dcp.jsonc, smart-title.jsonc, plugin/
 │   ├── calibre/ mpd/ mpv/ rmpc/ sioyek/ uwsm/ yazi/ miscellaneous/
 ├── install/                # Installation pipeline (see setup.md)
 │   ├── config/             #   stow.sh, omarchy.sh, applications.sh, fonts.sh, pam.sh, zsh.sh

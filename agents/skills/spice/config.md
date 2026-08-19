@@ -56,7 +56,6 @@ require("default.hypr.toggles")
 |---------|--------|
 | `ALT + SPACE` | Select theme (`rofi-set-theme`) |
 | `ALT + B` | Set wallpaper (`rofi-set-bg`) |
-| `ALT + M` | Toolbox (`[float; size 845 600] archer-hub`) |
 | `ALT + comma` | Unmount HDD (`hdd-unmount`) |
 | `XF86NotificationCenter` | WhatsApp webapp |
 | `XF86Favorites` | Calibre (`ebook-viewer`) |
@@ -159,23 +158,54 @@ Notable hooks:
 
 Theme state dir: `~/.local/state/omarchy/current/theme/`.
 
-## opencode Config (`config/opencode/opencode.json`)
+## opencode Config (`config/opencode/`)
 
-Stowed to `~/.config/opencode/opencode.json`. Current contents:
+Stowed to `~/.config/opencode/`. Contents:
+
+| File | Purpose |
+|------|---------|
+| `opencode.json` | Main config: agents, models, plugin list |
+| `tui.json` | TUI plugin overrides (DCP + quota) |
+| `dcp.jsonc` | DCP (dynamic context pruning) — schema-only, defaults apply |
+| `smart-title.jsonc` | Smart Title plugin settings (enabled, 5-turn context limit) |
+| `plugin/vision-bridge.ts` | Custom plugin bridging vision subagent output |
+| `package.json` / `package-lock.json` | Node deps for `vision-bridge.ts` (`@opencode-ai/plugin`) |
+
+`opencode.json` current contents (key parts):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": false,
+  "default_agent": "build",
+  "plugin": [
+    "./plugin/vision-bridge.ts",
+    "@tarquinen/opencode-dcp@latest",
+    "opencode-smart-title",
+    "opencode-update-notifier",
+    "opencode-handoff",
+    "opencode-simple-notify",
+    "@slkiser/opencode-quota",
+    "opencode-command-inject@latest",
+    "harness-memory@latest"
+  ],
+  "small_model": "opencode/nemotron-3.5-lightning-free",
   "provider": { "zen": { "type": "opencode-zen" } },
   "agent": {
-    "plan":      { "mode": "primary", "model": "opencode/big-pickle" },
-    "build":     { "mode": "primary", "model": "opencode/deepseek-v4-flash-free" },
-    "quickfix":  { "mode": "subagent", "model": "opencode/nemotron-3.5-lightning-free",
-                   "permission": { "edit": "allow", "bash": "allow" } }
+    "plan":     { "mode": "primary",  "model": "opencode/big-pickle" },
+    "build":    { "mode": "primary",  "model": "opencode/deepseek-v4-flash-free" },
+    "quickfix": { "mode": "subagent", "model": "opencode/nemotron-3.5-lightning-free",
+                  "permission": { "edit": "allow", "bash": "allow" } },
+    "explore":  { "mode": "subagent", "model": "opencode/nemotron-3.5-lightning-free" },
+    "vision":   { "mode": "subagent", "model": "opencode/mimo-v2.5-free" }
   }
 }
 ```
+
+Plugins installed: `vision-bridge.ts` (local, custom), DCP (context
+pruning), smart-title, update-notifier, handoff, simple-notify, quota
+(@slkiser/opencode-quota), command-inject, harness-memory (persistent
+memory in `~/.harness-memory/memory.sqlite`).
 
 > Changes require an opencode restart. Consult the `customize-opencode` skill
 > before editing.
