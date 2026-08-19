@@ -31,16 +31,9 @@ deliberately excluded.
 
 ## Install
 
-Install and enable the plugin with Omarchy's native plugin command:
-
-```bash
-omarchy plugin add \
-  https://github.com/ilyaZar/omarchy-cliamp-control.git --enable
-```
-
-No setup hook or user-configuration change is required. Omarchy clones the
-complete runtime, launcher, recovery helper, and assets into the plugin
-checkout.
+Included in the [spice](https://github.com/drunk-particles/spice) repo.
+Deployed automatically via `bash ~/spice/update.sh` (runs `omarchy.sh`
+which copies plugins into `~/.config/omarchy/plugins/`).
 
 For local development, link this checkout into the plugin directory and
 rescan before enabling it:

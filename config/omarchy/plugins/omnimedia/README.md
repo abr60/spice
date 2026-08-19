@@ -61,7 +61,7 @@ live audio visualizer.
 1. Remove the widget from the bar and disable the plugin:
 
    ```sh
-   omarchy plugin disable sanjar.omnimedia
+   omarchy plugin disable omnimedia
    ```
 
 2. Delete the plugin folder:

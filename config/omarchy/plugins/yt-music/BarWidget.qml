@@ -36,7 +36,7 @@ Panel {
   readonly property int settingsCount: 5
   readonly property string restoreIconWarning:
     "Run `~/.config/omarchy/plugins/yt-music/bin/"
-      + "cliamp-widget` to restore the bar icon."
+      + "yt-music-widget` to restore the bar icon."
   readonly property string tooltip: leftAlignedTooltip([
     "CLIamp",
     "Left click:  toggle",
