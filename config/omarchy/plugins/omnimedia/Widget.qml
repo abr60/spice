@@ -178,10 +178,6 @@ BarWidget {
         else root.widgetRepeat = !root.widgetRepeat
     }
 
-    readonly property string wallpaperPath: Quickshell.env("HOME") + "/.local/state/omarchy/current/background"
-    property int wallpaperVersion: 0
-    readonly property string wallpaperUrl: Util.fileUrl(root.wallpaperPath) + "?v=" + root.wallpaperVersion
-
     Timer {
         id: closeDelay
         interval: 220
@@ -257,7 +253,7 @@ BarWidget {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onEntered: { closeDelay.stop(); root.wallpaperVersion++; root.popupOpen = true; root.refreshCliampState() }
+        onEntered: { closeDelay.stop(); root.popupOpen = true; root.refreshCliampState() }
         onExited: closeDelay.restart()
         onClicked: {
             if (!root.player) return
@@ -273,8 +269,8 @@ BarWidget {
         owner: root
         open: root.popupOpen
         triggerMode: "hover"
-        contentWidth: popup.fittedContentWidth(Style.space(300))
-        contentHeight: popup.fittedContentHeight(column.implicitHeight)
+        contentWidth: popup.fittedContentWidth(Style.space(320))
+        contentHeight: popup.fittedContentHeight(popupCol.implicitHeight)
 
         onContainsMouseChanged: {
             if (popup.containsMouse) closeDelay.stop()
@@ -282,14 +278,17 @@ BarWidget {
         }
 
         Column {
-            id: column
+            id: popupCol
             anchors.fill: parent
-            spacing: Style.space(10)
+            anchors.margins: Style.space(8)
+            spacing: Style.space(8)
 
+            // ── Main Card Row ──
             Row {
-                spacing: Style.space(10)
                 width: parent.width
+                spacing: Style.space(10)
 
+                // ── Left: Album Art ──
                 BorderSurface {
                     width: Style.space(64)
                     height: Style.space(64)
@@ -316,9 +315,10 @@ BarWidget {
                     }
                 }
 
+                // ── Middle: Title, Artist, Timestamp, Seek+Prev/Next ──
                 Column {
-                    spacing: Style.space(4)
-                    width: parent.width - Style.space(74)
+                    width: parent.width - Style.space(64) - Style.space(44) - Style.space(20)
+                    spacing: Style.space(2)
 
                     Text {
                         text: root.player ? (root.player.trackTitle || "Nothing playing") : "No player"
@@ -329,110 +329,110 @@ BarWidget {
                         elide: Text.ElideRight
                         width: parent.width
                     }
+
                     Text {
                         text: root.player ? root.player.trackArtist : ""
                         color: Qt.darker(root.fg, 1.3)
                         font.family: root.fontFam
-                        font.pixelSize: Style.font.bodySmall
+                        font.pixelSize: Style.font.caption
                         elide: Text.ElideRight
                         width: parent.width
                         visible: text !== ""
                     }
-                }
-            }
 
-            Item {
-                id: progressArea
-                width: parent.width
-                height: Style.space(12)
+                    Text {
+                        property real pos: root.progressDrag >= 0 ? root.progressDrag * (root.player ? root.player.length : 0) : (root.player ? root.player.position : 0)
+                        property real len: root.player ? root.player.length : 0
+                        function fmtTime(sec) {
+                            var s = Math.max(0, Math.floor(sec))
+                            var m = Math.floor(s / 60)
+                            s = s % 60
+                            return m + ":" + (s < 10 ? "0" : "") + s
+                        }
+                        text: root.player && root.player.length > 0 ? fmtTime(pos) + " / " + fmtTime(len) : ""
+                        color: Qt.darker(root.fg, 1.5)
+                        font.family: root.fontFam
+                        font.pixelSize: Style.font.caption
+                        width: parent.width
+                        visible: text !== ""
+                    }
 
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: Style.space(4)
-                    radius: height / 2
-                    color: Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.15)
-                }
+                    Row {
+                        width: parent.width
+                        spacing: Style.space(4)
 
-                Rectangle {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    height: Style.space(4)
-                    width: parent.width * (root.progressDrag >= 0 ? root.progressDrag : root.progress)
-                    radius: height / 2
-                    color: root.fg
-                }
+                        Button {
+                            iconText: "\uf048"
+                            foreground: root.fg
+                            enabled: root.player && root.player.canGoPrevious
+                            opacity: enabled ? 1.0 : 0.4
+                            onClicked: {
+                                if (root.player) root.preferredPlayerKey = root.playerKey(root.player)
+                                if (root.player) root.player.previous()
+                            }
+                        }
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onPressed: function(mouse) { root.seekTo(mouse.x, progressArea.width) }
-                    onPositionChanged: function(mouse) { if (pressed) root.seekTo(mouse.x, progressArea.width) }
-                    onReleased: root.progressDrag = -1
-                }
-            }
+                        Item {
+                            width: parent.width - Style.space(32) - Style.space(32)
+                            height: Style.space(12)
 
-            PanelSeparator {
-            }
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: Style.space(4)
+                                radius: height / 2
+                                color: Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.15)
+                            }
 
-            Item {
-                width: parent.width
-                height: width * 9 / 16
+                            Rectangle {
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                height: Style.space(4)
+                                width: parent.width * (root.progressDrag >= 0 ? root.progressDrag : root.progress)
+                                radius: height / 2
+                                color: root.fg
+                            }
 
-                Image {
-                    anchors.fill: parent
-                    source: root.wallpaperUrl
-                    fillMode: Image.PreserveAspectFit
-                    asynchronous: true
-                    cache: false
-                    clip: true
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: Qt.rgba(Color.popups.background.r, Color.popups.background.g, Color.popups.background.b, 0.5)
-                }
-
-                Row {
-                    id: buttonsRow
-                    anchors.centerIn: parent
-                    spacing: Style.space(6)
-
-                    Item {
-                        implicitWidth: repeatButton.implicitWidth
-                        implicitHeight: repeatButton.implicitHeight
-                        opacity: root.repeatEnabled ? 1.0 : 0.4
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Style.cornerRadius
-                            color: root.repeatActive
-                                ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.35)
-                                : "transparent"
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onPressed: function(mouse) { root.seekTo(mouse.x, parent.width) }
+                                onPositionChanged: function(mouse) { if (pressed) root.seekTo(mouse.x, parent.width) }
+                                onReleased: root.progressDrag = -1
+                            }
                         }
 
                         Button {
-                            id: repeatButton
-                            iconText: "\uf01e"
+                            iconText: "\uf051"
                             foreground: root.fg
-                            selected: root.repeatActive
-                            enabled: root.repeatEnabled
-                            onClicked: root.toggleRepeat()
+                            enabled: root.player && root.player.canGoNext
+                            opacity: enabled ? 1.0 : 0.4
+                            onClicked: {
+                                if (root.player) root.preferredPlayerKey = root.playerKey(root.player)
+                                if (root.player) root.player.next()
+                            }
                         }
                     }
-                    Button {
-                        iconText: "\uf048"
-                        foreground: root.fg
-                        enabled: root.player && root.player.canGoPrevious
-                        opacity: enabled ? 1.0 : 0.4
-                        onClicked: {
-                            if (root.player) root.preferredPlayerKey = root.playerKey(root.player)
-                            if (root.player) root.player.previous()
-                        }
+                }
+
+                // ── Right: Play/Pause button ──
+                Item {
+                    width: Style.space(36)
+                    height: Style.space(36)
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: width / 2
+                        color: root.player && root.player.isPlaying
+                            ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.35)
+                            : Qt.rgba(root.fg.r, root.fg.g, root.fg.b, 0.1)
                     }
+
                     Button {
+                        anchors.centerIn: parent
                         iconText: root.player && root.player.isPlaying ? "\uf04c" : "\uf04b"
                         foreground: root.fg
                         enabled: root.player && root.player.canTogglePlaying
@@ -442,56 +442,15 @@ BarWidget {
                             if (root.player) root.player.togglePlaying()
                         }
                     }
-                    Button {
-                        iconText: "\uf051"
-                        foreground: root.fg
-                        enabled: root.player && root.player.canGoNext
-                        opacity: enabled ? 1.0 : 0.4
-                        onClicked: {
-                            if (root.player) root.preferredPlayerKey = root.playerKey(root.player)
-                            if (root.player) root.player.next()
-                        }
-                    }
-                    Item {
-                        implicitWidth: shuffleButton.implicitWidth
-                        implicitHeight: shuffleButton.implicitHeight
-                        opacity: root.shuffleEnabled ? 1.0 : 0.4
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: Style.cornerRadius
-                            color: root.shuffleActive
-                                ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.35)
-                                : "transparent"
-                        }
-
-                        Button {
-                            id: shuffleButton
-                            iconText: "\uf074"
-                            foreground: root.fg
-                            selected: root.shuffleActive
-                            enabled: root.shuffleEnabled
-                            onClicked: root.toggleShuffle()
-                        }
-                    }
                 }
             }
 
-            PanelSeparator {
-            }
-
-            CavaVisualizer {
-                width: parent.width
-                height: Style.space(60)
-                running: root.popupOpen
-            }
-
+            // ── Player Source List (compact) ──
             PanelSeparator {
                 visible: root.players.length > 1
             }
 
             Column {
-                id: sourceList
                 visible: root.players.length > 1
                 width: parent.width
                 spacing: Style.space(4)
@@ -513,8 +472,8 @@ BarWidget {
                             ? sourcePlayer.trackArtist
                             : (sourcePlayer && sourcePlayer.identity ? sourcePlayer.identity : "")
 
-                        width: sourceList.width
-                        height: sourceInner.implicitHeight + Style.space(10)
+                        width: parent.width
+                        height: sourceInner.implicitHeight + Style.space(6)
                         radius: Style.cornerRadius
                         color: active ? Style.selectedFillFor(root.fg, Color.accent) : "transparent"
                         borderSpec: active ? Border.controlSpec("normal", root.fg, Color.accent) : Border.none()
@@ -524,30 +483,30 @@ BarWidget {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: sourceRow.borderLeft + Style.space(8)
-                            anchors.rightMargin: sourceRow.borderRight + Style.space(8)
-                            spacing: Style.space(8)
+                            anchors.leftMargin: sourceRow.borderLeft + Style.space(6)
+                            anchors.rightMargin: sourceRow.borderRight + Style.space(6)
+                            spacing: Style.space(6)
 
                             Text {
                                 text: sourceRow.sourcePlayer && sourceRow.sourcePlayer.isPlaying ? "󰏤" : "󰐊"
                                 color: root.fg
                                 font.family: root.fontFam
-                                font.pixelSize: Style.font.body
-                                width: Style.space(18)
+                                font.pixelSize: Style.font.bodySmall
+                                width: Style.space(16)
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.verticalCenter: parent.verticalCenter
                             }
 
                             Column {
-                                width: parent.width - Style.space(26)
-                                spacing: Style.space(1)
+                                width: parent.width - Style.space(22)
+                                spacing: 0
                                 anchors.verticalCenter: parent.verticalCenter
 
                                 Text {
                                     text: sourceRow.sourceTitle
                                     color: root.fg
                                     font.family: root.fontFam
-                                    font.pixelSize: Style.font.bodySmall
+                                    font.pixelSize: Style.font.caption
                                     font.bold: sourceRow.active
                                     elide: Text.ElideRight
                                     width: parent.width
