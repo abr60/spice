@@ -194,7 +194,7 @@ grep -q "^Waydroid"     <<< "$SELECTED" && {
 
 grep -q "^Wallpapers"   <<< "$SELECTED" && {
     step_header "Wallpapers"
-    run_logged "extras/wallpapers.sh" "Wallpapers"
+    run_logged "themes/wallpapers.sh" "Wallpapers"
 }
 
 # =============================================================================
