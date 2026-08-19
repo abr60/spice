@@ -9,22 +9,22 @@
           "id": "omarchy.menu"
         },
         {
-          "id": "mus.quran"
+          "id": "quran"
         },
         {
-          "id": "dizziee.auto-wallpaper"
+          "id": "auto-wallpaper"
         },
         {
-          "id": "acrogenesis.theme-scheduler"
+          "id": "theme-scheduler"
         },
         {
-          "id": "io.github.ilyazar.yt-music",
+          "id": "yt-music",
           "alignment": "Left",
           "windowHeight": 850,
           "windowWidth": 450
         },
         {
-          "id": "sanjar.omnimedia"
+          "id": "omnimedia"
         }
       ],
       "center": [
@@ -54,13 +54,13 @@
           "id": "omarchy.tray"
         },
         {
-          "id": "ussego.otoru"
+          "id": "otoru"
         },
         {
-          "id": "jesseburlamaque.herald-notification"
+          "id": "herald-notification"
         },
         {
-          "id": "io.github.nameless312.protonvpn"
+          "id": "protonvpn"
         },
         {
           "id": "omarchy.dropbox"
@@ -69,10 +69,10 @@
           "id": "omarchy.agents"
         },
         {
-          "id": "stappmus.activity-monitor"
+          "id": "activity-monitor"
         },
         {
-          "id": "ssupt.bluetooth-audio"
+          "id": "bluetooth-audio"
         },
         {
           "id": "omarchy.network"
@@ -96,7 +96,7 @@
   },
   "plugins": [
     {
-      "id": "omarchy-overview",
+      "id": "overview",
       "rows": 2,
       "columns": 5,
       "hideEmptyRows": true,
@@ -105,10 +105,10 @@
       "showIcons": false
     },
     {
-      "id": "shell.settings"
+      "id": "shell-settings"
     },
     {
-      "id": "taxin.cursor-style"
+      "id": "cursor-style"
     }
   ],
   "version": 1

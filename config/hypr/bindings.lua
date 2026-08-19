@@ -14,7 +14,7 @@ o.bind("SUPER + M", "Comic (Latin)", "comic-translate lat")
 o.bind("SUPER + N", "Comic (Asian)", "comic-translate cjk")
 
 hl.unbind("SUPER + grave")
-o.bind("SUPER + grave", "Overview", "omarchy-shell shell toggle omarchy-overview")
+o.bind("SUPER + grave", "Overview", "omarchy-shell shell toggle overview")
 
 if o.cmd_present("voxtype") then
   o.bind("ALT + Z", "Toggle dictation", "voxtype record toggle")

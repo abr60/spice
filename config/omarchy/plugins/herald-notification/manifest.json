@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "herald-notification",
+  "name": "Herald Notification Center",
+  "version": "1.0.0",
+  "author": "jesseburlamaque",
+  "license": "MIT",
+  "description": "A clean notification center for Omarchy with themed icons, focus actions, and a touch of Herald flair.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Herald Notification Center",
+    "description": "Centralized notification list with focus and dismiss actions.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "center"
+  }
+}

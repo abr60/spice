@@ -6,6 +6,6 @@ hl.gesture({
   fingers = 3,
   direction = "up",
   action = function()
-    hl.exec_cmd("omarchy-shell shell toggle omarchy-overview")
+    hl.exec_cmd("omarchy-shell shell toggle overview")
   end,
 })
