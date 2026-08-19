@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "default_agent": "build",
+  "plugin": [
+    "./plugin/vision-bridge.ts",
+    "@tarquinen/opencode-dcp@latest",
+"opencode-smart-title",
+    "opencode-update-notifier",
+    "opencode-handoff",
+    "opencode-simple-notify",
+    "@slkiser/opencode-quota",
+    "opencode-command-inject@latest",
+    "harness-memory@latest"
+  ],
+  "small_model": "opencode/nemotron-3.5-lightning-free",
+  "provider": {
+    "zen": {
+      "type": "opencode-zen"
+    }
+  },
+  "agent": {
+    "plan": {
+      "mode": "primary",
+      "model": "opencode/big-pickle",
+      "description": "Read-only planning and analysis agent",
+      "permission": {
+        "edit": "deny",
+        "bash": "ask"
+      },
+      "prompt": "If the user attaches an image or references an image file, you MUST use the task tool to launch the vision subagent (subagent_type: vision) and have it produce a detailed text description of the image. Then proceed using that description."
+    },
+    "build": {
+      "mode": "primary",
+      "model": "opencode/deepseek-v4-flash-free",
+      "description": "Fast execution and code writing agent",
+      "prompt": "If the user attaches an image or references an image file, you MUST use the task tool to launch the vision subagent (subagent_type: vision) and have it produce a detailed text description of the image. Then proceed using that description."
+    },
+    "quickfix": {
+      "mode": "subagent",
+      "model": "opencode/nemotron-3.5-lightning-free",
+      "description": "Handles small, simple tasks like minor file edits and quick fixes",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow"
+      }
+    },
+    "explore": {
+      "mode": "subagent",
+      "model": "opencode/nemotron-3.5-lightning-free",
+      "description": "Fast codebase exploration and search agent"
+    },
+    "vision": {
+      "mode": "subagent",
+      "model": "opencode/mimo-v2.5-free",
+      "description": "Analyzes images and produces detailed text descriptions for text-only models",
+      "prompt": "You are a meticulous visual analyst. When given an image, describe it in exhaustive detail: visible text, UI elements, layout, colors, code/screenshots, diagrams, tables, error messages. Output ONLY a complete text description. No commentary."
+    }
+  }
+}
