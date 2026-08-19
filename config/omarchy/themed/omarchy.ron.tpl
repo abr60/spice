@@ -8,62 +8,62 @@
     browser_column_widths: [20, 38, 42],
     background_color: None,
     modal_backdrop: true,
-    text_color: Some("#ddc39b"),
+    text_color: Some("{{ accent }}"),
     header_background_color: None,
     modal_background_color: None,
-    preview_label_style: (fg: "#efbf6c"),
-    preview_metadata_group_style: (fg: "#bdce7f", modifiers: "Bold"),
+    preview_label_style: (fg: "{{ foreground }}"),
+    preview_metadata_group_style: (fg: "{{ muted }}", modifiers: "Bold"),
     song_table_album_separator: None,
     show_song_table_header: true,
     tab_bar: (
-        active_style: (fg: "#3e2e11", bg: "#ddc39b", modifiers: "Bold"),
-        inactive_style: (fg: "#ddc39b"),
+        active_style: (fg: "{{ foreground }}", bg: "{{ accent }}", modifiers: "Bold"),
+        inactive_style: (fg: "{{ accent }}"),
     ),
-    highlighted_item_style: (fg: "#ddc39b", modifiers: "Bold"),
-    current_item_style: (fg: "#ddc39b", bg: "#7c580b", modifiers: "Bold"),
-    borders_style: (fg: "#ddc39b", modifiers: "Bold"),
-    highlight_border_style: (fg: "#ddc39b"),
+    highlighted_item_style: (fg: "{{ accent }}", modifiers: "Bold"),
+    current_item_style: (fg: "{{ accent }}", bg: "{{ dark_background }}", modifiers: "Bold"),
+    borders_style: (fg: "{{ accent }}", modifiers: "Bold"),
+    highlight_border_style: (fg: "{{ accent }}"),
     symbols: (song: "󰝚 ", dir: "󱍙 ", playlist: "󰲸 ", marker: "* ", ellipsis: "...",
-        song_style: (fg: "#efbf6c"), song_highlighted_style: None, song_current_style: (fg: "#3e2e11"),
-        dir_style: (fg: "#efbf6c"), dir_highlighted_style: None, dir_current_style: (fg: "#3e2e11"),
-        playlist_style: (fg: "#efbf6c"), playlist_highlighted_style: None, playlist_current_style: (fg: "#3e2e11"),
-        marker_style: (fg: "#bdce7f"), marker_highlighted_style: (fg: "#bdce7f"), marker_current_style: (fg: "#3e2e11"),
+        song_style: (fg: "{{ foreground }}"), song_highlighted_style: None, song_current_style: (fg: "{{ foreground }}"),
+        dir_style: (fg: "{{ foreground }}"), dir_highlighted_style: None, dir_current_style: (fg: "{{ foreground }}"),
+        playlist_style: (fg: "{{ foreground }}"), playlist_highlighted_style: None, playlist_current_style: (fg: "{{ foreground }}"),
+        marker_style: (fg: "{{ muted }}"), marker_highlighted_style: (fg: "{{ muted }}"), marker_current_style: (fg: "{{ foreground }}"),
     ),
     progress_bar: (
         symbols: ["=", "=", "=", "=", "=" ],
-        track_style: (fg: "#3e2e11"),
-        elapsed_style: (fg: "#ddc39b"),
-        thumb_style: (fg: "#ddc39b"),
+        track_style: (fg: "{{ foreground }}"),
+        elapsed_style: (fg: "{{ accent }}"),
+        thumb_style: (fg: "{{ accent }}"),
         use_track_when_empty: false,
     ),
     scrollbar: (
         symbols: ["┋", "█", "󰄿", "󰄼"],
-        track_style: (fg: "#3e2e11"),
-        ends_style: (fg: "#efbf6c"),
-        thumb_style: (fg: "#efbf6c"),
+        track_style: (fg: "{{ foreground }}"),
+        ends_style: (fg: "{{ foreground }}"),
+        thumb_style: (fg: "{{ foreground }}"),
     ),
     song_table_format: [
         (
             prop: (kind: Group([
                 (kind: Text(" ")),
-                (kind: Property(Title), style: (fg: "#efbf6c"),
-                    default: (kind: Property(Filename), style: (fg: "#efbf6c"),
-                        default: (kind: Text("Unknown Title"), style: (fg: "#ddc39b")))),
+                (kind: Property(Title), style: (fg: "{{ foreground }}"),
+                    default: (kind: Property(Filename), style: (fg: "{{ foreground }}"),
+                        default: (kind: Text("Unknown Title"), style: (fg: "{{ accent }}")))),
             ])),
             width: "92%",
             label_prop: (kind: Group([
                 (kind: Text("Title "), style: (modifiers: "Bold")),
-                (kind: Text(""), style: (fg: "#ddc39b"))
+                (kind: Text(""), style: (fg: "{{ accent }}"))
             ]))
         ),
         (
-            prop: (kind: Property(Duration), style: (fg: "#efbf6c"),
+            prop: (kind: Property(Duration), style: (fg: "{{ foreground }}"),
                 default: (kind: Text("-"))),
             width: "8%",
             alignment: Right,
             label_prop: (kind: Group([
                 (kind: Text("Length "), style: (modifiers: "Bold")),
-                (kind: Text(" "), style: (fg: "#ddc39b"))
+                (kind: Text(" "), style: (fg: "{{ accent }}"))
             ]))
         ),
     ],
@@ -131,20 +131,20 @@
                 ),
                 (size: "5", borders: "ALL", border_symbols: Library("rounded_collapsed_top"),
                   border_title: [
-                            (kind: Text("─"), style: (fg: "#ddc39b")),
+                            (kind: Text("─"), style: (fg: "{{ accent }}")),
                         (kind: Transform(Replace(content: (kind: Sticker("rating")), replacements: [
-                            (match:  "1", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text(" "),         style: (fg: "#ddc39b")), (kind: Text("    ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "2", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text(" "),         style: (fg: "#ddc39b")), (kind: Text("    ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "3", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("  "),       style: (fg: "#ddc39b")), (kind: Text("   ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "4", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("  "),       style: (fg: "#ddc39b")), (kind: Text("   ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "5", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("   "),     style: (fg: "#ddc39b")), (kind: Text("  ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "6", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("   "),     style: (fg: "#ddc39b")), (kind: Text("  ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "7", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("    "),   style: (fg: "#ddc39b")), (kind: Text(" ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "8", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("    "),   style: (fg: "#ddc39b")), (kind: Text(" ")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match:  "9", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("     "), style: (fg: "#ddc39b")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                            (match: "10", replace: (kind: Group([(kind: Text("["), style: (fg: "#ddc39b")), (kind: Text("     "), style: (fg: "#ddc39b")), (kind: Text("]"), style: (fg: "#ddc39b"))]))),
-                        ])), default: (kind: Text("─"),style: (fg: "#ddc39b"))),
-                            (kind: Text("─"), style: (fg: "#ddc39b")),
+                            (match:  "1", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text(" "),         style: (fg: "{{ accent }}")), (kind: Text("    ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "2", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text(" "),         style: (fg: "{{ accent }}")), (kind: Text("    ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "3", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("  "),       style: (fg: "{{ accent }}")), (kind: Text("   ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "4", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("  "),       style: (fg: "{{ accent }}")), (kind: Text("   ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "5", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("   "),     style: (fg: "{{ accent }}")), (kind: Text("  ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "6", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("   "),     style: (fg: "{{ accent }}")), (kind: Text("  ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "7", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("    "),   style: (fg: "{{ accent }}")), (kind: Text(" ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "8", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("    "),   style: (fg: "{{ accent }}")), (kind: Text(" ")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match:  "9", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("     "), style: (fg: "{{ accent }}")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                            (match: "10", replace: (kind: Group([(kind: Text("["), style: (fg: "{{ accent }}")), (kind: Text("     "), style: (fg: "{{ accent }}")), (kind: Text("]"), style: (fg: "{{ accent }}"))]))),
+                        ])), default: (kind: Text("─"),style: (fg: "{{ accent }}"))),
+                            (kind: Text("─"), style: (fg: "{{ accent }}")),
                   ],
                   border_title_position: Bottom,
                   border_title_alignment: Right,
@@ -160,10 +160,10 @@
             direction: Vertical, panes: [
               (size: "3", borders: "ALL", border_symbols: Rounded ,
                   border_title: [
-                         (kind: Property(Status(Elapsed)),style: (fg: "#ddc39b")),
+                         (kind: Property(Status(Elapsed)),style: (fg: "{{ accent }}")),
                          (kind: Property(Status(StateV2(playing_label: "─󱦟─", paused_label: "  ", stopped_label: "  "))),
                              style: (modifiers: "Bold")),
-                         (kind: Property(Status(Duration)),style: (fg: "#ddc39b")),
+                         (kind: Property(Status(Duration)),style: (fg: "{{ accent }}")),
                       ],
                   border_title_position: Top,
                   border_title_alignment: Center,
@@ -177,24 +177,24 @@
              (size: "100%", pane: Pane(Property(content: [
                              (kind: Text(" "), style: (modifiers: "Bold")),
                              (kind: Property(Status(StateV2(playing_label: "", paused_label: "", stopped_label: ""))),
-                                 style: (fg: "#ddc39b")),
+                                 style: (fg: "{{ accent }}")),
                              (kind: Text("  "), style: (modifiers: "Bold")),
-                             (kind: Property(Song(FileExtension)), style: (fg: "#ddc39b")),
+                             (kind: Property(Song(FileExtension)), style: (fg: "{{ accent }}")),
                              (kind: Text(" ")),
                              (kind: Property(Widget(ScanStatus)), style: (modifiers: "Bold")),
                              (kind: Text(" ")),
-                             (kind: Property(Status(InputBuffer())), style: (fg: "#ddc39b")),
+                             (kind: Property(Status(InputBuffer())), style: (fg: "{{ accent }}")),
                          ], align: Left))
              ),
             ]),
         "tab_bar_right": Split(direction: Horizontal, panes: [
                  (size: "100%", pane: Pane(Property(content: [
-                                 (kind: Transform(Replace(content: (kind: Property(Status(Partition)), style: (fg: "#ddc39b")), replacements: [
+                                 (kind: Transform(Replace(content: (kind: Property(Status(Partition)), style: (fg: "{{ accent }}")), replacements: [
                                      (match:  "default", replace: (kind: Group([(kind: Text(""))]))),
                                    ]))),
                                  (kind: Text(" ")),
                                  (kind: Text(" 󱡬"), style: (modifiers: "Bold")),
-                                 (kind: Property(Status(Volume)), style: (fg: "#ddc39b")),
+                                 (kind: Property(Status(Volume)), style: (fg: "{{ accent }}")),
                                  (kind: Text("% "), style: (modifiers: "Bold"))
                              ], align: Right))
                  ),
@@ -204,9 +204,9 @@
             panes: [
                (size: "100%", pane: Pane(Property(content: [
                                (kind: Text("[ "),style: (modifiers: "Bold")),
-                               (kind: Property(Status(Elapsed)),style: (fg: "#ddc39b")),
+                               (kind: Property(Status(Elapsed)),style: (fg: "{{ accent }}")),
                                (kind: Text(" / "),style: (modifiers: "Bold")),
-                               (kind: Property(Status(Duration)),style: (fg: "#ddc39b")),
+                               (kind: Property(Status(Duration)),style: (fg: "{{ accent }}")),
                                (kind: Text(" 󱦟"),style: (modifiers: "Bold")),
                                (kind: Text(" ]"),style: (modifiers: "Bold")),
                            ], align: Left))
@@ -245,8 +245,8 @@
                                          on_style: (modifiers: "Bold"),
                                          off_style: (modifiers: "Bold"))))),
                          (kind: Text(" | "),style: (modifiers: "Bold")),
-                         (kind: Property(Status(Crossfade)),style: (fg: "#ddc39b"),
-                          default: (kind: Text("󰴽"), style: (fg: "#ddc39b"))),
+                         (kind: Property(Status(Crossfade)),style: (fg: "{{ accent }}"),
+                          default: (kind: Text("󰴽"), style: (fg: "{{ accent }}"))),
                          (kind: Text(" | "),style: (modifiers: "Bold")),
                          (kind: Transform(Replace(content: (kind: Property(Status(InputMode()))), replacements: [
                                  (match:  "Normal", replace: (kind: Group([(kind: Text("N"),style: (modifiers: "Bold"))]))),
@@ -261,11 +261,11 @@
             panes: [
                 (size: "100%", pane: Pane(Property(content: [
                                 (kind: Text("[ "),style: (modifiers: "Bold")),
-                                (kind: Property(Song(Bits())),default: (kind: Text(" "), style: (fg: "#ddc39b")), style: (fg: "#ddc39b")),
-                                (kind: Text(" bit"),style: (fg: "#ddc39b")),
+                                (kind: Property(Song(Bits())),default: (kind: Text(" "), style: (fg: "{{ accent }}")), style: (fg: "{{ accent }}")),
+                                (kind: Text(" bit"),style: (fg: "{{ accent }}")),
                                 (kind: Text(" | "),style: (modifiers: "Bold")),
-                                (kind: Property(Status(Bitrate)),default: (kind: Text(" "), style: (fg: "#ddc39b")),style: (fg: "#ddc39b")),
-                                (kind: Text(" kbps"),style: (fg: "#ddc39b")),
+                                (kind: Property(Status(Bitrate)),default: (kind: Text(" "), style: (fg: "{{ accent }}")),style: (fg: "{{ accent }}")),
+                                (kind: Text(" kbps"),style: (fg: "{{ accent }}")),
                                 (kind: Text(" ]"),style: (modifiers: "Bold"))
                             ], align: Left))
                 ),
@@ -276,17 +276,17 @@
             panes: [
                  (size: "100%", pane: Pane(Property(content: [
                                  (kind: Transform(Replace(content:
-                                     (kind: Property(Song(Artist)), style: (fg: "#ddc39b"),
-                                         default: (kind: Text("Unknown Artist"), style: (fg: "#ddc39b"))),
+                                     (kind: Property(Song(Artist)), style: (fg: "{{ accent }}"),
+                                         default: (kind: Text("Unknown Artist"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Artist"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Artist"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
-                                 (kind: Text(" - "), style: (fg: "#ddc39b")),
+                                 (kind: Text(" - "), style: (fg: "{{ accent }}")),
                                  (kind: Transform(Replace(content:
-                                    (kind: Property(Song(Album)),style: (fg: "#ddc39b"),
-                                        default: (kind: Text("Unknown Album"), style: (fg: "#ddc39b"))),
+                                    (kind: Property(Song(Album)),style: (fg: "{{ accent }}"),
+                                        default: (kind: Text("Unknown Album"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Album"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Album"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
                              ], align: Center, scroll_speed: 6))
                  ),
@@ -297,9 +297,9 @@
             panes: [
                  (size: "100%", pane: Pane(Property(content: [
                                  (kind: Text("[ "),style: (modifiers: "Bold")),
-                                 (kind: Property(Status(QueueTimeRemaining(separator: " "))),style: (fg: "#ddc39b")),
+                                 (kind: Property(Status(QueueTimeRemaining(separator: " "))),style: (fg: "{{ accent }}")),
                                  (kind: Text(" / "),style: (modifiers: "Bold")),
-                                 (kind: Property(Status(QueueTimeTotal(separator: " "))),style: (fg: "#ddc39b")),
+                                 (kind: Property(Status(QueueTimeTotal(separator: " "))),style: (fg: "{{ accent }}")),
                                  (kind: Text(" 󱎫"),style: (modifiers: "Bold")),
                              ], align: Right))
                  ),
@@ -310,13 +310,13 @@
             panes: [
                   (size: "100%", pane: Pane(Property(content: [
                                   (kind: Text("[ "),style: (modifiers: "Bold")),
-                                  (kind: Property(Song(SampleRate())),default: (kind: Text(" "), style: (fg: "#ddc39b")), style: (fg: "#ddc39b")),
-                                  (kind: Text(" Hz"),style: (fg: "#ddc39b")),
+                                  (kind: Property(Song(SampleRate())),default: (kind: Text(" "), style: (fg: "{{ accent }}")), style: (fg: "{{ accent }}")),
+                                  (kind: Text(" Hz"),style: (fg: "{{ accent }}")),
                                   (kind: Text(" | "),style: (modifiers: "Bold")),
-                                  (kind: Property(Song(Position)), style: (fg: "#ddc39b"),
-                                      default: (kind: Text("0"), style: (fg: "#ddc39b"))),
+                                  (kind: Property(Song(Position)), style: (fg: "{{ accent }}"),
+                                      default: (kind: Text("0"), style: (fg: "{{ accent }}"))),
                                   (kind: Text(" / "),style: (modifiers: "Bold")),
-                                  (kind: Property(Status(QueueLength())),style: (fg: "#ddc39b")),
+                                  (kind: Property(Status(QueueLength())),style: (fg: "{{ accent }}")),
                                   (kind: Text(" 󰴍"),style: (modifiers: "Bold")),
                                   (kind: Text(" ]"),style: (modifiers: "Bold"))
                               ], align: Left))
@@ -339,31 +339,31 @@
                    (size: "100%", pane: Pane(Property(content: [
                                    (kind: Text("[ "),style: (modifiers: "Bold")),
                                    (kind: Transform(Replace(content:
-                                       (kind: Property(Song(Other("date"))),style: (fg: "#ddc39b"),
-                                           default: (kind: Text("Unknown Date"), style: (fg: "#ddc39b"))),
+                                       (kind: Property(Song(Other("date"))),style: (fg: "{{ accent }}"),
+                                           default: (kind: Text("Unknown Date"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Date"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Date"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
                                    (kind: Text(" | "),style: (modifiers: "Bold")),
                                    (kind: Transform(Replace(content:
-                                       (kind: Property(Song(Track)),style: (fg: "#ddc39b"),
-                                           default: (kind: Text("0"), style: (fg: "#ddc39b"))),
+                                       (kind: Property(Song(Track)),style: (fg: "{{ accent }}"),
+                                           default: (kind: Text("0"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("0"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("0"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
                                    (kind: Text(" / "),style: (modifiers: "Bold")),
                                    (kind: Transform(Replace(content:
-                                       (kind: Property(Song(Disc)),style: (fg: "#ddc39b"),
-                                           default: (kind: Text("0"), style: (fg: "#ddc39b"))),
+                                       (kind: Property(Song(Disc)),style: (fg: "{{ accent }}"),
+                                           default: (kind: Text("0"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("0"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("0"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
                                    (kind: Text(" 󰥠 | "),style: (modifiers: "Bold")),
                                    (kind: Transform(Replace(content:
-                                       (kind: Property(Song(Other("genre"))),style: (fg: "#ddc39b"),
-                                           default: (kind: Text("Unknown Genre"), style: (fg: "#ddc39b"))),
+                                       (kind: Property(Song(Other("genre"))),style: (fg: "{{ accent }}"),
+                                           default: (kind: Text("Unknown Genre"), style: (fg: "{{ accent }}"))),
                                    replacements: [
-                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Genre"), style: (fg: "#ddc39b"))]))),
+                                     (match:  "", replace: (kind: Group([(kind: Text("Unknown Genre"), style: (fg: "{{ accent }}"))]))),
                                    ]))),
                                ], align: Right))
                    ),
@@ -389,9 +389,9 @@
         ),
     },
     cava: (bar_symbols: ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'], bar_width: 1, bar_spacing: 1, bg_color: None, bar_color: Gradient({
-            0: "#b48a3c",
-            50: "#efbf6c",
-            100: "#000000",
+            0: "{{ lighter_background }}",
+            50: "{{ foreground }}",
+            100: "{{ foreground }}",
         })),
     lyrics:(timestamp: false, alignment: Center),
     border_symbol_sets: {

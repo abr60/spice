@@ -1,4 +1,4 @@
-# oma-cursor-style
+# Cursor Style
 
 A self-contained [Omarchy](https://github.com/basecamp/omarchy) plugin that
 picks the cursor **theme** and **size** from a single overlay picker.

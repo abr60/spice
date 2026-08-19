@@ -62,6 +62,17 @@ else
     warn "Yazi theme hook not found — apply a theme with 'omarchy theme set'"
 fi
 
+RMPC_HOOK="$CONFIG_DEST/omarchy/hooks/theme-set.d/update-rmpc-theme"
+if [[ -x "$RMPC_HOOK" ]]; then
+    if bash "$RMPC_HOOK"; then
+        ok "RMPC theme regenerated"
+    else
+        warn "RMPC theme regeneration failed — apply a theme with 'omarchy theme set'"
+    fi
+else
+    warn "RMPC theme hook not found — apply a theme with 'omarchy theme set'"
+fi
+
 # =============================================================================
 # 4. RELOAD
 # =============================================================================

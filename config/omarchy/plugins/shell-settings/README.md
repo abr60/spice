@@ -1,6 +1,6 @@
 # Shell Settings — Omarchy Plugin
 
-A settings panel for [Omarchy](https://github.com/AyushKr2003/omarchy) that lets
+A settings panel for [Omarchy](https://github.com/basecamp/omarchy) that lets
 you configure your shell without hand-editing `~/.config/omarchy/shell.json`.
 Manage plugins, adjust idle/lock timings, and arrange the bar — all from a
 single QML panel summoned with a keybind.
@@ -144,7 +144,7 @@ and writes changes back to `shell.json` under the plugin's id:
 The full schema — field types (`string`, `boolean`, `integer`, `number`,
 `enum`, `multiselect`), options, and dynamic `optionsCommand` — is defined by
 the Omarchy shell itself in
-[`docs/omarchy-shell.md`](https://github.com/AyushKr2003/omarchy/blob/main/docs/omarchy-shell.md)
+[`docs/omarchy-shell.md`](https://github.com/basecamp/omarchy/blob/main/docs/omarchy-shell.md)
 and `PluginRegistry.qml`; this panel renders whatever schema it declares.
 
 Bar widgets can keep using `barWidget.schema` or a built-in `settingsForm`;

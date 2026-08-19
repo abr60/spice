@@ -12,15 +12,18 @@ mkdir -p "$YAZI_CONFIG"
 if [[ -f "$TEMPLATE" && -f "$THEME_DIR/colors.toml" ]]; then
     # Start with a copy of the template
     cp "$TEMPLATE" "$THEME_DIR/yazi.toml"
-    
-    # Substitute color variables from colors.toml
-    while IFS='=' read -r key value; do
-        key=$(echo "$key" | tr -d ' ')
-        value=$(echo "$value" | tr -d '"' | xargs)
-        if [[ -n "$key" && -n "$value" && "$key" != "#"* ]]; then
-            sed -i "s|{{ $key }}|$value|g" "$THEME_DIR/yazi.toml"
-        fi
-    done < "$THEME_DIR/colors.toml"
+
+    # Use omarchy-theme-color for the full resolved color set (handles derived
+    # aliases like dark_background, lighter_background, light_foreground that are
+    # not present in the raw colors.toml). Output is tab-separated key/value.
+    sed_script=$(mktemp)
+    while IFS=$'\t' read -r key value; do
+        [[ -n "$key" && -n "$value" ]] || continue
+        printf 's|{{ %s }}|%s|g\n' "$key" "$value" >> "$sed_script"
+    done < <(omarchy-theme-color --file "$THEME_DIR/colors.toml" --all 2>/dev/null)
+
+    sed -i -f "$sed_script" "$THEME_DIR/yazi.toml"
+    rm -f "$sed_script"
 fi
 
 # Symlink yazi theme to the generated theme file

@@ -88,7 +88,7 @@ progress_error  = { fg = "{{ red }}", bg = "{{ lighter_background }}" }
 cols = 3
 mask = { bg = "{{ lighter_background }}" }
 cand = { fg = "{{ accent }}" }
-rest = { fg = "{{ background }}" }
+rest = { fg = "{{ muted }}" }
 desc = { fg = "{{ foreground }}" }
 separator = " ▶ "
 separator_style = { fg = "{{ foreground }}" }
@@ -159,16 +159,16 @@ footer = { fg = "{{ foreground }}", bg = "{{ muted }}" }
 
 rules = [
     # Images
-    { mime = "image/*", fg = "#94e2d5" },
+    { mime = "image/*", fg = "{{ cyan }}" },
 
     # Media
-    { mime = "{audio,video}/*", fg = "#f9e2af" },
+    { mime = "{audio,video}/*", fg = "{{ yellow }}" },
 
     # Archives
-    { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#f5c2e7" },
+    { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "{{ magenta }}" },
 
     # Documents
-    { mime = "application/{pdf,doc,rtf}", fg = "#a6e3a1" },
+    { mime = "application/{pdf,doc,rtf}", fg = "{{ green }}" },
 
     # Special files
     { url = "*", is = "orphan", bg = "{{ red }}" },

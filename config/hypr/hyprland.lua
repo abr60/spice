@@ -10,3 +10,7 @@ require("hypr.autostart")
 require("hypr.rules")
 
 require("default.hypr.toggles")
+hl.env("XCURSOR_THEME", "Bibata-Original-Amber")
+hl.env("HYPRCURSOR_THEME", "Bibata-Original-Amber")
+hl.env("XCURSOR_SIZE", "28")
+hl.env("HYPRCURSOR_SIZE", "28")

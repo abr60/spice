@@ -1,6 +1,6 @@
 # Omarchy Overview Plugin
 
-A Hyprland workspace overview plugin with live window previews, seamless theme integration, and app icon resolution for [Omarchy Shell](https://github.com/AyushKr2003/omarchy-dotfiles).
+A Hyprland workspace overview plugin with live window previews, seamless theme integration, and app icon resolution for [Omarchy Shell](https://github.com/basecamp/omarchy).
 
 ![Omarchy Overview Screenshot](preview.png)
 

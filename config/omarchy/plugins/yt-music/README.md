@@ -1,122 +1,78 @@
-# CLIamp Window Control for Omarchy Quattro
+# YT Music Window Control
 
-A self-contained Omarchy Quattro plugin that gives CLIamp a configurable
-Guake-style drop-down window. Its bar control uses the classic Winamp
-lightning-bolt logo.
+A binding-scoped YouTube Music WebApp drop-down for Omarchy Shell with
+configurable geometry and compact bar controls.
 
-- Left click shows or hides the CLIamp drop-down.
-- Right click opens alignment and size settings.
-- Horizontal alignment is Left, Center, or Right.
-- Width and height use editable numeric fields with 50 px arrow steps.
-- Existing effective CLIamp bindings trigger the shipped drop-down adapter.
-- Ordinary CLIamp windows launched outside those bindings stay ordinary.
-- Hiding the bar icon requires explicit confirmation.
-- Geometry management continues while the bar icon is hidden.
+The bar icon shows the YouTube Music brand. Left click toggles a drop-down
+window that loads `music.youtube.com`. Right click opens alignment and size
+settings.
 
-"Center" affects x only. The y coordinate starts at the top of the monitor's
-usable rectangle, below any reserved screen area.
+## Features
+
+- Drop-down YouTube Music WebApp window with configurable geometry
+- Horizontal alignment: Left, Center, or Right
+- Adjustable width and height (editable numeric fields with 50 px steps)
+- Bar icon visibility toggle with confirmation
+- Settings panel: alignment, window size, and icon visibility
+- Geometry clamped to usable monitor area (handles transforms, scaling, and
+  reserved margins)
+- Remembers settings in `shell.json` via the shell's `updateEntryInline` API
+- Recovery helper to restore a hidden or removed bar entry
+- Keybinding integration: scans effective Lua bindings and rebinds the
+  configured key to the drop-down adapter
 
 ## Requirements
 
-- Omarchy Quattro with the manifest-based shell plugin runtime
-- Hyprland 0.55 or newer with the Lua provider
+- Omarchy Shell with the manifest-based plugin runtime
+- Hyprland 0.55+ with the Lua provider
 - `bash`, `jq`, `lua`, and `hyprctl`
-- `cliamp`, which is included in a standard Omarchy installation
-
-The plugin does not change CLIamp's audio sources or edit Hyprland configuration
-files. Its binding adapter launches the managed app ID
-`org.omarchy.cliamp.quake` through Omarchy's native TUI launcher. The ordinary
-`org.omarchy.cliamp` app ID and older `org.omarchy.quake.music` windows are
-deliberately excluded.
 
 ## Install
 
-Included in the [spice](https://github.com/drunk-particles/spice) repo.
-Deployed automatically via `bash ~/spice/update.sh` (runs `omarchy.sh`
-which copies plugins into `~/.config/omarchy/plugins/`).
+```bash
+omarchy plugin add https://github.com/ilyaZar/yt-music.git --enable
+```
 
-For local development, link this checkout into the plugin directory and
-rescan before enabling it:
+Or place it manually:
 
 ```bash
-ln -s "$PWD" \
-  ~/.config/omarchy/plugins/yt-music
+mkdir -p ~/.config/omarchy/plugins
+cp -r yt-music ~/.config/omarchy/plugins/
 omarchy-shell shell rescanPlugins
 omarchy plugin enable yt-music
 ```
 
-## Settings and behavior
+## Settings
 
-Defaults are Center, 1200 px wide, 600 px high, and icon visible. Valid values
-are stored inline on the widget's `shell.json` layout entry through the shell's
-supported `updateEntryInline` method. The recovery helper uses `omarchy bar`
-commands instead of editing `shell.json`.
+Defaults are Center, 450 px wide, 800 px high, and icon visible. Settings are
+stored inline on the widget's `shell.json` layout entry. The settings panel
+right-click menu lets you cycle alignment and adjust dimensions.
 
-The service listens for relevant Hyprland window, workspace, special-workspace,
-and monitor events. It selects only `org.omarchy.cliamp.quake`. A tiled managed
-window is floated before its exact size and position are applied.
-
-While no client exists, a fallback check backs off from two seconds to fifteen
-seconds. There is no periodic polling after a client is found. If CLIamp was
-removed from the preinstalled packages, the settings panel reports that it is
-not installed.
-
-Left click calls the included `scripts/toggle_cliamp.sh` adapter. It reuses an
-existing managed client or launches CLIamp with the plugin-owned app ID. The
-client is moved to `special:cliamp` and shown or hidden without creating
-duplicates. Generic special-workspace mechanics live separately in
-`lib/quake.sh`; CLIamp selection and launch details stay in the thin adapter.
+| Setting | Type | Default | Description |
+|---|---|---|---|
+| `alignment` | `Left` / `Center` / `Right` | `Center` | Horizontal window placement |
+| `windowWidth` | integer | `450` | Window width in logical pixels |
+| `windowHeight` | integer | `800` | Window height in logical pixels |
+| `iconVisible` | boolean | `true` | Show the bar icon |
 
 ## Keybinding
 
-Stock Omarchy binds `Super+Shift+Alt+M` to `Music TUI`. The plugin scans the
-effective Lua configuration and recognizes CLIamp by its launch command, so a
-user may change the key or description. It also recognizes the older
-`quake_toggle.sh music` action. Every matching key is rebound in Hyprland's
-running session to the shipped adapter while the plugin is enabled. Supported
-Hyprland binding options, including release behavior and device filters, are
-preserved.
-
-The source configuration is never rewritten. Disabling or removing the plugin
-reloads the Hyprland configuration so each original action is restored. A
-normal CLIamp launch still uses `org.omarchy.cliamp` and is not resized, moved,
-or hidden by this plugin. This separate app ID is what makes the behavior
-binding-scoped instead of class-wide.
-
-The **Launch keybinding** row shows all consumed key combinations and opens the
-personal bindings file in Omarchy's configured editor.
+Stock Omarchy binds `Super+Shift+Alt+M` to the Music action. The plugin scans
+the effective Lua configuration and rebinds the matching key to its drop-down
+adapter while enabled. Disabling or removing the plugin reloads the Hyprland
+configuration so the original action is restored.
 
 ## Geometry
 
-The helper reads `hyprctl clients -j` and `hyprctl monitors -j`. A present
+The service reads `hyprctl clients -j` and `hyprctl monitors -j`. A present
 client selects its reported monitor ID. Only an absent client falls back to the
 focused monitor.
 
 Hyprland reports monitor pixel dimensions before output transform. The plugin
 swaps width and height for odd transforms, divides by scale, and applies the
-reserved margins in Hyprland's `[left, top, right, bottom]` order:
-
-```text
-logical width  = transformed pixel width / scale
-logical height = transformed pixel height / scale
-usable x       = monitor x + reserved left
-usable y       = monitor y + reserved top
-usable width   = logical width - reserved left - reserved right
-usable height  = logical height - reserved top - reserved bottom
-```
-
-Requested dimensions are clamped to the usable rectangle. Left uses
-`usable x`, Center adds half the remaining horizontal space, and Right uses the
-usable right edge minus the clamped width. Every result is integral and keeps
-the complete window reachable.
-
-The runtime floats tiled clients, then applies the result with current
-Hyprland Lua dispatchers through `hyprctl eval` and an exact client address. It
-does not use legacy hyprlang dispatch syntax.
+reserved margins. Requested dimensions are clamped to the usable rectangle.
 
 ## Hide and recover
-
-These states are deliberately different:
 
 - **Hide icon** sets `iconVisible` to false. The widget consumes no bar gap and
   its enabled service keeps running.
@@ -124,8 +80,7 @@ These states are deliberately different:
   available.
 - **Remove plugin** removes its checkout and shell registration.
 
-Restore a hidden or removed bar entry with the helper inside the native plugin
-checkout:
+Restore a hidden or removed bar entry:
 
 ```bash
 ~/.config/omarchy/plugins/yt-music/bin/yt-music-widget
@@ -135,7 +90,7 @@ The helper rescans plugins, idempotently puts the widget in its default right
 section when absent, and clears `iconVisible`. It also supports `show`, `hide`,
 and `status` subcommands.
 
-Remove the plugin without leaving external setup files behind:
+Remove the plugin without leaving setup files behind:
 
 ```bash
 omarchy plugin remove yt-music
@@ -147,25 +102,23 @@ omarchy plugin remove yt-music
 omarchy plugin validate .
 bash -n bin/yt-music-widget lib/*.sh scripts/*.sh tests/*.sh *.sh
 shellcheck bin/yt-music-widget lib/*.sh scripts/*.sh tests/*.sh *.sh
-tests/test_geometry.sh
-tests/test_apply_geometry.sh
-tests/test_toggle.sh
-tests/test_bindings.sh
-tests/test_keybindings.sh
-tests/test_recovery.sh
-tests/test_teardown.sh
 qmllint -I /usr/share/omarchy/shell Service.qml BarWidget.qml
 ```
 
-The tests cover transformed and scaled monitors, reserved margins, exact
-floating geometry, managed and legacy client selection, launch/show/hide
-behavior, command-based effective binding consumption, ordinary CLIamp
-isolation, guarded teardown, and idempotent icon recovery.
+## Structure
 
-## Logo license
+| File | Role |
+|---|---|
+| `BarWidget.qml` | Bar icon, settings panel, keyboard/pointer interaction |
+| `Service.qml` | Geometry service, client tracking, Hyprland events |
+| `scripts/toggle_cliamp.sh` | Drop-down adapter: launches or toggles the YouTube Music window |
+| `scripts/apply_geometry.sh` | Applies alignment and size to the managed client |
+| `scripts/sync_bindings.sh` | Scans and rebinds Hyprland keybindings |
+| `lib/quake.sh` | Special-workspace toggle logic |
+| `lib/geometry.sh` | Monitor geometry calculation and clamping |
+| `lib/clients.sh` | Hyprland client filtering helpers |
+| `bin/yt-music-widget` | Recovery helper for restoring the bar entry |
 
-The unmodified classic Winamp logo is redistributed under the permission and
-attribution recorded in [`assets/README.md`](assets/README.md). It is a
-trademark of its respective owner. This plugin is unofficial and is not
-affiliated with or endorsed by Winamp or its owner. Plugin code is MIT
-licensed; the logo keeps its separately documented terms.
+## License
+
+MIT

@@ -139,6 +139,31 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 - Fixed a regression in `cursor-style/bin/omarchy-cursor-menu-entry`: the ownership check `*cursor-style*` matched the row key `style.cursor-style` itself and deleted user-redefined rows on `--remove`. Now matches `omarchy-cursor-menu-entry` or `toggle cursor-style`.
 - All plugin test suites pass (yt-music, bluetooth-audio, cursor-style).
 
+### 2026-08-19 -- overview keybind fix
+
+- Overview (SUPER+grave) wasn't working: `bindings.lua` called `omarchy-shell shell toggle overview`, but the installed plugin id is `omarchy-overview`. Shell's `toggle`/`summon` silently no-ops on unknown ids (warns to the shell log only).
+- Fixed `config/hypr/bindings.lua:17` to use `toggle omarchy-overview`. Verified via IPC state flip open/closed, then `hyprctl reload`.
+- Side note: installed plugin dirs are author-prefixed (`sanjar.omnimedia`, `omarchy-overview`) while the spice repo has short names (`omnimedia`, `overview`). The two copies diverge; edits to installed plugins under `~/.config/omarchy/plugins/` do NOT live in the spice repo.
+
+### 2026-08-19 -- rmpc dynamic omarchy theme + yazi crash fix
+
+**rmpc theme made dynamic (previously hardcoded `matugen.ron`):**
+- `config/rmpc/themes/` cleared to a single theme. Old themes (`matugen.ron`, `dark-mocha.ron`, `mocha.ron`, `monochrome.ron`, `nord.ron`, `versatile.ron`) deleted.
+- Theme moved to `config/omarchy/themed/omarchy.ron.tpl` — a template processed by `omarchy-theme-set-templates` on every theme set. Uses `{{ accent }}`, `{{ foreground }}`, `{{ muted }}`, `{{ dark_background }}`, `{{ lighter_background }}`.
+- `config/rmpc/config.ron:7` theme changed `"matugen"` → `"omarchy"`.
+- New hook `config/omarchy/hooks/theme-set.d/update-rmpc-theme` symlinks the generated theme (`~/.local/state/omarchy/current/theme/omarchy.ron`) into `~/.config/rmpc/themes/omarchy.ron`.
+- `install/config/stow.sh` now regenerates the rmpc theme link after stow (mirrors the yazi step).
+- The `~/.config/rmpc/themes/omarchy.ron` symlink is git-tracked like `config/yazi/theme.toml` (both point into the omarchy state dir).
+
+**yazi crash fix (TOML parse error on `{{ red }}`):**
+- `config/omarchy/hooks/theme-set.d/update-yazi-theme` was substituting only raw `colors.toml` keys, so derived aliases (`{{ dark_background }}`, `{{ lighter_background }}`, `{{ light_foreground }}`) stayed as literal `{{ }}` strings → yazi crashed.
+- Hook now uses `omarchy-theme-color --file "$COLORS_FILE" --all` (full resolved set, tab-separated) to build the sed script, same as `omarchy-theme-set-templates`.
+- `config/omarchy/themed/yazi.toml.tpl` light-theme readability fixes:
+  - Hardcoded Catppuccin pastels in `[filetype]` (invisible on light backgrounds) → theme vars: images=`{{ cyan }}`, media=`{{ yellow }}`, archives=`{{ magenta }}`, documents=`{{ green }}`.
+  - `[which] rest` was `{{ background }}` (invisible, text = bg color) → `{{ muted }}`.
+
+**Syncing reminder:** `~/.config/omarchy` is NOT stowed — it's copied by `install/config/omarchy.sh`. Edits to `config/omarchy/**` in spice must be re-pasted there (and hooks re-run) to take effect live. `~/.config/rmpc` IS a stow symlink into the repo.
+
 ## Architecture Notes
 
 **Two helpers.sh files (same API, different locations):**
