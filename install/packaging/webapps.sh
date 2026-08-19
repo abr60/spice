@@ -26,7 +26,7 @@ omarchy-webapp-install "OpenCourseWare (MIT)" "https://ocw.mit.edu/" ""
 # ==============================================================================
 omarchy-webapp-install "Excel" "https://excel.cloud.microsoft/" ""
 omarchy-webapp-install "MS Word" "https://word.cloud.microsoft/" ""
-omarchy-webapp-install "GitHub" "https://github.com/drunk-particles/spice" ""
+omarchy-webapp-install "GitHub" "https://github.com/abr60/spice" ""
 
 # ==============================================================================
 # Social & Communication

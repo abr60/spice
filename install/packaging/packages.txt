@@ -71,3 +71,4 @@ scrcpy
 
 # --- AUR ---
 python-ffmpeg-python
+subliminal

@@ -95,18 +95,17 @@ function control_downloads()
 
     if not autosub_allowed() then return end
 
-    sub_tracks = {}
+    -- Skip auto-download entirely if any subtitle track already exists
+    -- (embedded or external). Auto-download is English-only.
     for _, track in ipairs(mp.get_property_native('track-list')) do
         if track['type'] == 'sub' then
-            sub_tracks[#sub_tracks + 1] = track
+            log('Subtitles already present — skipping auto-download')
+            return
         end
     end
 
-    for _, language in ipairs(languages) do
-        if should_download_subs_in(language) then
-            if download_subs(language) then return end
-        else return end
-    end
+    -- English auto-download only; Bangla is manual (menu / 'n' key)
+    download_subs(languages[1])
 end
 
 function autosub_allowed()
@@ -144,3 +143,7 @@ end
 mp.add_key_binding('b', 'download_subs', download_subs)
 mp.add_key_binding('n', 'download_subs2', download_subs2)
 mp.register_event('file-loaded', control_downloads)
+
+-- Named bindings for uosc menu items (no key, invoked via script-binding)
+mp.add_key_binding(nil, 'download-en', function() download_subs(languages[1]) end)
+mp.add_key_binding(nil, 'download-bn', function() download_subs(languages[2]) end)

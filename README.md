@@ -24,9 +24,17 @@ Personal dotfiles and system setup for [Omarchy](https://github.com/basecamp/oma
 
 ## Quick Start
 
+You can install Spice with a single command using our bootstrap script:
+
 ```bash
-git clone git@github.com:drunk-particles/spice.git ~/spice
-bash ~/spice/setup.sh
+curl -fsSL https://abr60.github.io/spice/install | bash
+```
+
+Alternatively, you can clone and run it manually:
+
+```bash
+git clone https://github.com/abr60/spice.git ~/spice
+cd ~/spice && ./setup.sh
 ```
 
 Select what to install from the menu. Everything is logged to `~/.local/state/spice/logs/`.

@@ -172,6 +172,19 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 
 **Verified:** rmpc connects `127.0.0.1:6600` == MPD bind. mpd-mpris connects via `localhost` (resolves `::1`, MPD binds IPv4-only `127.0.0.1`) — works only because Go's dialer falls back to IPv4. Fragile but functional; not changed. Live `~/.config/mpd` IS a stow symlink (`../spice/config/mpd`), so config edits go live instantly. After `systemctl --user restart mpd`, playlist restores paused, mpd-mpris reconnects fine.
 
+### 2026-08-19 -- mpv config audit + fixes
+
+**Thorough review of `config/mpv/` — 6 issues found and fixed:**
+- `mpv.conf:19` `video-aspect-override = 16:9` forced ALL content (2.35:1 movies, portrait videos) to 16:9 → changed to `no` (auto); `e` key still cycles.
+- `profiles.conf` `[hd]`/`[sdtv-ntsc]` auto-profiles used `width`/`height` (nil pre-load → "attempt to compare number with nil" errors). Switched to `p["video-params/w"]`/`p["video-params/h"]` with `or 0` guard. Verified: 0 errors, profiles apply (720p → hd, 480p → sdtv-ntsc).
+- `script-opts/ytsub.conf` had invalid `target_langs` key (script only supports `source_lang`) → removed, documented.
+- `script-opts/autosub.conf` contained hardcoded OpenSubtitles credentials (`samoq`/`8989898989`) committed since first commit — but `autosub.lua` does NOT read that file (hardcoded languages, logins commented out). Credentials removed; noted as unused + leak risk.
+- `evafast.lua` binds RIGHT (overrides input.conf `RIGHT seek 5`): seek + hold-to-fastforward. README updated to document `→` behavior.
+- README: removed broken `demo/*.png` references (dir deleted), fixed `mpv-launch` path (`bin/mpv-launch`, not `hypr-scripts/`).
+- `install/packaging/packages.txt`: added `subliminal` (AUR, not `python-subliminal`) — the `autosub.lua` script requires `/usr/bin/subliminal` which was missing.
+
+**Verified clean:** `mpv --config-dir=~/.config/mpv` loads with zero config errors, no unknown-key warnings, no profile-condition errors. `DR failed` only occurs with `--vo=null` (headless test artifact). Live `~/.config/mpv` IS a stow symlink (`../spice/config/mpv`).
+
 ## Architecture Notes
 
 **Two helpers.sh files (same API, different locations):**

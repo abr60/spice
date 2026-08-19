@@ -16,7 +16,7 @@ gum style --border rounded --border-foreground 2 --padding "1 2" \
   "• This will FORCE PUSH local changes to GitHub" \
   "• Ensure you have an active internet connection" \
   "" \
-  "$(gum style --foreground 8 "Repo: https://github.com/drunk-particles/Walls.git")"
+  "$(gum style --foreground 8 "Repo: https://github.com/abr60/Walls.git")"
 
 echo
 

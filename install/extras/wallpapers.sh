@@ -10,7 +10,7 @@ section "Walls"
 
 WALLS_DIR="$HOME/Walls"
 OMARCHY_BG_DIR="$HOME/.config/omarchy/backgrounds"
-REPO_URL="https://github.com/drunk-particles/Walls.git"
+REPO_URL="https://github.com/abr60/Walls.git"
 
 # ─── Clone or Update ──────────────────────────────────────────────────────────
 if [[ -d "$WALLS_DIR/.git" ]]; then

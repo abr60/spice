@@ -1,6 +1,6 @@
 🌸 RMPC
 
-| ![](https://github.com/drunk-particles/Assets/blob/main/RMPC/rmpc.png) |
+| ![](https://github.com/abr60/Assets/blob/main/RMPC/rmpc.png) |
 | ------------------------------------------------------------ |
 
 | ![]() |

@@ -22,9 +22,9 @@ A clean, snappy **mpv** configuration for the **Lenovo ThinkPad T14 Gen 2 (Intel
 
 ## 🖼️ Preview
 
-| ![](demo/1.png) | ![](demo/2.png) |
-|-----------------|-----------------|
-| ![](demo/3.png) | ![](demo/4.png) |
+> Demo screenshots were removed from the repo to keep it lean. See the
+> [uosc](https://github.com/tomasklaen/uosc) and [mpv](https://mpv.io) docs
+> for what the UI looks like.
 
 ---
 
@@ -35,7 +35,8 @@ A clean, snappy **mpv** configuration for the **Lenovo ThinkPad T14 Gen 2 (Intel
 | Key | Action |
 |:----|:-------|
 | `SPACE` | Play / Pause |
-| `→` / `←` | Seek ±5s |
+| `→` | Seek +5s (hold to fast-forward, bilibili-style via `evafast`) |
+| `←` | Seek -5s |
 | `Shift+→` / `Shift+←` | Seek ±1s exact |
 | `Bs` | Reset speed |
 | `Left Click` | Play / Pause |
@@ -71,6 +72,16 @@ A clean, snappy **mpv** configuration for the **Lenovo ThinkPad T14 Gen 2 (Intel
 | `Shift+BS` | Reset all subtitle settings |
 | `Alt+y` | YouTube autosubs (auto, needs video ID in filename) |
 | `Alt+Shift+y` | YouTube autosubs (manual — paste URL when prompted) |
+| `b` / `n` | Download English / Bangla subtitles (subliminal) |
+
+### Shaders
+
+| Key | Action |
+|:----|:-------|
+| `Ctrl+1` | Anime4K Mode A — sharp lines |
+| `Ctrl+2` | Anime4K Mode B — soft/blurry |
+| `Ctrl+3` | Anime4K Mode C — noisy/compressed |
+| `Ctrl+0` | Anime4K off |
 
 ### File & Misc
 
@@ -106,7 +117,7 @@ GPU-aware wrapper — detects Intel/AMD/NVIDIA and sets optimal hwdec and gpu-ap
 
 ```bash
 mkdir -p ~/.config/hypr/scripts/Precious
-cp hypr-scripts/mpv-launch ~/.config/hypr/scripts/Precious/
+cp ~/spice/bin/mpv-launch ~/.config/hypr/scripts/Precious/
 chmod +x ~/.config/hypr/scripts/Precious/mpv-launch
 ```
 
@@ -123,13 +134,19 @@ Kept in `~/.config/hypr/scripts/Precious/` so Omarchy updates never overwrite it
 
 ### Movies — automatic via subliminal
 
-Subtitles are fetched automatically when a video opens if none are found. Requires `subliminal`:
+Subtitles are fetched automatically when a video opens **only if no subtitle track
+is already present** (embedded or external). Auto-download is **English-only**;
+Bangla must be triggered manually. Requires `subliminal`:
 
 ```bash
 pip install subliminal --break-system-packages
 ```
 
 Configured for **English + Bengali**, using your OpenSubtitles account (`script-opts/autosub.conf`).
+
+**Right-click menu (uosc):** `Subtitles > Download English` (auto) and
+`Subtitles > Download Bangla` (manual) trigger a download on demand.
+Keybindings: `b` = English, `n` = Bangla.
 
 ### YouTube videos — download subs at download time (recommended)
 

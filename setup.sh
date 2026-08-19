@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # spice - Unified Setup Script
-# https://github.com/drunk-particles/spice.git
+# https://github.com/abr60/spice.git
 # Usage: bash ~/spice/setup.sh
 # =============================================================================
 
@@ -59,7 +59,7 @@ gum style \
     --foreground 117 --border-foreground 117 --border rounded \
     --align center --width 50 --padding "0 1" \
     "SPICE SETUP" \
-    "github.com/drunk-particles/spice"
+    "github.com/abr60/spice"
 
 echo ""
 
