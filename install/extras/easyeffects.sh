@@ -54,6 +54,11 @@ if [[ -d "$PRESET_SOURCE" ]]; then
     jsons=("$PRESET_SOURCE"/*.json)
     if [[ ${#jsons[@]} -gt 0 ]]; then
         cp "${jsons[@]}" "$PRESET_DEST/"
+        # Presets store the convolver kernel-path with a __HOME__ placeholder so
+        # the repo stays machine-agnostic; substitute the real home at install time.
+        for dest_json in "$PRESET_DEST"/*.json; do
+            sed -i "s|__HOME__|$HOME|g" "$dest_json"
+        done
         ok "EasyEffects presets installed"
     else
         warn "No .json presets found in $PRESET_SOURCE"

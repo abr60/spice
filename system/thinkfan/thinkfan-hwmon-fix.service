@@ -1,0 +1,12 @@
+[Unit]
+Description=Fix thinkfan.conf hwmon path before thinkfan starts
+Before=thinkfan.service
+ConditionPathExists=/etc/thinkfan.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/fix-thinkfan-hwmon.sh
+
+[Install]
+WantedBy=multi-user.target
+RequiredBy=thinkfan.service
