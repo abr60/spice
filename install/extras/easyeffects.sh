@@ -9,8 +9,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 section "EasyEffects DSP"
 
-ARCHER_DIR="${ARCHER_DIR:-$HOME/.local/share/Archer}"
-PRESET_SOURCE="$ARCHER_DIR/system/easyeffects/presets"
+SPICE_DIR="${SPICE_DIR:-$HOME/spice}"
+PRESET_SOURCE="$SPICE_DIR/system/easyeffects/presets"
 IRS_DEST="$HOME/.local/share/easyeffects/irs"
 PRESET_DEST="$HOME/.local/share/easyeffects/output"
 IRS_BASE_URL="https://github.com/shuhaowu/linux-thinkpad-speaker-improvements/raw/main/ThinkPadT14Gen1"
@@ -18,7 +18,7 @@ IRS_BASE_URL="https://github.com/shuhaowu/linux-thinkpad-speaker-improvements/ra
 # ─── Install EasyEffects packages via the tagged package list ─────────────────
 if ! command -v easyeffects &>/dev/null; then
     msg "Installing EasyEffects packages..."
-    bash "$(dirname "${BASH_SOURCE[0]}")/../packaging/packages" extra --tag easyeffects
+    bash "$(dirname "${BASH_SOURCE[0]}")/../packaging/install-packages.sh" --tag easyeffects
 fi
 
 mkdir -p "$IRS_DEST" "$PRESET_DEST"

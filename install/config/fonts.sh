@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # config/fonts.sh — Install custom fonts
-# Copies fonts from Archer/fonts/ to ~/.local/share/fonts
+# Copies fonts from spice/fonts/ to ~/.local/share/fonts
 # Rebuilds font cache and sets system monospace font
 # =============================================================================
 
@@ -10,8 +10,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 section "Fonts"
 
-ARCHER_DIR="${ARCHER_DIR:-$HOME/.local/share/Archer}"
-FONT_SOURCE="$ARCHER_DIR/fonts"
+SPICE_DIR="${SPICE_DIR:-$HOME/spice}"
+FONT_SOURCE="$SPICE_DIR/fonts"
 FONT_DEST="$HOME/.local/share/fonts"
 
 if [[ ! -d "$FONT_SOURCE" ]]; then

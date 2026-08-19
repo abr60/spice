@@ -8,8 +8,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 
 section "Zsh Setup"
 
-ARCHER_DIR="${ARCHER_DIR:-$HOME/.local/share/Archer}"
-ZSH_DOTS_DIR="$ARCHER_DIR/zshrc"
+SPICE_DIR="${SPICE_DIR:-$HOME/spice}"
+ZSH_DOTS_DIR="$SPICE_DIR/zshrc"
 ZSHRC_LINK="$HOME/zshrc"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
@@ -41,7 +41,7 @@ else
     ok "fast-syntax-highlighting already installed"
 fi
 
-# ─── Symlink ~/zshrc → Archer/zshrc ──────────────────────────────────────────
+# ─── Symlink ~/zshrc → spice/zshrc ───────────────────────────────────────────
 if [[ -d "$ZSH_DOTS_DIR" ]]; then
     remove_path "$ZSHRC_LINK"
     ln -sf "$ZSH_DOTS_DIR" "$ZSHRC_LINK"

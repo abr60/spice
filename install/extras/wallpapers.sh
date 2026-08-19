@@ -9,7 +9,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 section "Walls"
 
 WALLS_DIR="$HOME/Walls"
-THEMES_DIR="$HOME/Archer/Themes"
+OMARCHY_BG_DIR="$HOME/.config/omarchy/backgrounds"
 REPO_URL="https://github.com/drunk-particles/Walls.git"
 
 # ─── Clone or Update ──────────────────────────────────────────────────────────
@@ -34,16 +34,16 @@ else
     fi
 fi
 
-# ─── Ensure Parent Themes Folder Exists ───────────────────────────────────────
-if [[ ! -d "$THEMES_DIR" ]]; then
-    msg "Creating parent themes directory: $THEMES_DIR"
-    mkdir -p "$THEMES_DIR"
+# ─── Ensure omarchy backgrounds folder exists ────────────────────────────────
+if [[ ! -d "$OMARCHY_BG_DIR" ]]; then
+    msg "Creating omarchy backgrounds directory: $OMARCHY_BG_DIR"
+    mkdir -p "$OMARCHY_BG_DIR"
 fi
 
 # ─── Clean Obsolete Theme Folders ─────────────────────────────────────────────
 msg "Checking for obsolete theme directories..."
-if [[ -d "$THEMES_DIR" ]]; then
-    find "$THEMES_DIR" -mindepth 1 -maxdepth 1 -type d -print0 | while read -r -d '' active_theme_dir; do
+if [[ -d "$OMARCHY_BG_DIR" ]]; then
+    find "$OMARCHY_BG_DIR" -mindepth 1 -maxdepth 1 -type d -print0 | while read -r -d '' active_theme_dir; do
         theme_name="$(basename "$active_theme_dir")"
         
         # Check if a matching folder does NOT exist in the Walls repository
@@ -60,7 +60,7 @@ msg "Linking wallpaper directories..."
 # Using -print0 and read -d '' to robustly handle directory names with spaces
 find "$WALLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name ".git" -print0 | while read -r -d '' source_dir; do
     theme_name="$(basename "$source_dir")"
-    target_theme_dir="$THEMES_DIR/$theme_name"
+    target_theme_dir="$OMARCHY_BG_DIR/$theme_name"
     target_link="$target_theme_dir/Walls"
 
     # Automatically create the missing theme name folder
@@ -74,3 +74,4 @@ find "$WALLS_DIR" -mindepth 1 -maxdepth 1 -type d ! -name ".git" -print0 | while
 done
 
 ok "Wallpaper links are up to date."
+msg "Add 'Walls' to a theme via: omarchy theme background <theme> ~/.config/omarchy/backgrounds/<theme>/Walls"

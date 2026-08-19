@@ -1,9 +1,10 @@
 #!/bin/bash
-source "$HOME/.config/hypr/assets/lib/helpers.sh"
+BIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$BIN_DIR/lib/helpers.sh"
 clear
 
 # ── Logo ────────────────────────────────────────────────────────────────────
-cat "$HOME/.config/hypr/assets/ANSI LOGO/mp4-to-gif.txt" 2>/dev/null || \
+cat "$BIN_DIR/../config/hypr/assets/branding/mp4-to-gif.txt" 2>/dev/null || \
   gum style --foreground 5 --bold "  ▶ MP4 → GIF Converter"
 
 echo

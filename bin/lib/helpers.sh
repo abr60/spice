@@ -19,8 +19,6 @@ _ensure_gum() {
   fi
 }
 
-_ensure_gum
-
 log_header() {
   local text="$1"
 

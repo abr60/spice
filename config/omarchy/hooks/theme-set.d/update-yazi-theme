@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Update yazi theme when omarchy theme changes
+THEME_DIR="$HOME/.local/state/omarchy/current/theme"
+TEMPLATE="$HOME/.config/omarchy/themed/yazi.toml.tpl"
+YAZI_CONFIG="$HOME/.config/yazi"
+
+# Ensure yazi config directory exists
+mkdir -p "$YAZI_CONFIG"
+
+# Generate yazi.toml from template if template exists
+if [[ -f "$TEMPLATE" && -f "$THEME_DIR/colors.toml" ]]; then
+    # Start with a copy of the template
+    cp "$TEMPLATE" "$THEME_DIR/yazi.toml"
+    
+    # Substitute color variables from colors.toml
+    while IFS='=' read -r key value; do
+        key=$(echo "$key" | tr -d ' ')
+        value=$(echo "$value" | tr -d '"' | xargs)
+        if [[ -n "$key" && -n "$value" && "$key" != "#"* ]]; then
+            sed -i "s|{{ $key }}|$value|g" "$THEME_DIR/yazi.toml"
+        fi
+    done < "$THEME_DIR/colors.toml"
+fi
+
+# Symlink yazi theme to the generated theme file
+if [[ -f "$THEME_DIR/yazi.toml" ]]; then
+    ln -sf "$THEME_DIR/yazi.toml" "$YAZI_CONFIG/theme.toml"
+fi

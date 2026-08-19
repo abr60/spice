@@ -1,0 +1,73 @@
+# =============================================================================
+# packages.txt — Spice packages (additions not in Omarchy base/other)
+# Installed via: bash install-packages
+# Tagged packages are opt-in — installed only when called with --tag <tag>
+# =============================================================================
+
+# --- Shell & Base ---
+stow
+nano
+ttf-cormorant
+ttf-alegreya
+ebgaramond-otf
+
+# --- Network ---
+xorg-xhost
+
+# --- Audio ---
+playerctl
+cava
+mpd
+mpc
+spotifydl
+mpd-mpris
+audacious
+rmpc
+
+# --- Theming ---
+bibata-cursor-theme
+
+# --- Applications ---
+android-tools
+android-udev
+qbittorrent
+pdfarranger
+sioyek-dev
+telegram-desktop
+
+# --- File Manager ---
+yazi
+
+# --- System Utilities ---
+wev
+tree
+entr
+rust
+
+# --- Terminal Fun ---
+cmatrix
+cowsay
+cowfortune
+
+# --- Hardware & Power (ThinkPad only) ---
+thinkfan          # [tag:thinkfan]
+thinkfan-cli      # [tag:thinkfan]
+
+# --- Audio Plugins ---
+easyeffects       # [tag:easyeffects]
+zam-plugins-lv2   # [tag:easyeffects]
+calf              # [tag:easyeffects]
+
+# --- Facial Recognition ---
+howdy-next-git              # [tag:howdy]
+linux-enable-ir-emitter-git # [tag:howdy]
+
+# --- Hyprpm Plugins ---
+cmake             # [tag:Hyprpm]
+ninja             # [tag:Hyprpm]
+
+# --- Android ---
+scrcpy
+
+# --- AUR ---
+python-ffmpeg-python

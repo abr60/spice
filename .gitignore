@@ -1,0 +1,36 @@
+# Logs
+*.log
+logs/
+
+# Local state
+.local/
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Compiled / cached
+__pycache__/
+*.pyc
+.cache/
+
+# Package lock files
+package-lock.json
+yarn.lock
+
+# Secrets (never commit these)
+*.key
+*.pem
+.env
+
+# Calibre runtime state (regenerated on every run)
+config/calibre/dynamic.pickle.json
+config/calibre/history.plist
+config/calibre/viewer/annots/

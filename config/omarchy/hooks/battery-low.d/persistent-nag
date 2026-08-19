@@ -1,0 +1,99 @@
+#!/bin/bash
+# persistent-nag — Omarchy battery-low hook: persistent low-battery nagging.
+#
+# Omarchy's battery service fires this hook (through omarchy-battery-low) once
+# per discharge cycle when the battery hits 10%. Its default behaviour is a
+# single notification, which is easy to ignore. This hook keeps nagging:
+#   • plays low-battery.wav whenever the level drops further
+#   • dims the screen to 5% and re-notifies on every drop below critical
+#   • stops nagging (and restores brightness) as soon as you plug in
+#
+# Sounds live in $HOME/.config/hypr/assets/sounds (bundled in the spice repo).
+# Depends on: upower, pw-play, pactl, notify-send, brightnessctl.
+
+SOUND_DIR="$HOME/.config/hypr/assets/sounds"
+CRITICAL_LEVEL=5
+BAT_DEV=$(upower -e | grep 'BAT' | head -n 1)
+NAG_PID_FILE="/run/user/$UID/battery_persistent_nag.pid"
+BRIGHTNESS_FILE="/tmp/battery-nag-brightness"
+
+[[ -z "$BAT_DEV" ]] && exit 0
+
+# play_alert <file> [vol%] — unmute, set volume, play, restore prior state.
+play_alert() {
+    local sound_file="$1"
+    local target_vol="${2:-80%}"
+
+    local original_vol original_mute
+    original_vol=$(pactl get-sink-volume @DEFAULT_SINK@ \
+        | awk -F '/' '{print $2}' | head -n 1 | tr -d '% ')
+    original_mute=$(pactl get-sink-mute @DEFAULT_SINK@ | awk '{print $2}')
+
+    pactl set-sink-mute   @DEFAULT_SINK@ 0
+    pactl set-sink-volume @DEFAULT_SINK@ "$target_vol"
+
+    pw-play "$sound_file"
+
+    pactl set-sink-volume @DEFAULT_SINK@ "${original_vol}%"
+    [[ "$original_mute" == "yes" ]] && pactl set-sink-mute @DEFAULT_SINK@ 1
+}
+
+# quiet_vol — returns 50% between midnight–6 AM, 75% otherwise.
+quiet_vol() {
+    local hour
+    hour=$(date +%H)
+    (( hour >= 0 && hour < 6 )) && echo "50%" || echo "75%"
+}
+
+# Never stack nag loops — if one is already running, leave it be.
+if [[ -f "$NAG_PID_FILE" ]] && kill -0 "$(cat "$NAG_PID_FILE")" 2>/dev/null; then
+    exit 0
+fi
+
+# Initial alert, then a detached loop that keeps nagging until you plug in.
+(
+    echo $$ > "$NAG_PID_FILE"
+    trap 'rm -f "$NAG_PID_FILE"' EXIT
+
+    play_alert "$SOUND_DIR/low-battery.wav" "$(quiet_vol)"
+
+    LAST_NAG="${1:-100}"
+    DIMMED=false
+
+    while :; do
+        sleep 30
+
+        info=$(upower -i "$BAT_DEV") || continue
+        status=$(echo   "$info" | awk '/state/      {print $2}')
+        capacity=$(echo "$info" | awk '/percentage/ {print $2}' | tr -d '%')
+
+        # Plugged back in — restore brightness and stop nagging.
+        if [[ "$status" != "discharging" ]]; then
+            if [[ "$DIMMED" == true && -f "$BRIGHTNESS_FILE" ]]; then
+                brightnessctl set "$(cat "$BRIGHTNESS_FILE")" 2>/dev/null
+            fi
+            rm -f "$BRIGHTNESS_FILE"
+            exit 0
+        fi
+
+        [[ "$capacity" =~ ^[0-9]+$ ]] || continue
+
+        # Persistent nag: re-alert every time the level drops further.
+        if (( capacity < LAST_NAG )); then
+            LAST_NAG=$capacity
+            play_alert "$SOUND_DIR/low-battery.wav" "$(quiet_vol)"
+
+            if (( capacity <= CRITICAL_LEVEL )); then
+                if [[ "$DIMMED" == false ]]; then
+                    brightnessctl -m | awk -F, '/backlight/ && !/kbd/ {print $4; exit}' \
+                        > "$BRIGHTNESS_FILE" 2>/dev/null
+                    brightnessctl set 5% 2>/dev/null
+                    DIMMED=true
+                fi
+                notify-send -u critical "CRITICAL: ${capacity}%" "Plug in now!" \
+                    -i battery-empty
+            fi
+        fi
+    done
+) >/dev/null 2>&1 &
+disown

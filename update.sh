@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Archer - Update Script
+# spice - Update Script
 # Remote-first: always overwrites local with remote state.
-# Usage: bash ~/Archer/update.sh
+# Usage: bash ~/spice/update.sh
 # =============================================================================
 
 set -uo pipefail
 
-DOTS_DIR="$HOME/Archer"
-export ARCHER_DIR="$HOME/.local/share/Archer"
-INSTALL_DIR="$DOTS_DIR/install"
-WALLPAPERS_DIR="$HOME/Wallpapers"
-REPORT_DIR="$HOME/.local/state/Archer"
+SPICE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$SPICE_DIR/install"
+REPORT_DIR="$HOME/.local/state/spice"
 REPORT_FILE="$REPORT_DIR/update-report.txt"
 
 source "$INSTALL_DIR/lib/helpers.sh"
@@ -28,20 +26,20 @@ ensure_installed gum
 # 2. SHOW HEADER
 # ==========================================
 clear
-LOGO_FILE="$INSTALL_DIR/lib/logo.txt"
+LOGO_FILE="$INSTALL_DIR/lib/spice.txt"
 [[ -f "$LOGO_FILE" ]] && cat "$LOGO_FILE" && echo ""
 
 gum style \
     --foreground 117 --border-foreground 117 --border rounded \
     --align center --width 50 --padding "0 1" \
-    "ARCHER UPDATE"
+    "SPICE UPDATE"
 echo ""
 
 # ==========================================
 # 3. FETCH & CHECK
 # ==========================================
 msg "Fetching remote changes..."
-cd "$DOTS_DIR"
+cd "$SPICE_DIR"
 
 git fetch origin 2>/dev/null || die "Could not reach remote — check your network."
 
@@ -54,7 +52,7 @@ REMOTE_SHORT="${REMOTE:0:7}"
 
 {
     echo "=============================================="
-    echo " ARCHER UPDATE REPORT"
+    echo " SPICE UPDATE REPORT"
     echo "=============================================="
     echo " Date     : $(date '+%Y-%m-%d %H:%M:%S')"
     echo " Hostname : $(cat /etc/hostname)"
@@ -138,23 +136,20 @@ run_step() {
     fi
 }
 
-export INSTALL_MODE="complete"
-
 section "Re-applying Scripts"
-run_step "packaging/packages-pacman"   "Syncing pacman packages"
-run_step "packaging/packages-aur"      "Syncing AUR packages"
-run_step "config/fonts.sh"             "Syncing fonts"
-run_step "config/applications.sh"      "Syncing applications"
-run_step "services/system-services.sh" "Syncing system services"
-run_step "services/user-services.sh"   "Syncing user services"
+run_step "packaging/install-packages.sh"   "Syncing packages"
+run_step "config/fonts.sh"            "Syncing fonts"
+run_step "config/applications.sh"     "Syncing applications"
+run_step "services/mpd-rmpc.sh"   "Syncing MPD/RMPC"
+run_step "extras/wallpapers.sh"       "Syncing wallpapers"
 
 # ==========================================
 # 7. RE-STOW CONFIG SYMLINKS
 # ==========================================
 section "Re-applying Config Symlinks"
-msg "Running stow --restow..."
+msg "Running stow --restow (omarchy excluded)..."
 
-STOW_OUTPUT=$(stow --restow --target="$HOME/.config" config 2>&1) || true
+STOW_OUTPUT=$(stow --restow --target="$HOME/.config" --ignore='^omarchy$' config 2>&1) || true
 
 if echo "$STOW_OUTPUT" | grep -qi "conflict\|error\|cannot"; then
     warn "Stow conflicts detected:"
@@ -167,33 +162,23 @@ else
     echo " STOW: Config symlinks refreshed" >> "$REPORT_FILE"
 fi
 
-# ==========================================
-# 8. WALLPAPERS SYNC
-# ==========================================
-section "Wallpapers"
+bash "$INSTALL_DIR/config/omarchy.sh"
+echo " OMARCHY: content synced" >> "$REPORT_FILE"
 
-if [[ -d "$WALLPAPERS_DIR/.git" ]]; then
-    msg "Pulling latest wallpapers..."
-    if git -C "$WALLPAPERS_DIR" fetch origin && \
-       git -C "$WALLPAPERS_DIR" reset --hard origin/HEAD 2>/dev/null; then
-        ok "Wallpapers updated"
-        echo " WALLPAPERS: Updated" >> "$REPORT_FILE"
-    else
-        warn "Wallpapers update failed — keeping existing"
-        echo " WALLPAPERS: Update failed" >> "$REPORT_FILE"
-    fi
-else
-    msg "Wallpapers not cloned on this machine — skipping"
-    echo " WALLPAPERS: Not cloned — skipped" >> "$REPORT_FILE"
+# ==========================================
+# 8. RELOAD
+# ==========================================
+section "Reloading UI"
+if command -v hyprctl &>/dev/null; then
+    hyprctl reload && ok "Hyprland reloaded" || warn "Hyprland reload failed"
 fi
+if command -v qs &>/dev/null; then
+    qs -c reload && ok "Quickshell reloaded" || warn "Quickshell reload failed"
+fi
+echo " RELOAD: UI reloaded" >> "$REPORT_FILE"
 
 # ==========================================
-# 9. RELOAD
-# ==========================================
-run_step "services/reload.sh" "Reloading UI"
-
-# ==========================================
-# 10. DONE
+# 9. DONE
 # ==========================================
 DURATION=$(( SECONDS - START_TIME ))
 

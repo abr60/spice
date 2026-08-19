@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "acrogenesis.theme-scheduler",
+  "name": "Theme Scheduler",
+  "version": "0.3.0",
+  "author": "acrogenesis",
+  "license": "MIT",
+  "description": "Automatically switch between light and dark Omarchy themes at sunrise and sunset, or at fixed times.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Theme Scheduler",
+    "description": "Switch light and dark themes at sunrise and sunset, or at times you set.",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

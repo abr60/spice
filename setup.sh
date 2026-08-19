@@ -53,7 +53,7 @@ run_logged() {
 # SPLASH
 # =============================================================================
 clear
-[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
+[[ -f "$INSTALL_DIR/lib/spice.txt" ]] && cat "$INSTALL_DIR/lib/spice.txt" && echo ""
 
 gum style \
     --foreground 117 --border-foreground 117 --border rounded \
@@ -67,10 +67,11 @@ echo ""
 # MULTI-SELECT
 # =============================================================================
 ITEMS=(
-    "Packages	Install all packages from pkgs-extra.txt"
+    "Packages	Install all packages from packages.txt"
     "Configs	Symlink config/ → ~/.config via Stow"
     "Applications	Set up desktop applications"
-    "Services	Enable and start system/user services"
+    "MPD + RMPC	Enable and start MPD + mpd-mpris (rmpc backend)"
+    "Themes	Install community Omarchy themes"
     "Fonts	Install fonts"
     "Zsh	Set up Zsh shell"
     "GPU Drivers	Install drivers for your hardware"
@@ -96,7 +97,7 @@ fi
 # SUMMARY
 # =============================================================================
 clear
-[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
+[[ -f "$INSTALL_DIR/lib/spice.txt" ]] && cat "$INSTALL_DIR/lib/spice.txt" && echo ""
 
 gum style --foreground 117 --padding "0 0 0 2" "  Selected steps:"
 echo ""
@@ -111,7 +112,7 @@ gum confirm "Run it?" || { msg "Aborted."; exit 0; }
 # EXECUTE
 # =============================================================================
 clear
-[[ -f "$INSTALL_DIR/lib/logo.txt" ]] && cat "$INSTALL_DIR/lib/logo.txt" && echo ""
+[[ -f "$INSTALL_DIR/lib/spice.txt" ]] && cat "$INSTALL_DIR/lib/spice.txt" && echo ""
 
 TOTAL=$(echo "$SELECTED" | wc -l)
 STEP=0
@@ -131,12 +132,12 @@ step_header() {
 
 grep -q "^Packages"     <<< "$SELECTED" && {
     step_header "Packages"
-    run_logged "packaging/packages" "Packages"
+    run_logged "packaging/install-packages.sh" "Packages"
 }
 
 grep -q "^Configs"      <<< "$SELECTED" && {
     step_header "Configs"
-    run_logged "config/configs.sh" "Configs"
+    run_logged "config/stow.sh" "Configs"
 }
 
 grep -q "^Applications" <<< "$SELECTED" && {
@@ -144,9 +145,14 @@ grep -q "^Applications" <<< "$SELECTED" && {
     run_logged "config/applications.sh" "Applications"
 }
 
-grep -q "^Services"     <<< "$SELECTED" && {
-    step_header "Services"
-    run_logged "services/all.sh" "Services"
+grep -q "^MPD + RMPC"  <<< "$SELECTED" && {
+    step_header "MPD + RMPC"
+    run_logged "services/mpd-rmpc.sh" "MPD + RMPC"
+}
+
+grep -q "^Themes"      <<< "$SELECTED" && {
+    step_header "Themes"
+    run_logged "themes/themes.sh" "Themes"
 }
 
 grep -q "^Fonts"        <<< "$SELECTED" && {

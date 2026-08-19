@@ -40,8 +40,8 @@ elif [[ -f "$HYPR_RULES" ]]; then
 fi
 
 # ─── Zsh hide_waydroid function ───────────────────────────────────────────────
-ARCHER_DIR="${ARCHER_DIR:-$HOME/.local/share/Archer}"
-ZSH_FUNCTIONS="$ARCHER_DIR/zshrc/functions"
+SPICE_DIR="${SPICE_DIR:-$HOME/spice}"
+ZSH_FUNCTIONS="$SPICE_DIR/zshrc/functions"
 FUNC_MARKER="hide_waydroid()"
 
 if [[ -f "$ZSH_FUNCTIONS" ]] && grep -qF "$FUNC_MARKER" "$ZSH_FUNCTIONS"; then
@@ -60,7 +60,7 @@ EOF
 fi
 
 # ─── Zsh init call ────────────────────────────────────────────────────────────
-ZSH_INIT="$ARCHER_DIR/zshrc/init"
+ZSH_INIT="$SPICE_DIR/zshrc/init"
 INIT_MARKER="hide_waydroid >/dev/null 2>&1"
 
 if [[ -f "$ZSH_INIT" ]] && grep -qF "$INIT_MARKER" "$ZSH_INIT"; then

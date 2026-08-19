@@ -1,29 +1,23 @@
--- Keep only your personal keybinding overrides here. Add new bindings or
--- unbind defaults before replacing them.
+o.bind("ALT + SPACE", "Select theme",  "rofi-set-theme")
+o.bind("ALT + B",     "Set wallpaper", "rofi-set-bg")
 
--- See current bindings and descriptions:
---   omarchy menu keybindings --print
+o.bind("ALT + M",     "Toolbox",   "[float; size 845 600] archer-hub")
+o.bind("ALT + comma", "Unmount",   "hdd-unmount")
 
--- To disable every Omarchy default binding, set this in
--- ~/.config/hypr/hyprland.lua before require("default.hypr.omarchy"), then add
--- only the bindings you want below:
---   omarchy_default_bindings = false
+o.bind("XF86NotificationCenter", "WhatsApp", { webapp = "https://web.whatsapp.com/", focus = true })
+o.bind("XF86Favorites", "Calibre", { launch = "ebook-viewer '/home/$USER/Calibre Library'" })
 
--- To disable all preinstalled app/webapp bindings, set:
---   omarchy_preinstalled_bindings = false
+o.bind("ALT + C", "RMPC Music", "[float; center] foot --title=rmpc-full -e rmpc")
+o.bind("ALT + X", "Study",      "[float; size 700 200; center] foot --override=class=Yazi --title=Yazi -e timeout 30s yazi \"~/Videos/Cowboy-Bebop\"")
 
--- Add a new binding.
--- o.bind("SUPER + SHIFT + R", "SSH", "alacritty -e ssh your-server")
+o.bind("SUPER + M", "Comic (Latin)", "comic-translate lat")
+o.bind("SUPER + N", "Comic (Asian)", "comic-translate cjk")
 
--- Change an existing binding by unbinding it first, then binding the key again.
--- This example changes SUPER+SPACE from the launcher to the Omarchy root menu.
--- hl.unbind("SUPER + SPACE")
--- o.bind("SUPER + SPACE", "Omarchy menu", "omarchy-menu toggle root")
+hl.unbind("SUPER + grave")
+o.bind("SUPER + grave", "Overview", "omarchy-shell shell toggle omarchy-overview")
 
--- Disable a default binding without replacing it.
--- hl.unbind("SUPER + SHIFT + B")
-
--- Logitech MX Keys examples:
--- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
--- o.bind("SUPER + H", nil, "voxtype record toggle")
--- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
+if o.cmd_present("voxtype") then
+  o.bind("ALT + Z", "Toggle dictation", "voxtype record toggle")
+  o.bind("F9", "Start dictation (push-to-talk)", "voxtype record start")
+  o.bind("F9", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
+end

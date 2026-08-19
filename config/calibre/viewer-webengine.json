@@ -124,13 +124,13 @@
     }
   },
   "session_data": {
-    "base_font_size": 37,
+    "base_font_size": 35,
     "columns_per_screen": {
       "landscape": 2,
       "portrait": 0
     },
     "controls_help_shown_count": 2,
-    "current_color_scheme": "*Vintage",
+    "current_color_scheme": "*adnan",
     "keyboard_shortcuts": {
       "show_profiles": [
         {
@@ -171,6 +171,9 @@
     "margin_left": 60,
     "margin_right": 60,
     "margin_top": 60,
+    "standalone_font_settings": {
+      "standard_font": "mono"
+    },
     "standalone_recently_opened": [
       {
         "authors": [
@@ -178,17 +181,11 @@
         ],
         "key": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
         "pathtoebook": "/home/abr/Calibre Library/Gu Zhen Ren/Reverend Insanity (1)/Reverend Insanity - Gu Zhen Ren.epub",
-        "timestamp": "2026-08-18T14:36:59.900Z",
+        "timestamp": "2026-08-18T15:51:02.375Z",
         "title": "Reverend Insanity"
       }
     ],
     "user_color_schemes": {
-      "*Vintage": {
-        "background": "#f0e9d8",
-        "foreground": "#0c0c14",
-        "is_dark_theme": false,
-        "name": "Vintage"
-      },
       "*adnan": {
         "background": "#000000",
         "foreground": "#878787",
@@ -197,7 +194,7 @@
         "name": "adnan"
       }
     },
-    "user_stylesheet": "body {\n    font-family: \"EB Garamond\", \"Alegreya\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
+    "user_stylesheet": "body {\n    font-family: \"Alegreya\", \"EB Garamond\", serif !important;\n}\n\nh1, h2, h3, h4, .chapter-title, .title {\n    font-family: \"Cormorant Garamond\", serif !important;\n    font-weight: 600 !important;\n    font-style: italic !important;\n}"
   },
   "viewer-search-case-sensitive": false,
   "viewer-search-mode": "normal"

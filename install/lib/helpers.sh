@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# lib/helpers.sh — Shared helper functions for Archer install scripts
+# lib/helpers.sh — Shared helper functions for spice install scripts
 # Source at the top of every install script:
 #   source "$(dirname "${BASH_SOURCE[0]}")/../lib/helpers.sh"
 # =============================================================================
 
-# ── Archer color palette — Forest green + cream (from wallpaper) ──────────────
+# ── spice color palette — Forest green + cream (from wallpaper) ──────────────
 # Hex values; gum supports #rrggbb directly.
 C_PRIMARY="#94c97a"    # bright canopy green  — headers, section titles, logo
 C_ACCENT="#e8dfc8"     # train cream/ivory    — warnings, highlights, prompts
@@ -28,16 +28,11 @@ _BOLD='\033[1m'
 _NC='\033[0m'
 
 # ── Terminal dimensions ────────────────────────────────────────────────────────
-# Uses stty via /dev/tty (reliable across TTY, sourced, and piped contexts)
-if [[ -e /dev/tty ]]; then
-    _TERM_SIZE=$(stty size 2>/dev/null </dev/tty)
-    if [[ -n "$_TERM_SIZE" ]]; then
-        export TERM_HEIGHT=$(echo "$_TERM_SIZE" | cut -d' ' -f1)
-        export TERM_WIDTH=$(echo  "$_TERM_SIZE" | cut -d' ' -f2)
-    else
-        export TERM_WIDTH=80
-        export TERM_HEIGHT=24
-    fi
+# Uses stty via /dev/tty (reliable across TTY, sourced, and piped contexts).
+# Guarded with an if so `set -e` callers don't abort when there's no TTY.
+if [[ -e /dev/tty ]] && _TERM_SIZE=$(stty size 2>/dev/null </dev/tty); then
+    export TERM_HEIGHT=$(echo "$_TERM_SIZE" | cut -d' ' -f1)
+    export TERM_WIDTH=$(echo  "$_TERM_SIZE" | cut -d' ' -f2)
 else
     export TERM_WIDTH=80
     export TERM_HEIGHT=24
@@ -47,7 +42,7 @@ term_width()  { echo "$TERM_WIDTH"; }
 term_height() { echo "$TERM_HEIGHT"; }
 
 # ── Logo geometry ─────────────────────────────────────────────────────────────
-LOGO_FILE="${INSTALL_DIR:-$HOME/Archer/install}/lib/logo.txt"
+LOGO_FILE="${INSTALL_DIR:-$HOME/spice/install}/lib/spice.txt"
 
 export LOGO_WIDTH=$(awk '{ if (length > max) max = length } END { print max+0 }' "$LOGO_FILE" 2>/dev/null || echo 0)
 export LOGO_HEIGHT=$(wc -l < "$LOGO_FILE" 2>/dev/null || echo 0)
@@ -180,10 +175,10 @@ is_laptop() {
 detect_hardware_type() { is_laptop && echo "laptop" || echo "desktop"; }
 has_battery() { is_laptop; }
 
-# ── Archer paths ──────────────────────────────────────────────────────────────
-ARCHER_DIR="${ARCHER_DIR:-$HOME/.local/share/Archer}"
-ARCHER_BIN="$ARCHER_DIR/bin"
-archer_bin_present() { [[ -x "$ARCHER_BIN/$1" ]]; }
+# ── spice paths ──────────────────────────────────────────────────────────────
+SPICE_DIR="${SPICE_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+SPICE_BIN="$SPICE_DIR/bin"
+spice_bin_present() { [[ -x "$SPICE_BIN/$1" ]]; }
 
 # ── Systemd helpers ───────────────────────────────────────────────────────────
 unit_exists_system() { systemctl cat "$1" &>/dev/null; }
@@ -213,7 +208,7 @@ run_step() {
     local critical="${3:-false}"
     local log_file="${4:-}"
 
-    local install_dir="${INSTALL_DIR:-$HOME/Archer/install}"
+    local install_dir="${INSTALL_DIR:-$SPICE_DIR/install}"
     local full_path="$install_dir/$script"
 
     echo ""
