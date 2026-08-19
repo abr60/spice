@@ -132,6 +132,13 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 - Player source selection list retained at bottom.
 - Removed unused wallpaper-related properties.
 
+### 2026-08-19 -- plugin id rename + preview shrink
+
+- Renamed all 15 external plugin ids/dirs from author-prefixed (`ericvrp.bar-autohide`) to short names (`bar-autohide`). Updated `shell.json`, `manifest.json` ids, QML `moduleName`s, hypr lua refs, and all functional scripts/tests.
+- Removed plugin preview/screenshot images (~1.8MB); kept runtime-referenced images (winamp-logo.svg, protonvpn icon, navbar-cat sprites/xbm).
+- Fixed a regression in `cursor-style/bin/omarchy-cursor-menu-entry`: the ownership check `*cursor-style*` matched the row key `style.cursor-style` itself and deleted user-redefined rows on `--remove`. Now matches `omarchy-cursor-menu-entry` or `toggle cursor-style`.
+- All plugin test suites pass (yt-music, bluetooth-audio, cursor-style).
+
 ## Architecture Notes
 
 **Two helpers.sh files (same API, different locations):**
@@ -149,7 +156,7 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 - `packages` script: `extra` mode = untagged only, `extra --tag <tag>` = tagged only
 - Bootstraps `yay` for AUR packages
 
-**Plugins:** 16 Omarchy shell plugins in `config/omarchy/plugins/`. Install sources in `install/plugins/` (some extras like `quickshell.spotify` only exist there).
+**Plugins:** 16 Omarchy shell plugins in `config/omarchy/plugins/` (external ones use short ids, e.g. `bar-autohide`, not author-prefixed). Install sources in `install/plugins/` (some extras like `quickshell.spotify` only exist there).
 
 **Themes:** 4 themes in `config/omarchy/themes/`: canvas, emerald, harbor, whitegold.
 
