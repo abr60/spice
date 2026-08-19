@@ -30,6 +30,26 @@ enable_user_service mpd.service
 enable_user_service mpd-mpris.service
 
 # =============================================================================
+# mpd-mpris ordering (drop-in override)
+# =============================================================================
+# The packaged unit (/usr/lib/systemd/user/mpd-mpris.service) ships with
+# After=mpd.service but no Requires=, so it can start before MPD binds and
+# the MPRIS bridge silently dies on cold boot. We can't edit /usr/lib (gets
+# wiped on package updates), so drop a user override that forces ordering.
+MPRIS_DROP="$HOME/.config/systemd/user/mpd-mpris.service.d/override.conf"
+if [[ ! -f "$MPRIS_DROP" ]]; then
+    ensure_dir "$(dirname "$MPRIS_DROP")"
+    cat > "$MPRIS_DROP" <<'EOF'
+[Unit]
+Requires=mpd.service
+EOF
+    ok "mpd-mpris drop-in override written ($MPRIS_DROP)"
+    systemctl --user daemon-reload
+else
+    msg "mpd-mpris drop-in override already present"
+fi
+
+# =============================================================================
 # Ensure MPD is actually running
 # =============================================================================
 if ! systemctl --user is-active mpd.service &>/dev/null; then

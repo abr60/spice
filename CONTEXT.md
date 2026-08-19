@@ -164,6 +164,14 @@ Personal dotfiles + system setup overlay for [Omarchy](https://github.com/baseca
 
 **Syncing reminder:** `~/.config/omarchy` is NOT stowed — it's copied by `install/config/omarchy.sh`. Edits to `config/omarchy/**` in spice must be re-pasted there (and hooks re-run) to take effect live. `~/.config/rmpc` IS a stow symlink into the repo.
 
+### 2026-08-19 -- MPD + mpd-mpris fixes
+
+**Audit of `config/mpd/` + `install/services/` found two issues:**
+- `mpd-mpris.service` (packaged unit `/usr/lib/systemd/user/`) ships with `After=mpd.service` but no `Requires=`. Cold boot could start the bridge before MPD binds → MPRIS dead. Since `/usr/lib` units get wiped on package updates, the fix is a user drop-in override at `~/.config/systemd/user/mpd-mpris.service.d/override.conf` with `Requires=mpd.service`, written by `install/services/mpd-rmpc.sh` (guarded by `[[ -f ]]`).
+- `config/mpd/mpd.conf` had no `restore_paused` → MPD auto-resumed playback on every restart/reboot. Added `restore_paused "yes"`.
+
+**Verified:** rmpc connects `127.0.0.1:6600` == MPD bind. mpd-mpris connects via `localhost` (resolves `::1`, MPD binds IPv4-only `127.0.0.1`) — works only because Go's dialer falls back to IPv4. Fragile but functional; not changed. Live `~/.config/mpd` IS a stow symlink (`../spice/config/mpd`), so config edits go live instantly. After `systemctl --user restart mpd`, playlist restores paused, mpd-mpris reconnects fine.
+
 ## Architecture Notes
 
 **Two helpers.sh files (same API, different locations):**
