@@ -23,6 +23,6 @@ end
 
 -- >>> blizl.voxtype-osd keybindings (managed; removed by bin/uninstall) >>>
 o.bind("SUPER + E", "VoxType engine picker", "mkdir -p $XDG_RUNTIME_DIR/voxtype && touch $XDG_RUNTIME_DIR/voxtype/engine-picker.flag")
-hl.unbind("SUPER + M")
-o.bind("SUPER + M", "VoxType meeting controls", "mkdir -p $XDG_RUNTIME_DIR/voxtype && touch $XDG_RUNTIME_DIR/voxtype/meeting-controls.flag")
 -- <<< blizl.voxtype-osd keybindings <<<
+
+
