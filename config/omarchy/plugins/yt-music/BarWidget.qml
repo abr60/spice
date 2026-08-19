@@ -38,7 +38,7 @@ Panel {
     "Run `~/.config/omarchy/plugins/yt-music/bin/"
       + "yt-music-widget` to restore the bar icon."
   readonly property string tooltip: leftAlignedTooltip([
-    "CLIamp",
+    "YT Music",
     "Left click:  toggle",
     "Right click: window settings"
   ])
@@ -250,7 +250,7 @@ Panel {
         PanelHero {
           visible: !root.hideConfirmOpen
           width: parent.width
-          title: "CLIamp"
+          title: "YT Music"
           foreground: root.foreground
           fontFamily: root.fontFamily
           iconComponent: Component {
