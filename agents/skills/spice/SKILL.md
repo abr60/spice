@@ -26,6 +26,13 @@ Spice is a git repo, remote at `git@github.com:abr60/spice.git`. On this
 machine it lives at **`~/spice`** (`/home/abr/spice`). That is the **source of
 truth**.
 
+> 💡 **`~/.agents/skills/spice` is a SYMLINK to `~/spice/agents/skills/spice`**
+> (installed there on Aug 20). When asked to edit this skill or its guides,
+> edit the files at `/home/abr/spice/agents/skills/spice/` — never
+> `~/.agents/skills/spice/` (same file, but the repo path is canonical and
+> survives `update.sh`). The repo `agents/skills/` dir is listed in the
+> MUST-USE triggers; the deployed copy is only a pointer.
+
 > ⚠️ **`~/Work/spice` is a STALE COPY.** It is an old clone pointing at
 > `git@github.com:drunk-particles/spice.git` and must NOT be treated as
 > current. If the user asks about "spice", assume `~/spice` unless they

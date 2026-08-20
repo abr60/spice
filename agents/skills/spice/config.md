@@ -95,6 +95,31 @@ Bar layout:
 - Plugins section: `overview` (2 rows × 5 columns, hide empty rows, show
   special workspaces), `shell-settings`, `cursor-style`.
 
+### Restart the Shell After Major Changes (MANDATORY)
+
+Hot-reload is NOT reliable for major shell/plugin changes. New plugin logic,
+new profiles, new Process/daemon wiring, or stateful widget behavior can
+silently fail to take effect while the shell keeps running — the log even
+shows a clean reload while the widget still behaves as the old code. Real
+example: the ThinkFan plugin's "Smart" profile showed as "balanced" and did
+nothing until a full restart.
+
+So after any major change to Omarchy shell/plugin code: **kill quickshell
+and let Omarchy relaunch it.** Do NOT trust hot-reload for verification.
+
+```bash
+pgrep -a quickshell          # find instance, e.g. "667223 quickshell -n -p /usr/share/omarchy/shell"
+kill <pid>                   # Omarchy auto-respawns (Hyprland autostart runs omarchy-launch-shell)
+pgrep -a quickshell          # confirm new PID came up (must differ from killed one)
+ls -td /run/user/1000/quickshell/by-id/*/ | head -1   # newest instance dir
+tail -30 <dir>/log.log       # verify clean log, no errors for your plugin
+```
+
+If it does not come back: `omarchy restart shell` (or
+`setsid omarchy-launch-shell`). Pre-existing unrelated warnings (e.g. missing
+`opencode-zen.svg` in the agents plugin) are normal; only errors for YOUR
+plugin/change matter.
+
 ## Plugins (`config/omarchy/plugins/`)
 
 Installed plugins use **short ids** (renamed from author-prefixed names; the
