@@ -1,6 +1,3 @@
-o.bind("ALT + SPACE", "Select theme",  "rofi-set-theme")
-o.bind("ALT + B",     "Set wallpaper", "rofi-set-bg")
-
 o.bind("ALT + comma", "Unmount",   "hdd-unmount")
 
 o.bind("XF86NotificationCenter", "WhatsApp", { webapp = "https://web.whatsapp.com/", focus = true })
@@ -20,9 +17,5 @@ if o.cmd_present("voxtype") then
   o.bind("F9", "Start dictation (push-to-talk)", "voxtype record start")
   o.bind("F9", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
 end
-
--- >>> blizl.voxtype-osd keybindings (managed; removed by bin/uninstall) >>>
-o.bind("SUPER + E", "VoxType engine picker", "mkdir -p $XDG_RUNTIME_DIR/voxtype && touch $XDG_RUNTIME_DIR/voxtype/engine-picker.flag")
--- <<< blizl.voxtype-osd keybindings <<<
 
 

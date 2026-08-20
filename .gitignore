@@ -34,3 +34,6 @@ yarn.lock
 config/calibre/dynamic.pickle.json
 config/calibre/history.plist
 config/calibre/viewer/annots/
+
+# Zsh shell history (live runtime data, never commit)
+zshrc/.zsh_history

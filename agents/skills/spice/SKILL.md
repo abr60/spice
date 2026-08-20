@@ -99,6 +99,12 @@ those configs, this is the `spice` skill's territory.**
    `tui.json`, `dcp.jsonc`, `smart-title.jsonc`, `plugin/vision-bridge.ts`,
    `package.json`. Changes need an opencode restart. See the
    `customize-opencode` skill before editing.
+8. **NEVER commit or push without the magic word.** The user must explicitly
+   say **"go ahead"** before ANY `git commit` or `git push` in this repo (or
+   any repo). No exceptions, no interpretation — "go ahead" is the only
+   permission. If the user asks for a commit/push without saying it, finish
+   the work, show what would be committed, and wait for the exact phrase.
+   This rule was added after an unsanctioned push (Aug 2026).
 
 ## Project Structure
 
