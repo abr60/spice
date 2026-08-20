@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "shell-settings",
+  "name": "Shell Settings",
+  "version": "1.0.0",
+  "author": "AyushKr2003",
+  "description": "Customize Omarchy shell settings, plugins, and the bar",
+  "kinds": [
+    "panel"
+  ],
+  "entryPoints": {
+    "panel": "SettingsPanel.qml"
+  }
+}

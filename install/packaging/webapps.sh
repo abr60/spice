@@ -40,3 +40,17 @@ omarchy-webapp-install "Reddit" "https://www.reddit.com/" "$ICON_DIR/reddit.png"
 # ==============================================================================
 omarchy-webapp-install "Wallhaven" "https://wallhaven.cc/" ""
 omarchy-webapp-install "YT Music" "https://music.youtube.com/" ""
+
+# ==============================================================================
+# Media Servers & Downloads (self-hosted *arr stack)
+# ==============================================================================
+omarchy-webapp-install "Jellyfin" "http://localhost:8096/" "$ICON_DIR/jellyfin.png"
+omarchy-webapp-install "Radarr" "http://localhost:7878/" ""
+omarchy-webapp-install "Sonarr" "http://localhost:8989/" ""
+omarchy-webapp-install "qBittorrent" "http://localhost:8080/" "$ICON_DIR/qbittorrent.png"
+omarchy-webapp-install "Prowlarr" "http://localhost:9696/" ""
+
+# ==============================================================================
+# Omarchy & Plugins
+# ==============================================================================
+omarchy-webapp-install "Omarchy Plugins" "https://omarchyplugins.com/" ""

@@ -1,0 +1,9 @@
+{
+  "enabled": false,
+  "intervalMinutes": 30,
+  "mode": "sequential",
+  "lastChangeEpoch": 1787182263048,
+  "cycle": [],
+  "cycleIndex": 0,
+  "cycleTheme": ""
+}

@@ -1,0 +1,58 @@
+# =============================================================================
+# ALIASES
+# =============================================================================
+
+# --- General ---
+alias c='clear'
+alias pf='fastfetch'
+
+# --- Files & Navigation ---
+alias ls='eza -lh --group-directories-first --icons=auto'
+alias ll='eza -al --group-directories-first --icons=always'
+alias lt='eza -a --tree --level=2 --icons=always'
+alias cd='zd'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# --- Search ---
+alias ff='sudo fd -HI -a --exclude .snapshots'
+alias is='fzf --preview="bat --style=numbers --color=always {}"'
+alias nis='nvim $(fzf --preview="bat --color=always {}")'
+
+# --- System ---
+alias batt='sudo batty --tui'
+alias ridle='killall hypridle && hypridle &'
+alias fan-full='echo "level full-speed" | sudo tee /proc/acpi/ibm/fan'
+alias fan-auto='sudo systemctl restart thinkfan'
+
+# =============================================================================
+# FUNCTIONS
+# =============================================================================
+
+# --- Sync Shortcuts ---
+alias walls='cd ~/Walls && git pull --rebase --autostash && git add . && git commit -m "sync: $(date +%Y-%m-%d\ %H:%M)" || true && git push'
+alias way='cd ~/waybar && git add . && git commit -m "sync: $(date)" && git push && cd -'
+alias assets='cd ~/Assets && git add . && git commit -m "sync: $(date +%Y-%m-%d\ %H:%M)" || true && git push && cd -'
+alias stow='stow -v -d ~/Archer -t ~/.config config'
+alias unstow='stow -Dv -d ~/Archer -t ~/.config config'
+alias restow='stow -Rv -d ~/Archer -t ~/.config config'
+
+dots() {
+    local msg="${1:-sync: $(date)}"
+    cd ~/dots && \
+    git add . && \
+    git commit -m "$msg" && \
+    git push && \
+    cd -
+}
+
+Archer() {
+    local msg="${1:-sync: $(date)}"
+    cd ~/Archer && \
+    git add . && \
+    git commit -m "$msg" && \
+    git push && \
+    cd -
+}
+

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "id": "bar-autohide",
+  "name": "Bar Autohide",
+  "version": "1.3.0",
+  "author": "Eric van Riet Paap",
+  "description": "Event-driven auto-hide for the Omarchy bar",
+  "license": "MIT",
+  "kinds": ["service"],
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}

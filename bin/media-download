@@ -154,43 +154,51 @@ if [[ "$type" == "Video" ]]; then
   # Download
   echo
   dl_log=$(mktemp)
+  dl_out=$(mktemp)
   dl_cmd() {
     yt-dlp --cookies-from-browser "$COOKIE_SPEC" --no-warnings -f "$format_spec" $sub_flags "$@"
   }
   if $is_playlist; then
     log_step "Downloading playlist: $playlist_title ($playlist_count videos @ $quality) [en subs]..."
     echo
-    dl_cmd --yes-playlist --ignore-errors --newline \
+    dl_cmd --yes-playlist --ignore-errors --newline --progress \
       --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      --print "after_move:DLFILE:%(filepath)s" \
       -o "$download_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url" 2>"$dl_log" \
-      | grep --line-buffered "download:" \
+      | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
       | while IFS= read -r line; do printf "\r  %s        " "$line"; done
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
       log_info "Rate limited — waiting 5s before retry..."
-      rm -f "$dl_log"
+      rm -f "$dl_log" "$dl_out"
       dl_log=$(mktemp)
+      dl_out=$(mktemp)
       sleep 5
-      dl_cmd --yes-playlist --ignore-errors --newline \
+      dl_cmd --yes-playlist --ignore-errors --newline --progress \
         --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+        --print "after_move:DLFILE:%(filepath)s" \
         -o "$download_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url" 2>"$dl_log" \
-        | grep --line-buffered "download:" \
+        | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
         | while IFS= read -r line; do printf "\r  %s        " "$line"; done
       dl_exit=${PIPESTATUS[0]}
     fi
 
     mv "$download_dir"/*.vtt "$sub_dir/" 2>/dev/null || true
+    n_downloaded=$(grep -c "^DLFILE:" "$dl_out" 2>/dev/null || true)
     echo
-    if [[ $dl_exit -ne 0 ]]; then
-      log_error "Playlist download had errors"
+    if [[ $dl_exit -ne 0 && $n_downloaded -eq 0 ]]; then
+      log_error "Playlist download failed — nothing was downloaded"
       [[ -s "$dl_log" ]] && { gum style --foreground 9 "  Errors:"; cat "$dl_log" | sed 's/^/    /'; }
+    elif [[ $n_downloaded -gt 0 ]]; then
+      log_success "Playlist saved to $download_dir ($n_downloaded items downloaded)"
+      [[ $dl_exit -ne 0 ]] && gum style --foreground 11 "  Note: some items were skipped (unavailable, private, or geo-blocked)."
     else
       log_success "Playlist saved to $download_dir"
     fi
   else
     log_step "Downloading video ($quality) [en subs]..."
-    dl_cmd --playlist-items 1 --newline \
+    dl_cmd --playlist-items 1 --newline --progress \
       --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       -o "$download_dir/%(title)s.%(ext)s" "$url" 2>"$dl_log" \
       | grep --line-buffered "%" \
@@ -202,7 +210,7 @@ if [[ "$type" == "Video" ]]; then
       rm -f "$dl_log"
       dl_log=$(mktemp)
       sleep 5
-      dl_cmd --playlist-items 1 --newline \
+      dl_cmd --playlist-items 1 --newline --progress \
         --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         -o "$download_dir/%(title)s.%(ext)s" "$url" 2>"$dl_log" \
         | grep --line-buffered "%" \
@@ -221,7 +229,7 @@ if [[ "$type" == "Video" ]]; then
     mv "$download_dir"/*.vtt "$sub_dir/" 2>/dev/null || true
     log_success "Video saved to $download_dir"
   fi
-  rm -f "$dl_log"
+  rm -f "$dl_log" "$dl_out"
 
 # ── MUSIC ────────────────────────────────────────────────────────────────────
 elif [[ "$type" == "Music" ]]; then
@@ -246,6 +254,7 @@ elif [[ "$type" == "Music" ]]; then
 
   echo
   dl_log=$(mktemp)
+  dl_out=$(mktemp)
   dl_audio() {
     yt-dlp --cookies-from-browser "$COOKIE_SPEC" "${metadata_flags[@]}" --no-warnings "$@"
   }
@@ -253,37 +262,44 @@ elif [[ "$type" == "Music" ]]; then
     out_template="$audio_root/%(playlist_title)s/%(title)s.%(ext)s"
     log_step "Downloading playlist: $playlist_title ($playlist_count items @ $audio_label)..."
     echo
-    dl_audio --yes-playlist --ignore-errors --newline \
+    dl_audio --yes-playlist --ignore-errors --newline --progress \
       --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      --print "after_move:DLFILE:%(filepath)s" \
       -o "$out_template" "$url" 2>"$dl_log" \
-      | grep --line-buffered "download:" \
+      | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
       | while IFS= read -r line; do printf "\r  %s        " "$line"; done
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
       log_info "Rate limited — waiting 5s before retry..."
-      rm -f "$dl_log"
+      rm -f "$dl_log" "$dl_out"
       dl_log=$(mktemp)
+      dl_out=$(mktemp)
       sleep 5
-      dl_audio --yes-playlist --ignore-errors --newline \
+      dl_audio --yes-playlist --ignore-errors --newline --progress \
         --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+        --print "after_move:DLFILE:%(filepath)s" \
         -o "$out_template" "$url" 2>"$dl_log" \
-        | grep --line-buffered "download:" \
+        | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
         | while IFS= read -r line; do printf "\r  %s        " "$line"; done
       dl_exit=${PIPESTATUS[0]}
     fi
 
+    n_downloaded=$(grep -c "^DLFILE:" "$dl_out" 2>/dev/null || true)
     echo
-    if [[ $dl_exit -ne 0 ]]; then
-      log_error "Playlist download had errors"
+    if [[ $dl_exit -ne 0 && $n_downloaded -eq 0 ]]; then
+      log_error "Playlist download failed — nothing was downloaded"
       [[ -s "$dl_log" ]] && { gum style --foreground 9 "  Errors:"; cat "$dl_log" | sed 's/^/    /'; }
+    elif [[ $n_downloaded -gt 0 ]]; then
+      log_success "Playlist downloaded and mapped to library under $audio_root ($n_downloaded items)"
+      [[ $dl_exit -ne 0 ]] && gum style --foreground 11 "  Note: some items were skipped (unavailable, private, or geo-blocked)."
     else
       log_success "Playlist downloaded and mapped to library under $audio_root"
     fi
   else
     out_template="$audio_root/%(title)s.%(ext)s"
     log_step "Downloading track ($audio_label)..."
-    dl_audio --playlist-items 1 --newline \
+    dl_audio --playlist-items 1 --newline --progress \
       --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       -o "$out_template" "$url" 2>"$dl_log" \
       | grep --line-buffered "%" \
@@ -295,7 +311,7 @@ elif [[ "$type" == "Music" ]]; then
       rm -f "$dl_log"
       dl_log=$(mktemp)
       sleep 5
-      dl_audio --playlist-items 1 --newline \
+      dl_audio --playlist-items 1 --newline --progress \
         --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         -o "$out_template" "$url" 2>"$dl_log" \
         | grep --line-buffered "%" \
@@ -312,7 +328,7 @@ elif [[ "$type" == "Music" ]]; then
     fi
     log_success "Track saved to $audio_root"
   fi
-  rm -f "$dl_log"
+  rm -f "$dl_log" "$dl_out"
 
   # ── Sync Hook ──────────────────────────────────────────────────────────────
   echo
