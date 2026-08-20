@@ -43,6 +43,9 @@ tesseract-data-kor
 tesseract-data-chi_sim
 translate-shell
 
+# --- Media Download (yt-dlp deps) ---
+python-mutagen
+
 # --- File Manager ---
 yazi
 

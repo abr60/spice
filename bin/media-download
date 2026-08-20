@@ -22,7 +22,7 @@ echo
 
 # ── Folder Picker ───────────────────────────────────────────────────────────
 pick_video_dir() {
-  local root="$HOME/Videos/Downloaded Videos"
+  local root="$HOME/Videos/YouTube"
   local NEW_FOLDER_LABEL="[ + Create new folder ]"
   mkdir -p "$root"
 
@@ -30,7 +30,7 @@ pick_video_dir() {
     local entries=()
     while IFS= read -r d; do
       entries+=("$(basename "$d")/")
-    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d | sort)
+    done < <(find "$root" -mindepth 1 -maxdepth 1 -type d ! -name '.*' | sort)
     entries+=("$NEW_FOLDER_LABEL")
 
     local choice
@@ -52,7 +52,7 @@ pick_video_dir() {
 }
 
 # ── URL Input ───────────────────────────────────────────────────────────────
-clip_url=$(wl-paste 2>/dev/null || true)
+clip_url=$(wl-paste 2>/dev/null | tr -d '\0' || true)
 [[ "$clip_url" != http* ]] && clip_url=""
 
 url=$(gum input --prompt "URL: " --placeholder "YouTube, SoundCloud, Reddit, Instagram..." --value "$clip_url")
@@ -132,7 +132,7 @@ if [[ "$type" == "Video" ]]; then
 
   echo
   quality=$(gum choose --header "Select video quality" \
-    "Preferred Quality (1080p)" \
+    "Preferred Quality (1440p)" \
     "Best Quality" \
     "720p" \
     "480p" \
@@ -140,7 +140,7 @@ if [[ "$type" == "Video" ]]; then
   [[ -z "$quality" ]] && { log_info "Cancelled"; exit 0; }
 
   case "$quality" in
-    "Preferred Quality (1080p)") format_spec="bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080]" ;;
+    "Preferred Quality (1440p)") format_spec="bestvideo[height<=1440][ext=mp4]+bestaudio[ext=m4a]/best[height<=1440]" ;;
     "Best Quality")              format_spec="bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" ;;
     "720p")                      format_spec="bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]" ;;
     "480p")                      format_spec="bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]" ;;
@@ -227,35 +227,16 @@ if [[ "$type" == "Video" ]]; then
 elif [[ "$type" == "Music" ]]; then
 
   echo
-  audio_format=$(gum choose --header "Select audio format" "FLAC (Lossless)" "Opus" "M4A" "MP3")
-  [[ -z "$audio_format" ]] && { log_info "Cancelled"; exit 0; }
+  audio_format_lower="best"
+  audio_label="best quality (auto)"
+  log_info "Audio: automatically using the highest-quality audio track (no conversion)"
 
-  case "$audio_format" in
-    "FLAC (Lossless)") audio_format_lower="flac" ;;
-    *)                 audio_format_lower=$(echo "$audio_format" | tr '[:upper:]' '[:lower:]') ;;
-  esac
-
-  echo
-  if [[ "$audio_format_lower" == "flac" ]]; then
-    audio_quality="0"
-    log_info "FLAC: Preset locked to maximum compression (0)"
-  else
-    quality_choice=$(gum choose --header "Select target bitrate" "320k (Excellent)" "192k (Standard)" "128k (Compact)")
-    [[ -z "$quality_choice" ]] && quality_choice="192k (Standard)"
-    case "$quality_choice" in
-      "320k (Excellent)") audio_quality="320k" ;;
-      "192k (Standard)")  audio_quality="192k" ;;
-      "128k (Compact)")   audio_quality="128k" ;;
-    esac
-  fi
-
-  audio_root="$HOME/Music"
+  audio_root="$HOME/Music/YT-Music"
   mkdir -p "$audio_root"
 
   metadata_flags=(
     --extract-audio
     --audio-format "$audio_format_lower"
-    --audio-quality "$audio_quality"
     --embed-thumbnail
     --embed-metadata
     --add-metadata
@@ -270,7 +251,7 @@ elif [[ "$type" == "Music" ]]; then
   }
   if $is_playlist; then
     out_template="$audio_root/%(playlist_title)s/%(title)s.%(ext)s"
-    log_step "Downloading playlist: $playlist_title ($playlist_count items @ $audio_format)..."
+    log_step "Downloading playlist: $playlist_title ($playlist_count items @ $audio_label)..."
     echo
     dl_audio --yes-playlist --ignore-errors --newline \
       --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
@@ -301,7 +282,7 @@ elif [[ "$type" == "Music" ]]; then
     fi
   else
     out_template="$audio_root/%(title)s.%(ext)s"
-    log_step "Downloading track ($audio_format)..."
+    log_step "Downloading track ($audio_label)..."
     dl_audio --playlist-items 1 --newline \
       --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       -o "$out_template" "$url" 2>"$dl_log" \
