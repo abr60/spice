@@ -1,5 +1,0 @@
-{
-  // Rows added by the cursor-style plugin so the picker is reachable from the
-  // Omarchy menu. Remove this block if you want the entry gone.
-  "style.cursor-style": {"icon":"󰇀","label":"Cursor Style","aliases":["cursor","cursor-picker"],"action":"/home/abr/.config/omarchy/extensions/omarchy-cursor-menu-entry"}
-}
