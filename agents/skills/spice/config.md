@@ -54,8 +54,6 @@ require("default.hypr.toggles")
 
 | Binding | Action |
 |---------|--------|
-| `ALT + SPACE` | Select theme (`rofi-set-theme`) |
-| `ALT + B` | Set wallpaper (`rofi-set-bg`) |
 | `ALT + comma` | Unmount HDD (`hdd-unmount`) |
 | `XF86NotificationCenter` | WhatsApp webapp |
 | `XF86Favorites` | Calibre (`ebook-viewer`) |
@@ -63,12 +61,30 @@ require("default.hypr.toggles")
 | `ALT + X` | Study folder in Yazi (30s timeout) |
 | `SUPER + M` | Comic translate Latin (`comic-translate lat`) |
 | `SUPER + N` | Comic translate CJK (`comic-translate cjk`) |
-| `SUPER + grave` | Toggle overview (`omarchy-shell shell toggle overview`) |
+| `SUPER + Alt_L` | Toggle overview (`omarchy-shell shell toggle overview`) |
+| `SUPER + A` | Launch default AI agent (`omarchy-agent` → opencode) |
 | `ALT + Z` / `F9` | Voxtype dictation (only if `voxtype` command exists) |
 
-Note: `SUPER + grave` unbinds the Omarchy default (`hl.unbind`) before
+Note: the overview binding unbinds the Omarchy default (`hl.unbind`) before
 rebinding, and calls `toggle overview` (the **short** plugin id — a previous
 bug used the long `omarchy-overview` id, which the shell silently ignored).
+
+#### Keybinding Quick Reference (read this FIRST)
+
+- **File:** `config/hypr/bindings.lua` (stowed live — edits apply instantly
+  with `hyprctl reload`, NO shell restart needed).
+- **Syntax:** `o.bind("MODS + KEY", "Description", "command")` — defined in
+  `/usr/share/omarchy/default/hypr/helpers.lua` (line ~81). `command` may be a
+  plain string, a `hl.dsp.*` dispatcher, or a table like
+  `{ launch = "cmd", focus = "^class$" }` / `{ webapp = "https://..." }`.
+  Unbind defaults first: `hl.unbind("MODS + KEY")`.
+- **KEY uses XKB keysym names, NOT abbreviations:** left Ctrl is
+  `Control_L`, left Alt is `Alt_L` — `CTRL_L` / `ALT_L` fail with
+  "Unknown keysym". Verify with: `hyprctl reload` → `hyprctl configerrors` →
+  `hyprctl binds -j` (check the binding appears).
+- **Fn key is NOT bindable on ThinkPads:** Fn is firmware/EC-level and never
+  reaches Hyprland as a keysym (verified: `KEY_FN` bit 216 is absent from the
+  AT keyboard keymap). Never suggest binding it.
 
 ### Window Rules (`rules.lua`)
 

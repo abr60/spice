@@ -24,13 +24,9 @@
     },
     "build": {
       "mode": "primary",
-      "model": "opencode/muse-spark-1.2-contributor-free",
-      "description": "Fast execution and code writing agent (Muse Spark 1.2 Free)",
-      "permission": {
-        "edit": "allow",
-        "bash": "ask"
-      },
-      "prompt": "Be concise. No preamble."
+      "model": "ollama/qwen2.5-coder:7b-16k",
+      "description": "Fast execution and code writing agent (Ollama Qwen)",
+      "prompt": "If the user attaches an image or references an image file, you MUST use the task tool to launch the vision subagent (subagent_type: vision) and have it produce a detailed text description of the image. Then proceed using that description."
     },
     "quickfix": {
       "mode": "subagent",
@@ -55,15 +51,9 @@
   },
   "provider": {
     "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "Ollama",
       "options": {
-        "baseURL": "http://localhost:11434/v1"
-      },
-      "models": {
-        "qwen2.5-coder:7b-16k": {
-          "name": "qwen2.5-coder:7b-16k"
-        }
+        "temperature": 0.7,
+        "num_ctx": 8192
       }
     }
   }

@@ -1,0 +1,125 @@
+# omARR stack: Radarr (movies) + Sonarr (TV) + qBittorrent (torrent downloader)
+# + Prowlarr (indexers) + FlareSolverr (Cloudflare) + Jellyfin (streaming)
+# + Jellyseerr (requests) + Bazarr (subtitles)
+#
+# Portable: ${HOME} is interpolated by docker compose from the shell env,
+# so this file works on any machine without editing.
+# Media lives in ~/media on the host. Each container mounts the SAME host
+# paths so Radarr/Sonarr can hardlink imports from qBittorrent's downloads.
+
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+      - WEBUI_PORT=8080
+      - WEBUI_USERNAME=abr
+      - WEBUI_PASSWORD=torrentisabliss
+    volumes:
+      - ./qbittorrent-config:/config
+      - ${HOME}/media/downloads:/downloads
+    ports:
+      - "8080:8080"   # web UI
+      - "6881:6881"   # torrent peer port (TCP)
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./radarr-config:/config
+      - ${HOME}/media:/media
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./sonarr-config:/config
+      - ${HOME}/media:/media
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+    depends_on:
+      - qbittorrent
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./prowlarr-config:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./jellyfin-config:/config
+      - ${HOME}/media:/media
+    ports:
+      - "8096:8096"
+    devices:
+      - /dev/dri:/dev/dri
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./jellyseerr-config:/app/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Dhaka
+    volumes:
+      - ./bazarr-config:/config
+      - ${HOME}/media:/media
+    ports:
+      - "6767:6767"
+    restart: unless-stopped
