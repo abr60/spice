@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# plugin-snapshot — snapshot an Omarchy plugin before major/dangerous changes.
+#
+# Usage:
+#   plugin-snapshot <id> <label> [--config file ...] [--no-push]
+#
+#   <id>     plugin: face.howdy | yt-music | netshare | thinkfan |
+#                    abr.lock | omarr (aliases: radar sonar radarr sonarr)
+#   <label>  short reason, e.g. "redesign" "pam-refactor" "remove-flow"
+#   --config optional config files bundled into the snapshot for a
+#            self-contained restore; bare names resolve to known paths:
+#              shell.json            -> ~/.config/omarchy/shell.json
+#              bindings.lua          -> ~/.config/hypr/bindings.lua
+#              anything else         -> resolved relative to $HOME
+#   --no-push skip pushing the git tag (lineage still recorded locally)
+#
+# What it does per plugin type:
+#   git-backed (face.howdy, yt-music, netshare, thinkfan, omarr):
+#     refuses if the worktree is dirty (commit/stash first), then tags
+#     <id>-pre-<label>-<YYYYMMDD-HHMMSS> and pushes the tag when the
+#     remote is abr60-owned (omarr's upstream remote is tag-only).
+#   git-less  (abr.lock — deploy-lock reconciles it from stock each run):
+#     copies the live dir to ~/plugin-backups/<id>/snap-<ts>-<label>/.
+#
+# Rollback (always docs-level; see plugins.md):
+#   git-backed:  git -C <dir> reset --hard <tag> ; omarchy restart shell
+#   git-less:    rsync -a ~/plugin-backups/<id>/snap-<ts>-<label>/plugin/ <dir>/
+#                omarchy restart shell
+#
+# Storage: ~/plugin-backups/<id>/... — deliberately OUTSIDE the plugin
+# dirs because plugin dirs get wiped/re-cloned (omarchy plugin add /
+# deploy-lock reconcile).
+
+set -euo pipefail
+
+PLUGIN_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins"
+BACKUP_ROOT="${PLUGIN_BACKUPS_DIR:-$HOME/plugin-backups}"
+TS="$(date +%Y%m%d-%H%M%S)"
+
+say()  { printf '%s\n' "$*"; }
+die()  { say "plugin-snapshot: $*" >&2; exit 1; }
+
+# resolve <id> -> canonical name + plugin dir (single space separator!)
+resolve() {
+  case "${1:-}" in
+    face.howdy|face-howdy)          say "face.howdy $PLUGIN_ROOT/face.howdy" ;;
+    yt-music|ytmusic)               say "yt-music $PLUGIN_ROOT/yt-music" ;;
+    netshare|abr.netshare)          say "netshare $PLUGIN_ROOT/abr.netshare" ;;
+    thinkfan|thinkfan-widget)       say "thinkfan $PLUGIN_ROOT/thinkfan" ;;
+    abr.lock|lock|lock-screen)      say "abr.lock $PLUGIN_ROOT/abr.lock" ;;
+    omarr|radar|sonar|radarr|sonarr) say "omarr $PLUGIN_ROOT/io.github.boyoyooo.omarr" ;;
+    *) return 1 ;;
+  esac
+}
+
+# resolve a --config argument to an absolute path
+resolve_config() {
+  case "$1" in
+    shell.json)   echo "${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/shell.json" ;;
+    bindings.lua) echo "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/bindings.lua" ;;
+    /*)           echo "$1" ;;
+    *)            echo "$HOME/$1" ;;
+  esac
+}
+
+sanitize() { printf '%s' "$1" | tr -cs '[:alnum:]' '-' | tr '[:upper:]' '[:lower:]'; }
+
+# ------------------------------------------------------------------ args
+id="${1:-}"; label="${2:-}"
+[ -n "$id" ]    || die "missing <id> (try: face.howdy yt-music netshare thinkfan abr.lock omarr)"
+[ -n "$label" ] || die "missing <label> (short reason, e.g. redesign pam-refactor)"
+
+CONFIGS=(); PUSH_TAG=1
+shift 2 || true
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --config)   shift || true; CONFIGS+=("$(resolve_config "$1")") ;;
+    --no-push)  PUSH_TAG=0 ;;
+    *) die "unknown argument: $1 (expect --config <file> or --no-push)" ;;
+  esac
+  shift || true
+done
+
+# ---------------------------------------------------------------- resolve
+RES="$(resolve "$id")" || die "unknown plugin id: $id"
+CANON="$(cut -d' ' -f1 <<<"$RES")"
+DIR="$(  cut -d' ' -f2- <<<"$RES")"
+LABEL="$(sanitize "$label")"
+
+[ -d "$DIR" ] || die "plugin dir not found: $DIR"
+
+say "== plugin-snapshot: $CANON ($DIR)"
+say "   label: $label"
+
+# ------------------------------------------------------------------ checks
+for c in "${CONFIGS[@]}"; do
+  [ -f "$c" ] || die "--config file not found: $c"
+done
+
+# ===================================================== git-backed branch
+if [ -d "$DIR/.git" ]; then
+  if [ -n "$(git -C "$DIR" status --porcelain)" ]; then
+    say "REFUSING: $CANON worktree is dirty — commit or stash first:" >&2
+    git -C "$DIR" status --short >&2
+    exit 2
+  fi
+
+  TAG="$CANON-pre-$LABEL-$TS"
+  git -C "$DIR" tag "$TAG"
+  say "   tag: $TAG"
+
+  REMOTE="$(git -C "$DIR" remote get-url origin 2>/dev/null || true)"
+  if [ "$PUSH_TAG" -eq 1 ] && [ -n "$REMOTE" ]; then
+    if printf '%s' "$REMOTE" | grep -qE 'abr60|oma-face-howdy|yt-music|netshare|thinkfan|abr\.lock'; then
+      git -C "$DIR" push origin "$TAG" >/dev/null 2>&1 \
+        && say "   pushed: origin $TAG" \
+        || say "   WARN: tag push failed (remote not reachable?) — tag is local"
+    elif printf '%s' "$REMOTE" | grep -qE 'github\.com|git@'; then
+      say "   tag kept local only (remote $REMOTE is not abr60-owned — e.g. omarr upstream)"
+    fi
+  else
+    say "   tag kept local only (--no-push)"
+  fi
+
+  # config bundle lives in the backups root so git history stays clean
+  if [ "${#CONFIGS[@]}" -gt 0 ]; then
+    SDIR="$BACKUP_ROOT/$CANON/snap-$TS-$LABEL/configs"
+    mkdir -p "$SDIR"
+    for c in "${CONFIGS[@]}"; do cp -a "$c" "$SDIR/"; done
+    say "   configs: $SDIR"
+  fi
+
+  say
+  say "   ROLLBACK: git -C $DIR reset --hard $TAG && omarchy restart shell"
+  exit 0
+fi
+
+# ======================================================= git-less branch
+SDIR="$BACKUP_ROOT/$CANON/snap-$TS-$LABEL"
+mkdir -p "$SDIR/plugin"
+cp -a "$DIR/." "$SDIR/plugin/"
+say "   snapshot: $SDIR (file copy — $CANON has no git worktree)"
+
+if [ "${#CONFIGS[@]}" -gt 0 ]; then
+  mkdir -p "$SDIR/configs"
+  for c in "${CONFIGS[@]}"; do cp -a "$c" "$SDIR/configs/"; done
+  say "   configs: $SDIR/configs"
+fi
+
+say
+say "   ROLLBACK: rsync -a '$SDIR/plugin/' '$DIR/' && omarchy restart shell"
+exit 0

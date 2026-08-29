@@ -6,13 +6,14 @@ description: >
   (the source of truth; NOT the stale ~/Work/spice copy), running or debugging
   setup.sh / update.sh / install.sh, editing configs that are deployed from
   config/ into ~/.config (stow + omarchy.sh), using or modifying the custom
-  bin/ scripts (comic-translate, dots-push, earbuds-status, hdd-status,
-  hdd-unmount, media-download, mp4-to-gif, mpv-launch, spotify-music-download,
+     bin/ scripts (comic-translate, dots-push, earbuds-status, hdd-status,
+  hdd-unmount, media-download, mp4-to-gif, spotify-music-download,
   write-iso), managing Omarchy shell plugins/themes/hooks that live in the repo,
   editing hypr configs managed by spice, the opencode config at
   config/opencode/opencode.json, package lists (packages.txt), the system/
   dir, or the setup pipeline. Triggers: spice, dots-push, setup.sh, update.sh,
   install.sh, "my dotfiles", stow, packages.txt, custom theme, omarchy plugins,
+  plugins.md, face.howdy, yt-music, omarr, netshare, thinkfan, abr.lock,
   hypr bindings in spice.
 ---
 
@@ -63,6 +64,9 @@ the Spice repo that provisions that state.
 - The opencode agent config at `config/opencode/` (`opencode.json`, `tui.json`,
   `dcp.jsonc`, `smart-title.jsonc`, `plugin/vision-bridge.ts`)
 - Editing the agent skills themselves (`agents/skills/spice/`)
+- Working on **our** live-installed plugins — face.howdy, yt-music, omarr,
+  netshare, thinkfan, abr.lock (see `plugins.md`)
+- Editing `~/.config/omarchy/plugins/*` QML or bin scripts
 
 **If you are about to touch a live config in `~/.config/`, that is the
 `omarchy` skill's territory. If the request is about the repo that provisions
@@ -105,6 +109,24 @@ those configs, this is the `spice` skill's territory.**
    permission. If the user asks for a commit/push without saying it, finish
    the work, show what would be committed, and wait for the exact phrase.
    This rule was added after an unsanctioned push (Aug 2026).
+9. **After ANY plugin QML change, run `omarchy restart shell`.** Editing
+   `~/.config/omarchy/plugins/*/Service.qml`, `BarWidget.qml`, `Panel.qml`
+   etc. does NOT hot-reload. The shell's reload path dead-latches silently
+   (local plugin watcher keeps firing reloads that never complete) — the OLD
+   QML keeps running with ZERO errors, so it looks like nothing was deployed.
+   This burned an entire day on face.howdy. After every edit: restart, then
+   verify with `journalctl --user | grep -i quickshell` for real QML errors.
+   See [`plugins.md`](plugins.md) for the plugin inventory and workflows.
+10. **Snapshot before anything major or dangerous.** Before a redesign,
+    core-logic refactor, privileged change (PAM/polkit/systemd/udev/pkexec),
+    deletion/teardown, or multi-file plugin work, make a snapshot: use
+    **`plugin-snapshot <id> <label>`** (`~/spice/bin/plugin-snapshot`, on
+    PATH) or plain `git tag <id>-pre-<label>-$(date +%Y%m%d-%H%M%S)` for the
+    git-backed plugins. It refuses on a dirty worktree, pushes the tag for
+    abr60-owned remotes, copies `abr.lock` (git-less) to
+    `~/plugin-backups/abr.lock/`, and supports `--config shell.json
+    bindings.lua` for config bundles. Rollback paths are in
+    [`plugins.md`](plugins.md) — "Snapshot & rollback".
 
 ## Project Structure
 
@@ -115,7 +137,7 @@ spice/                      # ~/spice — SOURCE OF TRUTH
 ├── install.sh              # Bootstrap installer (curl | bash entry point)
 ├── CONTEXT.md              # Session log: fixes, architecture notes, known issues
 ├── agents/                 # Agent skills (this skill, installed at ~/.agents/skills)
-│   └── skills/spice/       #   SKILL.md, config.md, scripts.md, setup.md
+│   └── skills/spice/       #   SKILL.md, config.md, scripts.md, setup.md, plugins.md
 ├── applications/           # Desktop entries + icons
 │   ├── cliamp.desktop
 │   └── icons/
@@ -128,7 +150,6 @@ spice/                      # ~/spice — SOURCE OF TRUTH
 │   ├── hdd-unmount
 │   ├── media-download
 │   ├── mp4-to-gif
-│   ├── mpv-launch
 │   ├── spotify-music-download
 │   └── write-iso
 ├── config/                 # Deployed to ~/.config/ (stow, omarchy = copy)
@@ -175,8 +196,7 @@ FORCE=1 bash ~/spice/install/themes/themes.sh        # force-reinstall all theme
 # Individual bin/ scripts — see scripts.md for full detail
 comic-translate        dots-push               earbuds-status
 hdd-status             hdd-unmount             media-download
-mp4-to-gif             mpv-launch              spotify-music-download
-write-iso
+mp4-to-gif             spotify-music-download  write-iso
 ```
 
 ## Topic Guides
@@ -191,6 +211,10 @@ starting:
 - [`config.md`](config.md) — config architecture: the Hyprland file chain,
   Omarchy shell layout, installed plugins, themed templates, hooks, opencode
   config, and system/
+- [`plugins.md`](plugins.md) — **our** plugins (the ones we built/customized,
+  vs the vendored ones in config.md): face.howdy, yt-music, omarr
+  (Radarr+Sonarr), netshare, thinkfan, abr.lock — how each works, git
+  remotes, the live-edit + `omarchy restart shell` workflow
 
 ## Example Requests
 

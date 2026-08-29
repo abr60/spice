@@ -162,6 +162,10 @@ scripts/tests). The 15 plugins:
 > Note: the repo stores short names, but `~/.config/omarchy/plugins/` may still
 > have author-prefixed install dirs. Installed plugin code is Omarchy's
 > territory; the repo keeps the plugin config/source it manages.
+>
+> Also see [`plugins.md`](plugins.md) — our own live-installed, heavily
+> customized plugins (face.howdy, yt-music, omarr, netshare, thinkfan,
+> abr.lock) that do NOT live in the repo.
 
 `install/plugins/` in the stale copy is not present here — plugin install
 sources were consolidated.
@@ -223,12 +227,7 @@ Stowed to `~/.config/opencode/`. Contents:
     "./plugin/vision-bridge.ts",
     "@tarquinen/opencode-dcp@latest",
     "opencode-smart-title",
-    "opencode-update-notifier",
-    "opencode-handoff",
-    "opencode-simple-notify",
-    "@slkiser/opencode-quota",
-    "opencode-command-inject@latest",
-    "harness-memory@latest"
+    "opencode-simple-notify"
   ],
   "small_model": "opencode/nemotron-3.5-lightning-free",
   "provider": { "zen": { "type": "opencode-zen" } },
@@ -244,9 +243,7 @@ Stowed to `~/.config/opencode/`. Contents:
 ```
 
 Plugins installed: `vision-bridge.ts` (local, custom), DCP (context
-pruning), smart-title, update-notifier, handoff, simple-notify, quota
-(@slkiser/opencode-quota), command-inject, harness-memory (persistent
-memory in `~/.harness-memory/memory.sqlite`).
+pruning), smart-title, simple-notify.
 
 > Changes require an opencode restart. Consult the `customize-opencode` skill
 > before editing.
