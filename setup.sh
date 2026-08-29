@@ -69,6 +69,7 @@ echo ""
 ITEMS=(
     "Packages	Install all packages from packages.txt"
     "Configs	Symlink config/ → ~/.config via Stow"
+    "Plugins	Install enabled Omarchy shell plugins from shell.json"
     "Applications	Set up desktop applications"
     "MPD + RMPC	Enable and start MPD + mpd-mpris (rmpc backend)"
     "Themes	Install community Omarchy themes"
@@ -139,6 +140,12 @@ grep -q "^Packages"     <<< "$SELECTED" && {
 grep -q "^Configs"      <<< "$SELECTED" && {
     step_header "Configs"
     run_logged "config/stow.sh" "Configs"
+}
+
+grep -q "^Plugins"      <<< "$SELECTED" && {
+    step_header "Plugins"
+    # shell.json is pasted by the Configs step above — Plugins reads it.
+    run_logged "extras/plugins.sh" "Plugins"
 }
 
 grep -q "^Applications" <<< "$SELECTED" && {

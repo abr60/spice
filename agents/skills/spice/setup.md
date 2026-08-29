@@ -24,6 +24,7 @@ Flow:
 3. Shows a **multi-select** of steps (gum choose, space to toggle):
    - `Packages` → `install/packaging/install-packages.sh`
    - `Configs` → `install/config/stow.sh` (stow symlinks + omarchy copy)
+   - `Plugins` → `install/extras/plugins.sh` (install shell plugins enabled in shell.json)
    - `Applications` → `install/config/applications.sh`
    - `MPD + RMPC` → `install/services/mpd-rmpc.sh`
    - `Themes` → `install/themes/themes.sh` (community themes)
@@ -97,11 +98,16 @@ Two scripts handle `config/` → `~/.config/`:
 
 ### `install/config/omarchy.sh`
 
-Copies `branding`, `hooks`, `plugins`, `themed`, and `shell.json` from
+Copies `branding`, `hooks`, `themed`, and `shell.json` from
 `config/omarchy/` into `~/.config/omarchy/`. It **never symlinks the whole
 omarchy dir** because Omarchy owns it at runtime (it installs/manages themes
 and plugins there). Anything else in `~/.config/omarchy/` (like `themes/`) is
 left untouched.
+
+Third-party plugins are **not** vendored in the repo anymore — they are
+installed at runtime from their upstream git repos by
+`install/extras/plugins.sh` (the `Plugins` setup step), driven by the plugin
+ids referenced in `shell.json`.
 
 > **Reminder:** after editing `config/omarchy/**` in the repo, re-run
 > `omarchy.sh` (or setup) so changes reach `~/.config/omarchy` — stow alone
