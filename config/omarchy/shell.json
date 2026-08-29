@@ -1,52 +1,84 @@
 {
   "bar": {
-    "position": "top",
-    "transparent": false,
     "centerAnchor": "omarchy.clock",
     "layout": {
-      "left": [
-        {
-          "id": "omarchy.menu"
-        },
-        {
-          "id": "quran"
-        },
-        {
-          "id": "auto-wallpaper"
-        },
-        {
-          "id": "theme-scheduler"
-        },
-        {
-          "id": "yt-music",
-          "alignment": "Left",
-          "windowHeight": 850,
-          "windowWidth": 450
-        },
-        {
-          "id": "omnimedia"
-        }
-      ],
       "center": [
         {
           "id": "omarchy.indicators"
         },
         {
-          "birthYear": 2004,
-          "format": "dddd h:mm AP",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "id": "omarchy.clock",
-          "lifeExpectancy": 90,
-          "verticalFormat": "HH\n—\nmm"
-        },
-        {
           "id": "omarchy.keyboard-layout"
         },
         {
-          "id": "omarchy.weather"
+          "id": "prettyletto.prettyzap"
+        },
+        {
+          "id": "omarchy.clock",
+          "birthYear": 2004,
+          "format": "dddd h:mm AP",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "lifeExpectancy": 90,
+          "verticalFormat": "HH\n—\nmm",
+          "showCompletedTasks": false,
+          "panelView": "month"
+        },
+        {
+          "id": "omarchy.spacer"
         },
         {
           "id": "omarchy.system-update"
+        },
+        {
+          "id": "omarchy.weather"
+        }
+      ],
+      "left": [
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "alignment": "Left",
+          "id": "yt-music",
+          "windowHeight": 850,
+          "windowWidth": 450
+        },
+        {
+          "iconOnly": true,
+          "id": "agx.screen-time"
+        },
+        {
+          "id": "omaplug"
+        },
+        {
+          "apiKeyFile": "/home/abr/.config/omarchy/arr/sonarr-apikey",
+          "app": "sonarr",
+          "id": "io.github.boyoyooo.omarr",
+          "interval": 60,
+          "label": "Sonarr",
+          "monitorMode": "all",
+          "qualityProfileId": 6,
+          "rootFolderPath": "/tv",
+          "seasonFolder": true,
+          "url": "http://localhost:8989"
+        },
+        {
+          "id": "thinkfan"
+        },
+        {
+          "id": "io.github.argusguardian.freemodels"
+        },
+        {
+          "id": "io.github.elevate08.ynab-glance"
+        },
+        {
+          "id": "io.github.silouanwright.look-elsewhere"
+        },
+        {
+          "id": "omapets",
+          "petPath": "bella"
+        },
+        {
+          "id": "io.github.thisisgm.cliampui"
         }
       ],
       "right": [
@@ -54,31 +86,60 @@
           "id": "omarchy.tray"
         },
         {
-          "id": "otoru"
+          "id": "jvb.omafocus"
         },
         {
-          "id": "herald-notification"
+          "id": "abran-labs.notification-center"
         },
         {
-          "id": "protonvpn"
+          "id": "maduki-tech.omado"
         },
         {
-          "id": "omarchy.dropbox"
+          "id": "io.github.grichard99.omaproton-vpn"
+        },
+        {
+          "darkTheme": "Yan",
+          "darkWallpaper": "/home/abr/.config/omarchy/themes/yan/backgrounds/yan.jpg",
+          "id": "andrewbacon.daynight",
+          "lightTheme": "Whitegold",
+          "lightWallpaper": "/home/abr/.config/omarchy/themes/whitegold/backgrounds/BG2.jpg"
+        },
+        {
+          "id": "omarchy.tailscale"
+        },
+        {
+          "id": "wian47.removable-drives"
+        },
+        {
+          "apiKeyFile": "/home/abr/.config/omarchy/arr/radarr-apikey",
+          "app": "radarr",
+          "id": "io.github.boyoyooo.omarr",
+          "interval": 60,
+          "label": "Radarr",
+          "qualityProfileId": 4,
+          "rootFolderPath": "/movies",
+          "url": "http://localhost:7878"
         },
         {
           "id": "omarchy.agents"
         },
         {
+          "id": "omarchy.dropbox"
+        },
+        {
           "id": "activity-monitor"
         },
         {
-          "id": "bluetooth-audio"
+          "id": "abr.network"
         },
         {
-          "id": "omarchy.network"
+          "id": "abr.netshare"
         },
         {
           "id": "omarchy.audio"
+        },
+        {
+          "id": "omarchy.bluetooth"
         },
         {
           "id": "omarchy.monitor"
@@ -88,28 +149,44 @@
           "showPercentage": false
         }
       ]
-    }
+    },
+    "position": "top",
+    "transparent": false
   },
   "idle": {
-    "screensaver": 150,
-    "lock": 300
+    "lock": 300,
+    "screensaver": 150
   },
   "plugins": [
     {
-      "id": "overview",
-      "rows": 2,
       "columns": 5,
       "hideEmptyRows": true,
+      "id": "overview",
+      "rows": 2,
+      "showIcons": false,
       "showSpecialWorkspaces": true,
-      "specialWorkspaceColumns": 5,
-      "showIcons": false
-    },
-    {
-      "id": "shell-settings"
+      "specialWorkspaceColumns": 5
     },
     {
       "id": "cursor-style"
+    },
+    {
+      "hideWhenWindowClosed": false,
+      "id": "omapets-desktop",
+      "size": 0.5
+    },
+    {
+      "id": "face.howdy"
+    },
+    {
+      "id": "abr.lock"
     }
   ],
-  "version": 1
+  "version": 1,
+  "disabledPlugins": [
+    "omarchy.lock"
+  ],
+  "cloneSourceRestores": [
+    "abr.lock"
+  ]
 }

@@ -4,7 +4,7 @@ o.bind("XF86NotificationCenter", "WhatsApp", { webapp = "https://web.whatsapp.co
 o.bind("XF86Favorites", "Calibre", { launch = "ebook-viewer '/home/$USER/Calibre Library'" })
 
 o.bind("ALT + C", "RMPC Music", "[float; center] foot --title=rmpc-full -e rmpc")
-o.bind("ALT + X", "Study",      "[float; size 700 200; center] foot --override=class=Yazi --title=Yazi -e timeout 30s yazi \"~/media/tv/Breaking Bad/Season 2/\"")
+o.bind("ALT + X", "Study",      "[float; size 700 200; center] foot --override=class=Yazi --title=Yazi -e timeout 30s yazi \"~/media/tv/Breaking Bad/Season 3/\"")
 
 o.bind("SUPER + M", "Comic (Latin)", "comic-translate lat")
 o.bind("SUPER + N", "Comic (Asian)", "comic-translate cjk")
@@ -32,6 +32,13 @@ hl.unbind("SUPER + SHIFT + CTRL + SPACE")
 o.bind("ALT + SPACE", "Theme menu", "omarchy-menu toggle theme")
 o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
 o.bind("switch:off:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+-- face.howdy: lid-open face unlock
+o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
 
 -- face.howdy: super-h overlay toggle
 o.bind("SUPER + H", "Face Howdy", "omarchy-shell shell toggle face.howdy")

@@ -1,7 +1,5 @@
 {
   "$schema": "https://opencode.ai/tui.json",
   "theme": "system",
-  "plugin": [
-    "@tarquinen/opencode-dcp@latest"
-  ]
+  "plugin": []
 }

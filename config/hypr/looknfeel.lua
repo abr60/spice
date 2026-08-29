@@ -10,7 +10,7 @@ hl.config({
 hl.config({
   decoration = {
     rounding         = 6,
-    active_opacity   = 0.92,
+    active_opacity   = 0.99,
     inactive_opacity = 0.95,
 
     blur = {

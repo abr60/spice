@@ -6,9 +6,7 @@
     "./plugin/vision-bridge.ts",
     "@tarquinen/opencode-dcp@latest",
     "opencode-smart-title",
-    "opencode-simple-notify",
-    "opencode-handoff",
-    "opencode-command-inject@latest"
+    "opencode-simple-notify"
   ],
   "small_model": "opencode/nemotron-3.5-lightning-free",
   "agent": {

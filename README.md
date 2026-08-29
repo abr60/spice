@@ -41,7 +41,6 @@ Scripts — Utility scripts in `bin/` (interactive or daemon):
 | `hdd-unmount` | ✗ | ✗ | udisksctl, lsof | Refuses when busy |
 | `media-download` | ✅ | ✗ | yt-dlp, mpc | Cookies via chromium; 5s rate-limit retry |
 | `mp4-to-gif` | ✅ | ✗ | ffmpeg, gifsicle | Two-pass palette render |
-| `mpv-launch` | ✗ | ✗ | mpv, lspci | GPU-aware hwdec selection |
 | `spotify-music-download` | ✅ | ✗ | spotifydl, mpc | Before/after snapshot move |
 | `write-iso` | ✅ | ✗ | dd, fzf, pv | Destructive to USB |
 
@@ -104,7 +103,6 @@ spice/
 │   ├── hdd-unmount
 │   ├── media-download
 │   ├── mp4-to-gif
-│   ├── mpv-launch
 │   ├── spotify-music-download
 │   └── write-iso
 ├── config/               # Deployed to ~/.config/ (stow, omarchy = copy)

@@ -44,7 +44,8 @@ omarchy-webapp-install "YT Music" "https://music.youtube.com/" ""
 # ==============================================================================
 # Media Servers & Downloads (self-hosted *arr stack)
 # ==============================================================================
-omarchy-webapp-install "Jellyfin" "http://localhost:8096/" "$ICON_DIR/jellyfin.png"
+# NOTE: Jellyfin intentionally NOT here as webapp — native desktop app
+# (flatpak org.jellyfin.JellyfinDesktop) is installed by extras/arr.sh instead.
 omarchy-webapp-install "Radarr" "http://localhost:7878/" ""
 omarchy-webapp-install "Sonarr" "http://localhost:8989/" ""
 omarchy-webapp-install "qBittorrent" "http://localhost:8080/" "$ICON_DIR/qbittorrent.png"

@@ -23,7 +23,14 @@ ensure_installed stow
 # Omarchy (it installs/manages themes at runtime), so the whole dir can't be a
 # symlink. Its content is handled separately below via omarchy.sh.
 STOW_DIRS=(
-    calibre hypr mpd mpv rmpc sioyek uwsm yazi
+    calibre
+    hypr
+    mpd
+    npm
+    rmpc
+    sioyek
+    uwsm
+    yazi
 )
 
 msg "Clearing existing config targets..."
@@ -36,7 +43,7 @@ for dir in "${STOW_DIRS[@]}"; do
 done
 
 cd "$SPICE_REAL"
-stow --target="$CONFIG_DEST" --ignore='^omarchy$' --verbose=1 config
+stow --target="$CONFIG_DEST" --ignore='^omarchy$' --ignore='^opencode$' --verbose=1 config
 ok "Stow complete"
 
 # =============================================================================

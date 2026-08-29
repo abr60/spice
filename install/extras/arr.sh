@@ -48,7 +48,11 @@ fi
 # added the user (fresh box), the current session still can't talk to the
 # daemon — bail early with clear instructions instead of dying mid-script.
 if ! docker ps &>/dev/null 2>&1; then
-    warn "Docker daemon not reachable (docker group needs a re-login)"
+    if groups | tr ' ' '\n' | grep -qx docker; then
+        warn "Docker daemon not reachable — is the docker service running? (sudo systemctl status docker)"
+    else
+        warn "Docker daemon not reachable (docker group needs a re-login)"
+    fi
     warn "Log out and back in, then re-run: bash $0"
     exit 0
 fi
@@ -103,6 +107,10 @@ for _ in $(seq 1 60); do
     fi
     sleep 5
 done
+if [[ -z $RADARR_KEY || -z $SONARR_KEY || -z $PROWLARR_KEY ]]; then
+    err "Failed to extract API keys (radarr=${RADARR_KEY:+ok} sonarr=${SONARR_KEY:+ok} prowlarr=${PROWLARR_KEY:+ok}) — containers may not have booted, check: docker compose -f $ARR_DIR/docker-compose.yml logs"
+    exit 1
+fi
 [[ -n $RADARR_KEY ]] && { printf '%s' "$RADARR_KEY" > "$KEY_DIR/radarr-apikey"; chmod 600 "$KEY_DIR/radarr-apikey"; }
 [[ -n $SONARR_KEY ]] && { printf '%s' "$SONARR_KEY" > "$KEY_DIR/sonarr-apikey"; chmod 600 "$KEY_DIR/sonarr-apikey"; }
 [[ -n $PROWLARR_KEY ]] && { printf '%s' "$PROWLARR_KEY" > "$KEY_DIR/prowlarr-apikey"; chmod 600 "$KEY_DIR/prowlarr-apikey"; }
@@ -115,33 +123,35 @@ ok "Radarr + Sonarr + Prowlarr APIs ready"
 
 # ── 5. Radarr config: root folder + download client ──────────────────────────
 RKEY="$RADARR_KEY"
-curl -sf -H "X-Api-Key: $RKEY" "http://localhost:7878/api/v3/rootfolder" \
-    | jq -e '.[] | select(.path == "/media/movies")' >/dev/null 2>&1 || \
+if ! curl -sf -H "X-Api-Key: $RKEY" "http://localhost:7878/api/v3/rootfolder" \
+    | jq -e '.[] | select(.path == "/media/movies")' >/dev/null 2>&1; then
     curl -sf -H "X-Api-Key: $RKEY" -H "Content-Type: application/json" \
-        -d '{"path":"/media/movies"}' "http://localhost:7878/api/v3/rootfolder" >/dev/null
+        -d '{"path":"/media/movies"}' "http://localhost:7878/api/v3/rootfolder" >/dev/null || warn "Radarr root folder create failed"
+fi
 ok "Radarr root folder /media/movies"
 
 if ! curl -sf -H "X-Api-Key: $RKEY" "http://localhost:7878/api/v3/downloadclient" \
         | jq -e '.[] | select(.name == "qBittorrent")' >/dev/null 2>&1; then
     curl -sf -H "X-Api-Key: $RKEY" -H "Content-Type: application/json" \
         -d "{\"enable\":true,\"name\":\"qBittorrent\",\"implementation\":\"QBittorrent\",\"configContract\":\"QBittorrentSettings\",\"fields\":[{\"name\":\"host\",\"value\":\"qbittorrent\"},{\"name\":\"port\",\"value\":8080},{\"name\":\"username\",\"value\":\"abr\"},{\"name\":\"password\",\"value\":\"$QB_PASS\"},{\"name\":\"movieCategory\",\"value\":\"radarr\"}]}" \
-        "http://localhost:7878/api/v3/downloadclient" >/dev/null
+        "http://localhost:7878/api/v3/downloadclient" >/dev/null || warn "Radarr download client create failed"
 fi
 ok "Radarr download client → qBittorrent"
 
 # ── 6. Sonarr config: root folder + download client ──────────────────────────
 SKEY="$SONARR_KEY"
-curl -sf -H "X-Api-Key: $SKEY" "http://localhost:8989/api/v3/rootfolder" \
-    | jq -e '.[] | select(.path == "/media/tv")' >/dev/null 2>&1 || \
+if ! curl -sf -H "X-Api-Key: $SKEY" "http://localhost:8989/api/v3/rootfolder" \
+    | jq -e '.[] | select(.path == "/media/tv")' >/dev/null 2>&1; then
     curl -sf -H "X-Api-Key: $SKEY" -H "Content-Type: application/json" \
-        -d '{"path":"/media/tv"}' "http://localhost:8989/api/v3/rootfolder" >/dev/null
+        -d '{"path":"/media/tv"}' "http://localhost:8989/api/v3/rootfolder" >/dev/null || warn "Sonarr root folder create failed"
+fi
 ok "Sonarr root folder /media/tv"
 
 if ! curl -sf -H "X-Api-Key: $SKEY" "http://localhost:8989/api/v3/downloadclient" \
         | jq -e '.[] | select(.name == "qBittorrent")' >/dev/null 2>&1; then
     curl -sf -H "X-Api-Key: $SKEY" -H "Content-Type: application/json" \
         -d "{\"enable\":true,\"name\":\"qBittorrent\",\"implementation\":\"QBittorrent\",\"configContract\":\"QBittorrentSettings\",\"fields\":[{\"name\":\"host\",\"value\":\"qbittorrent\"},{\"name\":\"port\",\"value\":8080},{\"name\":\"username\",\"value\":\"abr\"},{\"name\":\"password\",\"value\":\"$QB_PASS\"},{\"name\":\"tvCategory\",\"value\":\"sonarr\"}]}" \
-        "http://localhost:8989/api/v3/downloadclient" >/dev/null
+        "http://localhost:8989/api/v3/downloadclient" >/dev/null || warn "Sonarr download client create failed"
 fi
 ok "Sonarr download client → qBittorrent"
 
@@ -163,7 +173,7 @@ fi
 TAG_ID=$(curl -sf -H "X-Api-Key: $PKEY" "$PKURL/tag" | jq -r '.[] | select(.label=="flare") | .id' 2>/dev/null | head -1)
 if [[ -z $TAG_ID ]]; then
     TAG_ID=$(curl -sf -H "X-Api-Key: $PKEY" -H "Content-Type: application/json" \
-        -d '{"label":"flare"}' "$PKURL/tag" | jq -r '.id')
+        -d '{"label":"flare"}' "$PKURL/tag" | jq -r '.id // empty')
     FPROXY_ID=$(curl -sf -H "X-Api-Key: $PKEY" "$PKURL/indexerproxy" | jq -r '.[0].id // empty')
     if [[ -n $FPROXY_ID ]]; then
         curl -sf -X PUT -H "X-Api-Key: $PKEY" -H "Content-Type: application/json" \
@@ -185,7 +195,7 @@ add_indexer() { # add_indexer <name> <definitionFile> <baseUrl> <tag-id-or-empty
             '{name:$n,implementation:"Cardigann",configContract:"CardigannSettings",appProfileId:1,priority:10,enable:true,fields:[{name:"definitionFile",value:$d},{name:"baseUrl",value:$b},{name:"baseSettings.limitsUnit",value:0},{name:"torrentBaseSettings.preferMagnetUrl",value:false}]}')
     fi
     curl -sf -H "X-Api-Key: $PKEY" -H "Content-Type: application/json" \
-        -d "$body" "$PKURL/indexer" >/dev/null
+        -d "$body" "$PKURL/indexer" >/dev/null || { warn "Failed to add indexer $name ($df) — check Prowlarr logs"; return 0; }
 }
 
 add_indexer "Knaben" "knaben" "https://knaben.org/"
@@ -348,7 +358,7 @@ right.extend([sonarr, radarr])
 with open(path, "w") as f:
     json.dump(cfg, f, indent=2)
 PYEOF
-    omarchy restart shell
+    omarchy restart shell || warn "omarchy restart shell failed — run manually"
     ok "omARR widget added to bar (Radarr + Sonarr)"
 else
     ok "omARR widget already in shell.json"
@@ -376,7 +386,24 @@ systemctl --user daemon-reload
 systemctl --user enable --now media-notify.service 2>/dev/null || true
 ok "media-notify toasts enabled"
 
-# ── 13. Summary ───────────────────────────────────────────────────────────────
+# ── 13. Jellyfin Desktop app (native client; NOT a webapp) ───────────────────
+if ! command -v flatpak >/dev/null; then
+    warn "flatpak not found — installing (pkexec)"
+    pkexec pacman -S --noconfirm --needed flatpak
+fi
+if ! flatpak remotes 2>/dev/null | grep -qx flathub; then
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || \
+        pkexec flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+fi
+if flatpak list --app 2>/dev/null | grep -q org.jellyfin.JellyfinDesktop; then
+    ok "Jellyfin Desktop app already installed"
+else
+    flatpak install -y --system flathub org.jellyfin.JellyfinDesktop >/dev/null 2>&1 || \
+        flatpak install -y flathub org.jellyfin.JellyfinDesktop || warn "Jellyfin Desktop flatpak install failed"
+    ok "Jellyfin Desktop app installed"
+fi
+
+# ── 14. Summary ───────────────────────────────────────────────────────────────
 section "Stack URLs"
 cat <<EOF
   Radarr      http://localhost:7878   (movies)

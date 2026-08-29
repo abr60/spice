@@ -139,19 +139,9 @@ Interactive video → GIF converter (ffmpeg + gifsicle).
 
 ---
 
-## mpv-launch
-
-GPU-aware MPV wrapper.
-
-- **Behavior:**
-  - Detects GPU via `lspci -mm` (VGA/3D/display):
-    - NVIDIA / AMD → `hwdec=vulkan`, `gpu-api=vulkan`, `vo=gpu-next`
-    - Intel → `hwdec=vaapi`, `gpu-api=vulkan` (falls back to `auto` hwdec if
-      `vainfo` shows no VAProfile)
-    - Unknown / no lspci → safe `auto` defaults
-  - Strips trailing empty arguments; `mpv-launch` with no args shows `mpv --version`.
-- **Debug:** `MPV_DEBUG=1 mpv-launch ...` prints detection details to stderr.
-- **Usage:** `mpv-launch [file/URL ...]`.
+> `mpv-launch` was removed 2026-08-23 — `mpv.conf` now uses `hwdec=auto-safe` + `gpu-api=auto` (portable, upstream-recommended). No wrapper needed; `mpv --hwdec=help` covers all GPUs. Former wrapper duplicated `mpv.conf` and was never wired to any keybind/desktop entry.
+>
+> Since 2026-08-29 the mpv config lives in its own repo — `github.com/abr60/mpv-config` — not in spice. The live copy is a git worktree at `~/.config/mpv` (edit/push there). Fresh installs clone it via `bash ~/spice/install/extras/mpv.sh` (also offered in the setup wizard as `MPV Config`).
 
 ---
 
@@ -205,6 +195,5 @@ Interactive **ISO → USB** writer.
 | `hdd-unmount` | ✗ | ✗ | udisksctl, lsof | Refuses when busy |
 | `media-download` | ✅ | ✗ | yt-dlp, mpc | Cookies via chromium; 5s rate-limit retry |
 | `mp4-to-gif` | ✅ | ✗ | ffmpeg, gifsicle | Two-pass palette render |
-| `mpv-launch` | ✗ | ✗ | mpv, lspci | GPU-aware hwdec selection |
 | `spotify-music-download` | ✅ | ✗ | spotifydl, mpc | Before/after snapshot move |
 | `write-iso` | ✅ | ✗ | dd, fzf, pv | Destructive to USB |

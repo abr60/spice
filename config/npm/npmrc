@@ -1,0 +1,2 @@
+prefix=${HOME}/.local
+allow-scripts=@doist/todoist-cli
