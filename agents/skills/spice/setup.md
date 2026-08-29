@@ -30,6 +30,7 @@ Flow:
    - `Fonts` → `install/config/fonts.sh`
    - `Zsh` → `install/config/zsh.sh`
    - `GPU Drivers` → `install/extras/gpu-driver.sh` (sets `NEEDS_REBOOT=true`)
+   - `MPV Config` → `install/extras/mpv.sh` (clones `abr60/mpv-config` to `~/.config/mpv`)
    - `Howdy` → `install/extras/howdy.sh` (face recognition)
    - `Thinkfan` → `install/extras/thinkfan.sh` (ThinkPad fan control)
    - `EasyEffects` → `install/extras/easyeffects.sh` (audio presets)
@@ -137,6 +138,7 @@ left untouched.
 | Extras script | What it does | Side effects |
 |---------------|--------------|--------------|
 | `gpu-driver.sh` | Installs drivers for detected hardware | Reboot recommended |
+| `mpv.sh` | Clone `abr60/mpv-config` to `~/.config/mpv` (idempotent HTTPS) | none |
 | `howdy.sh` | Face recognition for sudo/login | `[tag:howdy]` packages |
 | `thinkfan.sh` | ThinkPad fan curve control | `[tag:thinkfan]` packages |
 | `easyeffects.sh` | Audio presets + plugins | `[tag:easyeffects]` packages |

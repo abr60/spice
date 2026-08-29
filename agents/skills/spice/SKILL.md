@@ -156,7 +156,7 @@ spice/                      # ~/spice — SOURCE OF TRUTH
 │   ├── hypr/               #   Hyprland config (hyprland.lua + requires)
 │   ├── omarchy/            #   shell.json, plugins, hooks, themed, branding
 │   ├── opencode/           #   opencode.json, tui.json, dcp.jsonc, smart-title.jsonc, plugin/
-│   ├── calibre/ mpd/ mpv/ rmpc/ sioyek/ uwsm/ yazi/ miscellaneous/
+│   ├── calibre/ mpd/ rmpc/ sioyek/ uwsm/ yazi/ miscellaneous/
 ├── install/                # Installation pipeline (see setup.md)
 │   ├── config/             #   stow.sh, omarchy.sh, applications.sh, fonts.sh, pam.sh, zsh.sh
 │   ├── extras/             #   gpu-driver.sh, howdy.sh, thinkfan.sh, easyeffects.sh, waydroid.sh

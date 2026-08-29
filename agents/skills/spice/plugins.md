@@ -47,8 +47,9 @@ hold the patched version (11 `howdyConfigured` refs) as a manual baseline.
 - Do NOT rely on `omarchy plugin update` / hot reload to pick up QML changes
   — see the dead-latch note above. After a restart the plugin loads fresh and
   journal shows any real QML error (`journalctl --user | grep quickshell`).
-- face.howdy rollback markers: tag `pre-redesign-ac903c7` (pushed + local),
-  plus file backups in `~/face-howdy-backups/.backup-pre-redesign/`.
+- face.howdy rollback marker: tag `pre-redesign-ac903c7` (pushed + local).
+  The old `~/face-howdy-backups/` dir was deleted `Aug 29` — redundant, its
+  contents are byte-identical to the tag (use `plugin-snapshot` today).
 - omarr is upstream-tracked; config lives in shell.json (below), code edits
   stay local unless you push to boyoyooo's fork.
 
@@ -78,7 +79,8 @@ on PATH, deployed with dotfiles):
 Storage: `~/plugin-backups/<id>/snap-<ts>-<label>/` — deliberately OUTSIDE
 the plugin dirs, because plugin dirs get wiped on re-add/clone/reconcile.
 First precedent: the face.howdy redesign used tag
-`pre-redesign-ac903c7` + dir `~/face-howdy-backups/.backup-pre-redesign/`.
+`pre-redesign-ac903c7` (the file backup dir `~/face-howdy-backups/` was
+archived `Aug 29` — contents matched the tag byte-for-byte).
 
 Rollback procedure (docs-level, per plugin type):
 
