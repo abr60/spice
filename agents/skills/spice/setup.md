@@ -109,6 +109,11 @@ installed at runtime from their upstream git repos by
 `install/extras/plugins.sh` (the `Plugins` setup step), driven by the plugin
 ids referenced in `shell.json`.
 
+`shell.json` stores machine-specific paths (arr api-key files, theme
+wallpapers) as username-agnostic `__HOME__` tokens. `omarchy.sh` expands
+`__HOME__` → `$HOME` only when pasting it live, so the repo installs under any
+username; the live `~/.config/omarchy/shell.json` always holds real paths.
+
 > **Reminder:** after editing `config/omarchy/**` in the repo, re-run
 > `omarchy.sh` (or setup) so changes reach `~/.config/omarchy` — stow alone
 > does not cover omarchy.

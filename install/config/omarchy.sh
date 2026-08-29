@@ -8,6 +8,9 @@
 # in — branding, hooks, themed, shell.json — leaving everything else
 # (like themes/ and plugins/) untouched. Plugins are NOT vendored here anymore:
 # Omarchy installs/manages them at runtime in ~/.config/omarchy/plugins.
+#
+# shell.json stores any machine-specific paths as __HOME__ tokens so the repo
+# installs under any username; they are expanded to $HOME when pasted live.
 # =============================================================================
 
 set -euo pipefail
@@ -31,6 +34,10 @@ for item in branding hooks themed shell.json; do
     fi
     if [[ -d "$src" ]]; then
         cp -rf "$src/." "$OMARCHY_DEST/$item"
+    elif [[ "$item" == "shell.json" ]]; then
+        # shell.json stores paths as username-agnostic __HOME__ tokens; expand
+        # them to the real home dir only when pasting live.
+        sed "s|__HOME__|$HOME|g" "$src" > "$OMARCHY_DEST/$item"
     else
         cp -f "$src" "$OMARCHY_DEST/$item"
     fi

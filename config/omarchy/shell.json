@@ -50,7 +50,7 @@
           "id": "omaplug"
         },
         {
-          "apiKeyFile": "/home/abr/.config/omarchy/arr/sonarr-apikey",
+          "apiKeyFile": "__HOME__/.config/omarchy/arr/sonarr-apikey",
           "app": "sonarr",
           "id": "io.github.boyoyooo.omarr",
           "interval": 60,
@@ -99,10 +99,10 @@
         },
         {
           "darkTheme": "Yan",
-          "darkWallpaper": "/home/abr/.config/omarchy/themes/yan/backgrounds/yan.jpg",
+          "darkWallpaper": "__HOME__/.config/omarchy/themes/yan/backgrounds/yan.jpg",
           "id": "andrewbacon.daynight",
           "lightTheme": "Whitegold",
-          "lightWallpaper": "/home/abr/.config/omarchy/themes/whitegold/backgrounds/BG2.jpg"
+          "lightWallpaper": "__HOME__/.config/omarchy/themes/whitegold/backgrounds/BG2.jpg"
         },
         {
           "id": "omarchy.tailscale"
@@ -111,7 +111,7 @@
           "id": "wian47.removable-drives"
         },
         {
-          "apiKeyFile": "/home/abr/.config/omarchy/arr/radarr-apikey",
+          "apiKeyFile": "__HOME__/.config/omarchy/arr/radarr-apikey",
           "app": "radarr",
           "id": "io.github.boyoyooo.omarr",
           "interval": 60,
