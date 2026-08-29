@@ -77,7 +77,6 @@ ITEMS=(
     "Zsh	Set up Zsh shell"
     "GPU Drivers	Install drivers for your hardware"
     "MPV Config	Clone abr60/mpv-config to ~/.config/mpv"
-    "Howdy	Face recognition for sudo/login"
     "Thinkfan	Fan curve control (ThinkPad)"
     "EasyEffects	Audio presets and plugins"
     "Waydroid	Android container"
@@ -182,13 +181,6 @@ grep -q "^GPU Drivers"  <<< "$SELECTED" && {
 grep -q "^MPV Config"   <<< "$SELECTED" && {
     step_header "MPV Config"
     run_logged "extras/mpv.sh" "MPV Config"
-}
-
-grep -q "^Howdy"        <<< "$SELECTED" && {
-    step_header "Howdy"
-    run_logged "extras/howdy-deploy.sh" "Howdy (deploy commands)"
-    # Run the actual Howdy setup (same script that was deployed as omarchy command)
-    run_logged "extras/howdy-setup.sh" "Howdy (face recognition)"
 }
 
 grep -q "^Thinkfan"     <<< "$SELECTED" && {

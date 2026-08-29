@@ -36,9 +36,5 @@ o.bind("switch:off:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry
 
 o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
 
--- face.howdy: lid-open face unlock
-o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
 o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
 
--- face.howdy: super-h overlay toggle
-o.bind("SUPER + H", "Face Howdy", "omarchy-shell shell toggle face.howdy")

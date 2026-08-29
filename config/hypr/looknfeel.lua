@@ -1,6 +1,6 @@
 hl.config({
   general = {
-    layout      = "master",
+    layout      = "scrolling",
     gaps_in     = 2,
     gaps_out    = 2,
     border_size = 2,
