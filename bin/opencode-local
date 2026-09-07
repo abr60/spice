@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+export OPENCODE_CONFIG="${OPENCODE_CONFIG:-$HOME/spice/config/opencode/opencode.local.json}"
+exec opencode "$@"

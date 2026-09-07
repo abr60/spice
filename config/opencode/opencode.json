@@ -2,38 +2,44 @@
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": false,
   "default_agent": "build",
+  "small_model": "ollama/qwen2.5-coder:3b",
+  "instructions": [
+    "AGENTS.md"
+  ],
+  "env": {
+    "VISION_API_URL": "http://127.0.0.1:11434/v1/chat/completions",
+    "VISION_API_KEY": "ollama",
+    "VISION_MODEL": "minicpm-v4.6:1b"
+  },
   "plugin": [
     "./plugin/vision-bridge.ts",
     "@tarquinen/opencode-dcp@latest",
     "opencode-smart-title",
     "opencode-simple-notify"
   ],
-  "small_model": "opencode/nemotron-3.5-lightning-free",
   "agent": {
     "plan": {
       "mode": "primary",
-      "model": "opencode/big-pickle",
       "description": "Read-only planning and analysis agent",
       "permission": {
         "edit": "deny",
         "bash": "ask"
       },
-      "prompt": "If the user attaches an image or references an image file, you MUST use the task tool to launch the vision subagent (subagent_type: vision) and have it produce a detailed text description of the image. Then proceed using that description."
+      "prompt": "Pasted images arrive with a vision-model description already in context (vision-bridge plugin sends the real pixels to a local vision model automatically) \u2014 use it directly, do NOT launch the vision subagent for them. Only use the task tool with the vision subagent (subagent_type: vision) for image files the bridge could not process, or when the user explicitly asks for a detailed visual analysis."
     },
     "build": {
       "mode": "primary",
-      "model": "opencode/muse-spark-1.2-contributor-free",
-      "description": "Fast execution and code writing agent (Muse Spark 1.2 Free)",
+      "description": "Fast execution and code writing agent",
       "permission": {
         "edit": "allow",
         "bash": "ask"
       },
-      "prompt": "Be concise. No preamble."
+      "prompt": "Be concise. No preamble. Work silently \u2014 don't narrate steps. When done, report briefly (what changed, how to verify). Delegate to subagents when fitting: explore for codebase search, quickfix for trivial edits, vision for images."
     },
     "quickfix": {
       "mode": "subagent",
-      "model": "opencode/nemotron-3.5-lightning-free",
       "description": "Handles small, simple tasks like minor file edits and quick fixes",
+      "model": "ollama/qwen2.5-coder:3b",
       "permission": {
         "edit": "allow",
         "bash": "allow"
@@ -41,13 +47,13 @@
     },
     "explore": {
       "mode": "subagent",
-      "model": "opencode/nemotron-3.5-lightning-free",
-      "description": "Fast codebase exploration and search agent"
+      "description": "Fast codebase exploration and search agent",
+      "model": "ollama/qwen2.5-coder:3b"
     },
     "vision": {
       "mode": "subagent",
-      "model": "opencode/mimo-v2.5-free",
       "description": "Analyzes images and produces detailed text descriptions for text-only models",
+      "model": "ollama/minicpm-v4.6:1b",
       "prompt": "You are a meticulous visual analyst. When given an image, describe it in exhaustive detail: visible text, UI elements, layout, colors, code/screenshots, diagrams, tables, error messages. Output ONLY a complete text description. No commentary."
     }
   },
@@ -56,11 +62,23 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama",
       "options": {
-        "baseURL": "http://localhost:11434/v1"
+        "baseURL": "http://127.0.0.1:11434/v1"
       },
       "models": {
-        "qwen2.5-coder:7b-16k": {
-          "name": "qwen2.5-coder:7b-16k"
+        "qwen2.5-coder:3b": {
+          "name": "qwen2.5-coder:3b"
+        },
+        "qwen2.5-coder:7b": {
+          "name": "qwen2.5-coder:7b"
+        },
+        "minicpm-v4.6:1b": {
+          "name": "minicpm-v4.6:1b"
+        },
+        "qwen2.5vl:3b": {
+          "name": "qwen2.5vl:3b"
+        },
+        "qwen2.5vl:7b": {
+          "name": "qwen2.5vl:7b"
         }
       }
     }
