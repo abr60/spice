@@ -32,7 +32,10 @@
       "description": "Fast execution and code writing agent",
       "permission": {
         "edit": "allow",
-        "bash": "ask"
+        "bash": "allow",
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       },
       "prompt": "Be concise. No preamble. Work silently \u2014 don't narrate steps. When done, report briefly (what changed, how to verify). Delegate to subagents when fitting: explore for codebase search, quickfix for trivial edits, vision for images."
     },
@@ -42,7 +45,10 @@
       "model": "ollama/qwen2.5-coder:3b",
       "permission": {
         "edit": "allow",
-        "bash": "allow"
+        "bash": "allow",
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       }
     },
     "explore": {
@@ -53,7 +59,7 @@
     "vision": {
       "mode": "subagent",
       "description": "Analyzes images and produces detailed text descriptions for text-only models",
-      "model": "ollama/minicpm-v4.6:1b",
+      "model": "opencode/mimo-v2.5-free",
       "prompt": "You are a meticulous visual analyst. When given an image, describe it in exhaustive detail: visible text, UI elements, layout, colors, code/screenshots, diagrams, tables, error messages. Output ONLY a complete text description. No commentary."
     }
   },
@@ -63,23 +69,6 @@
       "name": "Ollama",
       "options": {
         "baseURL": "http://127.0.0.1:11434/v1"
-      },
-      "models": {
-        "qwen2.5-coder:3b": {
-          "name": "qwen2.5-coder:3b"
-        },
-        "qwen2.5-coder:7b": {
-          "name": "qwen2.5-coder:7b"
-        },
-        "minicpm-v4.6:1b": {
-          "name": "minicpm-v4.6:1b"
-        },
-        "qwen2.5vl:3b": {
-          "name": "qwen2.5vl:3b"
-        },
-        "qwen2.5vl:7b": {
-          "name": "qwen2.5vl:7b"
-        }
       }
     }
   }

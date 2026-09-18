@@ -111,35 +111,35 @@
   },
   "geometry-of-import-foreign-geometry": {
     "frame_geometry": {
-      "height": 680,
-      "width": 695,
+      "height": 864,
+      "width": 1536,
       "x": 0,
       "y": 0
     },
-    "full_screened": false,
+    "full_screened": true,
     "geometry": {
-      "height": 680,
-      "width": 695,
+      "height": 864,
+      "width": 1536,
       "x": 0,
       "y": 0
     },
     "maximized": true,
     "normal_geometry": {
-      "height": 680,
-      "width": 695,
+      "height": 864,
+      "width": 1536,
       "x": 0,
       "y": 0
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAAAAAAAAAAAArYAAAKnAAAAAAAAAAAAAAK2AAACpwAAAAACAAAABQAAAAAAAAAAAAAAArYAAAKn"
+      "__value__": "AdnQywADAAAAAAAAAAAAAAAABf8AAANfAAAAAAAAAAAAAAX/AAADXwAAAAACBAAABgAAAAAAAAAAAAAABf8AAANf"
     },
     "screen": {
       "depth": 32,
       "device_pixel_ratio": 2.0,
       "geometry_in_logical_pixels": {
-        "height": 720,
-        "width": 1280,
+        "height": 864,
+        "width": 1536,
         "x": 0,
         "y": 0
       },
@@ -149,12 +149,12 @@
       "name": "eDP-1",
       "serial": "",
       "size_in_logical_pixels": {
-        "height": 720,
-        "width": 1280
+        "height": 864,
+        "width": 1536
       },
       "virtual_geometry": {
-        "height": 720,
-        "width": 1280,
+        "height": 864,
+        "width": 1536,
         "x": 0,
         "y": 0
       }
@@ -162,15 +162,15 @@
   },
   "geometry-of-main_window_geometry": {
     "frame_geometry": {
-      "height": 864,
-      "width": 1536,
+      "height": 409,
+      "width": 760,
       "x": 484,
       "y": 92
     },
-    "full_screened": true,
+    "full_screened": false,
     "geometry": {
-      "height": 864,
-      "width": 1536,
+      "height": 409,
+      "width": 760,
       "x": 484,
       "y": 92
     },
@@ -183,7 +183,7 @@
     },
     "qt": {
       "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAHkAAAAXAAAB+MAAAO7AAAB5AAAAFwAAAfjAAADuwAAAAACBAAABgAAAAHkAAAAXAAAB+MAAAO7"
+      "__value__": "AdnQywADAAAAAAHkAAAAXAAABNsAAAH0AAAB5AAAAFwAAAfjAAADuwAAAAACAAAABgAAAAHkAAAAXAAABNsAAAH0"
     },
     "screen": {
       "depth": 32,
@@ -213,7 +213,7 @@
   },
   "main_window_state": {
     "__class__": "bytearray",
-    "__value__": "AAAA/wAAAAD9AAAABAAAAAAAAACBAAADCfwCAAAABfsAAAAkAGYAaQBsAGUAcwAtAGIAcgBvAHcAcwBlAHIALQBkAG8AYwBrAQAAAD8AAAMJAAAAWwD////7AAAAHgB0AG8AYwAtAHYAaQBlAHcAZQByAC0AZABvAGMAawgAAAAA/////wAAAFsA////+wAAACAAdABlAHgAdAAtAHMAZQBhAHIAYwBoAC0AZABvAGMAawgAAAAA/////wAAAIEA////+wAAACAAYwBoAGUAYwBrAHAAbwBpAG4AdABzAC0AZABvAGMAawgAAAAA/////wAAAI4A////+wAAACYAcwBhAHYAZQBkAC0AcwBlAGEAcgBjAGgAZQBzAC0AZABvAGMAawgAAAAA/////wAAAiQA////AAAAAQAAASsAAAMJ/AIAAAAC+wAAABgAcAByAGUAdgBpAGUAdwAtAGQAbwBjAGsBAAAAPwAAAwkAAABVAP////sAAAAaAGwAaQB2AGUALQBjAHMAcwAtAGQAbwBjAGsIAAAAAP////8AAABbAP///wAAAAIAAAAAAAAAAPwBAAAAAfsAAAAeAGMAaABlAGMAawAtAGIAbwBvAGsALQBkAG8AYwBrCAAAAAD/////AAAAkAD///8AAAADAAAAAAAAAAD8AQAAAAH7AAAAHABpAG4AcwBwAGUAYwB0AG8AcgAtAGQAbwBjAGsIAAAAAP////8AAAA2AP///wAABEgAAAMJAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAMAAAAUAGcAbABvAGIAYQBsAC0AYgBhAHIBAAAAAP////8AAAAAAAAAAAAAABIAdABvAG8AbABzAC0AYgBhAHIBAAABJv////8AAAAAAAAAAAAAABYAcABsAHUAZwBpAG4AcwAtAGIAYQByAAAAAAD/////AAAAAAAAAAA="
+    "__value__": "AAAA/wAAAAD9AAAABAAAAAAAAABGAAABQvwCAAAABfsAAAAkAGYAaQBsAGUAcwAtAGIAcgBvAHcAcwBlAHIALQBkAG8AYwBrAQAAAD8AAAFCAAAAWwD////7AAAAHgB0AG8AYwAtAHYAaQBlAHcAZQByAC0AZABvAGMAawgAAAAA/////wAAAFsA////+wAAACAAdABlAHgAdAAtAHMAZQBhAHIAYwBoAC0AZABvAGMAawgAAAAA/////wAAAIEA////+wAAACAAYwBoAGUAYwBrAHAAbwBpAG4AdABzAC0AZABvAGMAawgAAAAA/////wAAAI4A////+wAAACYAcwBhAHYAZQBkAC0AcwBlAGEAcgBjAGgAZQBzAC0AZABvAGMAawgAAAAA/////wAAAiQA////AAAAAQAAAKYAAAFC/AIAAAAC+wAAABgAcAByAGUAdgBpAGUAdwAtAGQAbwBjAGsBAAAAPwAAAUIAAABVAP////sAAAAaAGwAaQB2AGUALQBjAHMAcwAtAGQAbwBjAGsIAAAAAP////8AAABbAP///wAAAAIAAAAAAAAAAPwBAAAAAfsAAAAeAGMAaABlAGMAawAtAGIAbwBvAGsALQBkAG8AYwBrCAAAAAD/////AAAAkAD///8AAAADAAAAAAAAAAD8AQAAAAH7AAAAHABpAG4AcwBwAGUAYwB0AG8AcgAtAGQAbwBjAGsIAAAAAP////8AAAA2AP///wAAAgAAAAFCAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAMAAAAUAGcAbABvAGIAYQBsAC0AYgBhAHIBAAAAAP////8AAAAAAAAAAAAAABIAdABvAG8AbABzAC0AYgBhAHIBAAABJv////8AAAAAAAAAAAAAABYAcABsAHUAZwBpAG4AcwAtAGIAYQByAAAAAAD/////AAAAAAAAAAA="
   },
   "recent-books": [
     "/home/abr/Dropbox/Apps/Books/Reverend_Insanity.epub"

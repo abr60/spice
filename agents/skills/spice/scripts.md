@@ -184,6 +184,25 @@ Interactive **ISO → USB** writer.
 
 ---
 
+## android-flash
+
+Toolkit for flashing/observing phones over adb / fastboot / OrangeFox (TWRP-family), device-generic (A/B + A-only, init_boot vs boot-holds-recovery, scoped for toekomstig reuse beyond spes). Lives in `bin/android-flash/` (on `PATH` via `config/uwsm/env.d/user-path`); entry point `bin/android-flash/spes` is a subcommand dispatcher like `git`.
+
+- **Subcommands:**
+  - `spes status` — device identity blob: state (`system`/`recovery`/`fastboot`/`none`/`unauthorized`/`offline`), slot (`_a`/`_b` or none), topology (`A/B` vs `A-only`, `init_boot` partition present, `recovery`-block present), codename/model/Android/patch level, root (`su`), OrangeFox/TWRP version, APatch package (`me.bmax.apatch`), GMS version. Safe, no confirmation — just reports and suggests a next step.
+  - `spes to-recovery` / `to-fastboot` / `to-system` — boot-mode jumps (`adb reboot recovery` / `bootloader` / `fastboot reboot` vs `adb reboot` from recovery). No big warning — `to-recovery`/`to-fastboot` are mild, `to-system` is a plain reboot; each prints what it sent and what to `spes status` next.
+  - `spes push <file> [--to <folder>]` — `adb push` into a **dedicated folder** named after the task: `/sdcard/<folder>/<basename>` (never scattered `/sdcard/Download/` chaos). Works in `system` and `recovery`; makes the target dir on-device first (mkdir), falls back to `/data/local/tmp` + `su cp` for permission-odd recoveries. Prints sha256 + `ls` of the target; "Next: open Files / OrangeFox under `/sdcard/<folder>/`".
+  - `spes apatch-push <boot.img>` — the APatch boot-push + app-launcher: sha-check, then **system**: checks `me.bmax.apatch` installed; if absent, hunts `~/Downloads/CustomRoms/APatch_*.apk` and asks `Install now? [y/N]` → `adb install`. Pushes to **dedicated** `/sdcard/apatch/boot.img` (not `Download`, per request), verifies, then `am start -n me.bmax.apatch/.ui.MainActivity`; tells the phone task "tap PATCH and pick the pushed file". **recovery**: push-only branch (pm/am don't exist there; scripts says why and skips, then hints `spes to-system → apatch-push`).
+  - `spes flash-recovery <img> [--partition <name>]` — **dangerous** → big ⚠️ + typed `'yes'` guard. `fastboot flash <partition> <img>`. Default partition auto-detected: `boot_<slot>` on A/B (spes: boot holds recovery, no `init_boot`), plain `boot`/`recovery`/`init_boot` for other topologies; override with `--partition`.
+  - `spes flash-zip <zip> [--expect <sha256>]` — ROM / GApps / firmware zips (post-wipe "system is empty" context) → **pushes to `/sdcard/` root** (Android home, not a subfolder — your rule), sha256-verified, ls-verified, then **manual** `OrangeFox → Install → select /sdcard/<zip>` hint. No `twrp install` automagic — you tap (push + manual tap, chosen). Filename hint logging, "Next:" ordering (e.g. ROM → Firmware → GApps).
+  - `spes extract-boot [zip]` — delegates to `bin/android-flash/extract-boot` (the payload.bin → `boot.img` extractor with `ROM/boot-img` + `ROM/unbrick` organized tree).
+  - `spes setup` — quick dep check (payload-dumper-go-bin, android-tools, unzip, optional fzf) with yay/paru/pacman `Install now? [y/N]` prompt (same pattern as `extract-boot`).
+- **Shared helpers:** `spes-lib.sh` (`spes_state`, `spes_wait_for`, `device_info`/`print_device_info`, `sha_check`, `confirm_danger`, `ensure_tools`). Topology detection uses `ro.build.ab_update` / `ro.boot.slot_suffix`, `su ls /dev/block/by-name/init_boot` and `/recovery`, and `fastboot getvar current-slot` / `partition-type:init_boot`.
+- **Files:** `bin/android-flash/spes`, `bin/android-flash/spes-lib.sh`, `bin/android-flash/extract-boot` (moved from `bin/extract-boot`). Mirror copy `~/Downloads/CustomRoms/extract-boot.sh` is not part of the repo checkout; sync if you duplicate it.
+- **PATH:** see `config/uwsm/env.d/user-path`.
+
+---
+
 ## Quick Reference Table
 
 | Script | Interactive | Daemon | Deps (notable) | Key detail |
@@ -197,3 +216,4 @@ Interactive **ISO → USB** writer.
 | `mp4-to-gif` | ✅ | ✗ | ffmpeg, gifsicle | Two-pass palette render |
 | `spotify-music-download` | ✅ | ✗ | spotifydl, mpc | Before/after snapshot move |
 | `write-iso` | ✅ | ✗ | dd, fzf, pv | Destructive to USB |
+| `android-flash/spes` (+ `spes-lib.sh`, `extract-boot`) | ✅ | ✗ | adb, fastboot, payload-dumper-go, sha256sum, fzf | Device-generic phone toolkit; flash-zip → push to /sdcard/ root, apatch-push → /sdcard/apatch/ |

@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+#
+# ventoy-setup — install Ventoy to a USB drive, ready for manual ISO copy.
+#
+# Usage:
+#   ventoy-setup [OPTIONS] [/dev/sdX]
+#
+# Options:
+#   -f, --force    force reinstall even if Ventoy is already present
+#   -y, --yes      skip confirmation prompts (still shows target first)
+#   -h, --help     show this help
+#
+# Portable by design: works with or without gum, udisksctl, curl/wget.
+# Only hard requirements: bash, lsblk, tar, sudo, and one of curl/wget.
+#
+# After this script finishes, copy your .iso files onto the Ventoy
+# partition yourself, eject, and boot from USB.
+
+set -euo pipefail
+
+# ---------------------------------------------------------------- helpers ---
+
+# Use spice helpers (gum UI) when available, plain echo otherwise.
+# shellcheck disable=SC1091
+if [ -f "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/helpers.sh" ] \
+  && command -v gum &>/dev/null; then
+  source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/helpers.sh"
+  _UI=gum
+else
+  _UI=plain
+  log_header()  { echo; echo "=== $1 ==="; echo; }
+  log_step()    { echo; echo "▸ $1"; }
+  log_info()    { echo "  → $1"; }
+  log_success() { echo "  ✓ $1"; }
+  log_error()   { echo "  ✗ $1" >&2; }
+  log_detail()  { echo "    › $1"; }
+  ask_yes_no()  { local p="$1"; read -rp "$p [y/N] " a; [[ "$a" =~ ^[Yy]$ ]]; }
+fi
+
+die() { log_error "$1"; exit "${2:-1}"; }
+
+need() {
+  command -v "$1" &>/dev/null || die "Required tool missing: $1"
+}
+
+# ------------------------------------------------------------------ args ---
+
+FORCE=0
+YES=0
+TARGET=""
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -f|--force) FORCE=1; shift ;;
+    -y|--yes)   YES=1; shift ;;
+    -h|--help)  sed -n '2,17p' "$0" | sed 's/^# \?//'; exit 0 ;;
+    -*)         die "Unknown option: $1 (try --help)" ;;
+    *)          TARGET="$1"; shift ;;
+  esac
+done
+
+need lsblk
+need tar
+need sudo
+if command -v curl &>/dev/null; then
+  DL="curl -fsSL"
+elif command -v wget &>/dev/null; then
+  DL="wget -qO-"
+else
+  die "Need either curl or wget to download Ventoy."
+fi
+
+[ "$(id -u)" -eq 0 ] && die "Do not run as root — sudo is used where needed."
+
+# ---------------------------------------------------------------- detect ---
+
+# List candidate USB/removable disks (whole disks only).
+list_usb_disks() {
+  lsblk -d -n -o NAME,TRAN,RM,SIZE,MODEL 2>/dev/null \
+    | awk '$2=="usb" || $3=="1" {print "/dev/"$1" "$4" "$5" "$6" "$7}'
+}
+
+pick_target() {
+  if [ -n "$TARGET" ]; then
+    [[ "$TARGET" == /dev/* ]] || TARGET="/dev/$TARGET"
+    [ -b "$TARGET" ] || die "$TARGET is not a block device."
+    echo "$TARGET"
+    return
+  fi
+
+  mapfile -t cands < <(list_usb_disks)
+  [ "${#cands[@]}" -gt 0 ] || die "No USB/removable drive found. Plug one in and retry."
+
+  if [ "${#cands[@]}" -eq 1 ]; then
+    echo "${cands[0]%% *}"
+    return
+  fi
+
+  log_info "Multiple removable drives found:"
+  local i=1
+  for c in "${cands[@]}"; do echo "  [$i] $c"; i=$((i + 1)); done
+  local n
+  read -rp "Pick a drive [1-${#cands[@]}]: " n
+  [[ "$n" =~ ^[0-9]+$ ]] && [ "$n" -ge 1 ] && [ "$n" -le "${#cands[@]}" ] \
+    || die "Invalid selection."
+  echo "${cands[$((n - 1))]%% *}"
+}
+
+TARGET="$(pick_target)"
+
+# Safety: refuse internal-looking drives unless explicitly passed with --force.
+if [ -z "${TARGET_OVERRIDE:-}" ]; then
+  :
+fi
+TRAN="$(lsblk -d -n -o TRAN "$TARGET" 2>/dev/null | tr -d ' ')"
+RM="$(lsblk -d -n -o RM "$TARGET" 2>/dev/null | tr -d ' ')"
+if [ "$TRAN" != "usb" ] && [ "$RM" != "1" ] && [ "$FORCE" -ne 1 ]; then
+  lsblk -d -o NAME,SIZE,MODEL,TRAN "$TARGET"
+  die "$TARGET does not look like a USB/removable drive. Pass it explicitly with --force if you really mean it."
+fi
+
+MODEL="$(lsblk -d -n -o MODEL "$TARGET" | xargs)"
+SIZE="$(lsblk -d -n -o SIZE "$TARGET" | xargs)"
+
+log_header "Ventoy Setup"
+log_detail "Target : $TARGET"
+log_detail "Model  : ${MODEL:-unknown}"
+log_detail "Size   : $SIZE"
+
+if [ "$YES" -ne 1 ]; then
+  ask_yes_no "ALL DATA on $TARGET will be ERASED. Continue?" \
+    || die "Aborted by user."
+fi
+
+# Already has Ventoy? -i refuses, so check first for a clean message.
+if lsblk -n -o LABEL "$TARGET" 2>/dev/null | grep -qiE '^(ventoy|vtoyefi)$'; then
+  if [ "$FORCE" -ne 1 ]; then
+    die "Ventoy already installed on $TARGET. Re-run with --force to reinstall."
+  fi
+fi
+
+# ---------------------------------------------------------------- unmount ---
+
+log_step "Unmounting partitions on $TARGET"
+while read -r part mp; do
+  [ -n "$mp" ] || continue
+  log_info "Unmounting $part ($mp)"
+  if command -v udisksctl &>/dev/null; then
+    udisksctl unmount -b "$part" --no-user-interaction 2>/dev/null \
+      || sudo umount "$part"
+  else
+    sudo umount "$part"
+  fi
+done < <(lsblk -n -r -o NAME,MOUNTPOINT "$TARGET" 2>/dev/null \
+  | awk '$2!="" {print "/dev/"$1" "$2}')
+log_success "Drive is clear."
+
+# ------------------------------------------------------- download ventoy ---
+
+log_step "Fetching latest Ventoy release"
+TMPD="$(mktemp -d)"
+trap 'rm -rf "$TMPD"' EXIT
+
+API="https://api.github.com/repos/ventoy/Ventoy/releases/latest"
+TAG="$($DL "$API" 2>/dev/null | grep -m1 '"tag_name"' | cut -d'"' -f4)"
+[ -n "$TAG" ] || die "Could not determine latest Ventoy version (network/API issue?)."
+log_info "Latest version: $TAG"
+
+TARBALL="ventoy-${TAG#v}-linux.tar.gz"
+URL="https://github.com/ventoy/Ventoy/releases/download/${TAG}/${TARBALL}"
+log_info "Downloading $TARBALL ..."
+if command -v curl &>/dev/null; then
+  curl -fsSL -o "$TMPD/$TARBALL" "$URL" || die "Download failed."
+else
+  wget -q -O "$TMPD/$TARBALL" "$URL" || die "Download failed."
+fi
+tar xzf "$TMPD/$TARBALL" -C "$TMPD" || die "Extraction failed."
+VDIR="$TMPD/ventoy-${TAG#v}"
+[ -x "$VDIR/Ventoy2Disk.sh" ] || die "Ventoy2Disk.sh not found in release."
+log_success "Ventoy $TAG ready."
+
+# ---------------------------------------------------------------- install ---
+
+log_step "Installing Ventoy to $TARGET (this takes a minute)"
+INSTALL_FLAG="-i"
+[ "$FORCE" -eq 1 ] && INSTALL_FLAG="-I"
+# Ventoy asks two y/n confirmations; answer both.
+# shellcheck disable=SC2059
+printf 'y\ny\n' | sudo "$VDIR/Ventoy2Disk.sh" "$INSTALL_FLAG" "$TARGET" \
+  || die "Ventoy install failed. If the drive vanished, unplug/replug it and retry."
+
+log_success "Ventoy installed."
+lsblk -o NAME,SIZE,FSTYPE,LABEL "$TARGET"
+
+# ----------------------------------------------------------------- done ---
+
+DATA_PART="$(lsblk -n -r -o NAME,LABEL "$TARGET" 2>/dev/null \
+  | awk 'tolower($2)=="ventoy" {print "/dev/"$1}' | head -n1)"
+[ -n "$DATA_PART" ] || DATA_PART="${TARGET}1"
+
+log_header "Next: copy your ISOs"
+log_info "1. (Re)plug the USB if your file manager doesn't show it yet."
+log_info "2. Copy your .iso files to the 'Ventoy' partition ($DATA_PART)."
+log_info "3. Eject, boot from USB, pick an ISO from the Ventoy menu."
+log_success "All done — Ventoy $TAG on $TARGET."

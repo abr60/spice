@@ -1,1 +1,1 @@
-export PATH="$PATH:$HOME/spice/bin:$HOME/spice/.local/share/spice/bin"
+export PATH="$PATH:$HOME/spice/bin:$HOME/spice/bin/android-flash:$HOME/spice/.local/share/spice/bin"

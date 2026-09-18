@@ -1,6 +1,6 @@
 hl.config({
   general = {
-    layout      = "scrolling",
+    layout      = "master",
     gaps_in     = 2,
     gaps_out    = 2,
     border_size = 2,
@@ -10,7 +10,7 @@ hl.config({
 hl.config({
   decoration = {
     rounding         = 6,
-    active_opacity   = 0.99,
+    active_opacity   = 0.92,
     inactive_opacity = 0.95,
 
     blur = {

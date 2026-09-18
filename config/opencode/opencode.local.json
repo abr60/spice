@@ -61,7 +61,9 @@
       "model": "ollama/qwen2.5-coder:3b-8k",
       "prompt": "Answer simple questions directly. Work only in the current project directory. Do not use question, todo, task, web, or delegation tools. Do not search parent or home directories. Use tools only when the user explicitly requests project work.",
       "permission": {
-        "external_directory": "deny"
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       },
       "tools": {
         "question": false,
@@ -74,7 +76,12 @@
       "model": "ollama/qwen2.5-coder:3b-8k",
       "prompt": "Answer greetings and simple questions directly without tools. Work only in the current project directory. Never use question, todo, task, web, or delegation tools. Do not search parent or home directories. Use tools only when the user explicitly requests project work.",
       "permission": {
-        "external_directory": "deny"
+        "edit": {
+          "/home/abr/Projects/*": "allow"
+        },
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       },
       "tools": {
         "question": false,
@@ -87,7 +94,12 @@
       "model": "ollama/qwen2.5-coder:3b",
       "prompt": "Answer simple questions directly without tools. Work only in the current project directory. Never use question, todo, task, web, or delegation tools.",
       "permission": {
-        "external_directory": "deny"
+        "edit": {
+          "/home/abr/Projects/*": "allow"
+        },
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       },
       "tools": {
         "question": false,
@@ -100,7 +112,9 @@
       "model": "ollama/qwen2.5-coder:3b",
       "prompt": "Work only in the current project directory. Never use question, todo, task, web, or delegation tools.",
       "permission": {
-        "external_directory": "deny"
+        "external_directory": {
+          "/home/abr/Projects/*": "allow"
+        }
       },
       "tools": {
         "question": false,
@@ -110,7 +124,7 @@
       }
     },
     "vision": {
-      "model": "ollama/minicpm-v4.6:1b"
+      "model": "opencode/mimo-v2.5-free"
     }
   }
 }

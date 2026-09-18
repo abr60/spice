@@ -14,6 +14,9 @@ o.bind("SUPER + grave", "Overview", "omarchy-shell shell toggle overview")
 
 o.bind("SUPER + A", "AI Agent", "omarchy-agent")
 
+hl.unbind("SUPER + SHIFT + A")
+o.bind("SUPER + SHIFT + A", "Local OpenCode", "foot --title=OpenCode-Local -e opencode-local")
+
 if o.cmd_present("voxtype") then
   o.bind("ALT + Z", "Toggle dictation", "voxtype record toggle")
   o.bind("F9", "Start dictation (push-to-talk)", "voxtype record start")
@@ -38,3 +41,38 @@ o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetr
 
 o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
 
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+
+-- face.howdy: lid-open face unlock
+o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
+o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
+
+-- face.howdy: super-h overlay toggle
+o.bind("SUPER + H", "Face Howdy", "omarchy-shell shell toggle face.howdy")
+
+-- Jotdown quick capture
+o.bind("SUPER + SHIFT + J", "Jotdown", "omarchy-shell shell summon io.github.mantisdotdev.jotdown '{}'")
+-- End Jotdown quick capture

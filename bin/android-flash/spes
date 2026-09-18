@@ -1,0 +1,340 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# spes — dispatcher for ~/spice/bin/android-flash/ (phone = system/recovery/fastboot/PC)
+# subcommands: status | to-recovery | to-fastboot | to-system | push | apatch-push | flash-recovery | flash-zip | extract-boot | setup
+# plain bash style (no gum); with fzf/select pickers where it helps
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=/dev/null
+source "$SCRIPT_DIR/spes-lib.sh"
+
+APK_CANDIDATE_GLOB="$HOME/Downloads/CustomRoms/APatch_*.apk"
+
+usage() {
+  cat <<'EOF'
+spes — phone toolkit (~/spice/bin/android-flash/)
+
+Usage:
+  spes status                              device state, slot, A/B/init_boot, root, APatch, recovery, APatch build
+  spes to-recovery                         adb reboot recovery
+  spes to-fastboot                         adb reboot bootloader
+  spes to-system                           fastboot reboot  (or adb reboot from recovery)
+  spes push <file> [--to <folder>]         adb push to /sdcard/<folder>/  (default folder per mode; system+recovery)
+  spes apatch-push <boot.img>              push boot.img to /sdcard/apatch/ + open APatch (checks install in system)
+  spes flash-recovery <img> [--partition <name>]  fastboot flash (boot/recovery/init_boot) — warns, needs 'yes'
+  spes flash-zip <zip> [--expect <sha>]    push + sha check → manual Install in OrangeFox (recovery/system)
+  spes extract-boot [zip]                  delegate to extract-boot
+  spes setup                               check payload-dumper-go/android-tools/unzip/fzf and offer install
+
+Push rule: dedicated folder named after the task (e.g. apatch/), EXCEPT ROM/GApps/firmware zips → /sdcard/ root.
+
+Examples:
+  spes status
+  spes apatch-push boot_out/boot.img
+  spes flash-zip ~/Downloads/CustomRoms/Nikgapps/NikGapps-core-*.zip --expect 8a7b68…
+  spes flash-recovery ~/spice/bin/android-flash/recovery.img --partition boot_b
+EOF
+}
+
+die() { echo "✗ $*" >&2; exit 1; }
+
+cmd_status() {
+  print_device_info
+  local s
+  s="$(spes_state)"
+  if [[ "$s" == "system" ]]; then
+    echo
+    echo "packages:"
+    adb shell pm list packages 2>/dev/null | grep -q me.bmax.apatch && echo "  APatch: me.bmax.apatch installed" || echo "  APatch: not installed"
+    adb shell pm list packages 2>/dev/null | grep -q org.lsposed.manager && echo "  LSPosed manager: installed" || true
+    adb shell pm list packages 2>/dev/null | grep -q com.google.android.gms && echo "  GMS present: $(adb shell dumpsys package com.google.android.gms 2>/dev/null | grep -m1 versionName | tr -d '\r')" || echo "  GMS: none"
+    echo
+    echo "Next: \`spes apatch-push <img>\` for root flow, or \`spes push <file> --to <folder>\` for ad-hoc push."
+  elif [[ "$s" == "recovery" ]]; then
+    echo
+    echo "Recovery (OrangeFox/TWRP) — pm not available here. Use \`spes flash-zip\` after you push."
+  elif [[ "$s" == "fastboot" ]]; then
+    echo
+    fastboot getvar current-slot 2>&1 | sed 's/^/  /' | head -5
+    echo
+    echo "Next: \`spes flash-recovery <img>\` if you need to restore OrangeFox (fastboot flash boot[_a|_b])."
+  elif [[ "$s" == "none" ]]; then
+    echo; echo "No device. Plug phone in / authorize USB debugging."
+  elif [[ "$s" == "unauthorized" ]]; then
+    echo; echo "Device unauthorized — accept the RSA dialog on the phone."
+  fi
+}
+
+cmd_to_recovery() {
+  local s; s="$(spes_state)"
+  [[ "$s" == "system" ]] || die "Need system mode for 'adb reboot recovery' (current: $s). Try spes status / spes to-system first."
+  echo "→ adb reboot recovery"
+  adb reboot recovery
+  echo "Sent. Wait for recovery (∼15s), then \`spes status\`."
+}
+
+cmd_to_fastboot() {
+  local s; s="$(spes_state)"
+  if [[ "$s" == "system" || "$s" == "recovery" ]]; then
+    echo "→ adb reboot bootloader"
+    adb reboot bootloader
+    echo "Sent. Then \`fastboot devices\` should list the phone."
+  else
+    echo "Current: $s — no adb device to reboot from fastboot. Try: hold Vol-Down + Power, or \`fastboot reboot reboot-bootloader\`."
+    exit 1
+  fi
+}
+
+cmd_to_system() {
+  local s; s="$(spes_state)"
+  if [[ "$s" == "fastboot" ]]; then
+    echo "→ fastboot reboot"
+    fastboot reboot
+  elif [[ "$s" == "recovery" ]]; then
+    echo "→ adb reboot"
+    adb reboot
+  elif [[ "$s" == "system" ]]; then
+    echo "Already in system."
+    return 0
+  else
+    die "No device (current: $s)."
+  fi
+  echo "Reboot sent. Then \`spes status\`."
+}
+
+# --- helper: push target resolution ---
+ab_push_dest() {
+  local src="$1" folder="${2:-}"
+  local expect_root=false
+  # caller sets folder explicitly or passes src hint for ROM/GApps names
+  echo "$folder"
+}
+
+cmd_push() {
+  # spes push <file> [--to <folder>]
+  local src="" folder=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --to) folder="$2"; shift 2 ;;
+      -h|--help) usage; exit 0 ;;
+      *) src="$1"; shift ;;
+    esac
+  done
+  [[ -n "$src" ]] || die "Usage: spes push <file> [--to <folder>]"
+  [[ -f "$src" ]] || die "Not found: $src"
+  local s; s="$(spes_state)"
+  if [[ "$s" != "system" && "$s" != "recovery" ]]; then
+    die "Need system or recovery for push (current: $s). For fastboot use flash-recovery, not push."
+  fi
+  ensure_tools
+  # default: derive a task folder from filename if not given — caller asked dedicated folder
+  if [[ -z "$folder" ]]; then
+    # keep safe default rather than Download — use 'misc'
+    folder="misc"
+    echo "  → no --to given, using /sdcard/$folder/ (tip: spes push <file> --to <myfolder>)"
+  fi
+  # ROM/GApps/firmware zips post-wipe should sit at /sdcard/ root per request — caller uses flash-zip, not push
+  local dest="/sdcard/${folder}/$(basename "$src")"
+  # make target dir first in system+recovery — ensure via adb shell mkdir
+  adb shell "mkdir -p \"/sdcard/${folder}\" 2>/dev/null; su -c 'mkdir -p \"/data/media/0/${folder}\" 2>/dev/null' 2>/dev/null" || true
+  echo "→ push $(basename "$src") → $dest  ($s)"
+  # try normal path first; fallback to local tmp then cp for permission oddities
+  if adb push "$src" "$dest" 2>&1 | tail -1; then
+    :
+  else
+    adb push "$src" "/data/local/tmp/$(basename "$src")" && adb shell "su -c 'cp /data/local/tmp/$(basename "$src") \"$dest\" && chown media_rw:media_rw \"$dest\" 2>/dev/null || true'" 2>&1 | tail -2
+  fi
+  sha_check "$src"
+  # verify on-device
+  adb shell "ls -lh \"$dest\" 2>&1 | head -1; su -c 'ls -lh \"$dest\" 2>&1 | head -1'" 2>&1 | head -2
+  echo
+  echo "Done: $dest — on the phone, files are at /sdcard/${folder}/."
+  echo "Next: open Files / OrangeFox file manager under /sdcard/${folder}/."
+}
+
+cmd_apatch_push() {
+  # spes apatch-push <boot.img>
+  [[ $# -ge 1 ]] || die "Usage: spes apatch-push <boot.img>"
+  local img="$1"
+  [[ -f "$img" ]] || die "Not found: $img"
+  sha_check "$img" | head -2
+  local s; s="$(spes_state)"
+  if [[ "$s" == "fastboot" ]]; then
+    die "In fastboot — switch to system (\`spes to-system\`) before apatch-push."
+  fi
+  if [[ "$s" != "system" && "$s" != "recovery" ]]; then
+    die "Need system or recovery (current: $s). Add phone to USB."
+  fi
+  # In system: check APatch APK installed
+  if [[ "$s" == "system" ]]; then
+    if adb shell pm list packages 2>/dev/null | grep -q me.bmax.apatch; then
+      echo "APatch app installed (me.bmax.apatch)."
+    else
+      echo "APatch app NOT installed (me.bmax.apatch)."
+      # try locate local APK
+      local apk
+      # shellcheck disable=SC2012
+      apk="$(ls -1 $APK_CANDIDATE_GLOB 2>/dev/null | head -n1)"
+      if [[ -n "$apk" ]]; then
+        echo "  Found: $apk"
+      else
+        echo "  No local APatch APK found at ~/Downloads/CustomRoms/APatch_*.apk"
+      fi
+      read -rp "Install APatch now? [y/N] " ans
+      if [[ "$ans" =~ ^[yY] ]]; then
+        if [[ -n "${apk:-}" && -f "$apk" ]]; then
+          echo "→ adb install $apk"
+          adb install "$apk" 2>&1 | tail -5
+        else
+          echo "No APK file — download APatch from https://github.com/bmax121/APatch/releases first." >&2
+          exit 1
+        fi
+      else
+        echo "Cancelled — install the APK then re-run: spes apatch-push $img"
+        exit 1
+      fi
+    fi
+  else
+    echo "In recovery — pm not available, skipping APatch-installed check (recovery has no app layer)."
+  fi
+
+  # dedicated folder = apatch (not Download)
+  local folder="apatch"
+  local dest="/sdcard/${folder}/boot.img"
+  adb shell "mkdir -p \"/sdcard/${folder}\" 2>/dev/null; su -c 'mkdir -p \"/data/media/0/${folder}\" 2>/dev/null' 2>/dev/null" || true
+  echo "→ push boot.img → $dest  ($s)"
+  if ! adb push "$img" "$dest" 2>&1 | tail -1; then
+    adb push "$img" "/data/local/tmp/boot.img" && adb shell "su -c 'cp /data/local/tmp/boot.img \"$dest\" && chown media_rw:media_rw \"$dest\"'" 2>&1 | tail -2
+  fi
+  # fallback verify with su in recovery too (su may not exist in recovery — ignore)
+  adb shell "ls -lh \"$dest\" 2>&1 | head -1; su -c 'ls -lh \"$dest\" 2>&1 | head -1'" 2>&1 | head -2
+  if [[ "$s" == "system" ]]; then
+    echo "→ open APatch"
+    adb shell am start -n me.bmax.apatch/.ui.MainActivity 2>&1 | sed 's/^/  /'
+    echo
+    echo "Done. On the phone: tap 'PATCH' inside APatch, pick the pushed /sdcard/apatch/boot.img if needed."
+    echo "Next: patch with SuperKey, then flash the patched img we pull back (see guide: crdroid-apatch-nikgapps-guide.md)."
+  else
+    echo
+    echo "Done (recovery). File at $dest — reboot to system first, APatch app will see it there."
+    echo "Next: spes to-system → spes apatch-push $(basename "$img")  (or keep pushed file and open APatch)."
+  fi
+}
+
+cmd_flash_recovery() {
+  # spes flash-recovery <img> [--partition <name>]
+  local img="" part=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --partition) part="$2"; shift 2 ;;
+      -h|--help) echo "Usage: spes flash-recovery <img> [--partition boot_b|boot|recovery|init_boot]"; exit 0 ;;
+      *) img="$1"; shift ;;
+    esac
+  done
+  [[ -n "$img" ]] || die "Usage: spes flash-recovery <img> [--partition <name>]"
+  [[ -f "$img" ]] || die "Not found: $img"
+  sha_check "$img" | head -2
+  local s; s="$(spes_state)"
+  [[ "$s" == "fastboot" ]] || die "Need fastboot (current: $s). Run: spes to-fastboot"
+  # default partition: spes = boot_<slot> because boot holds recovery, A/B; fallback heuristics
+  if [[ -z "$part" ]]; then
+    local slot
+    slot="$(fastboot getvar current-slot 2>&1 | grep -oE 'current-slot: [ab]' | awk '{print $2}' 2>/dev/null)"
+    part="boot"
+    if [[ -n "$slot" ]]; then part="boot_${slot}"; fi
+    echo "  (no --partition given → defaulting to '$part' — override with --partition <name> for other devices)"
+  fi
+  echo
+  confirm_danger "FASTBOOT FLASH: \`fastboot flash ${part} ${img}\` — this overwrites the recovery in boot on spes." || { echo "Cancelled."; exit 1; }
+  echo "→ fastboot flash $part $img"
+  fastboot flash "$part" "$img" 2>&1
+  echo
+  echo "Done. Next: spes to-system  (or stay in fastboot for more flashes)."
+}
+
+cmd_flash_zip() {
+  # spes flash-zip <zip> [--expect <sha>]
+  local zip="" expect=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --expect) expect="$2"; shift 2 ;;
+      -h|--help) echo "Usage: spes flash-zip <zip> [--expect <sha256>]"; exit 0 ;;
+      *) zip="$1"; shift ;;
+    esac
+  done
+  [[ -n "$zip" ]] || die "Usage: spes flash-zip <zip> [--expect <sha256>]"
+  [[ -f "$zip" ]] || die "Not found: $zip"
+  sha_check "$zip" "$expect" || { [[ -z "$expect" ]] && echo "(sha printed above; add --expect to enforce)" || exit 1; }
+  local s; s="$(spes_state)"
+  if [[ "$s" != "recovery" && "$s" != "system" ]]; then
+    echo "Not in recovery/system (current: $s)."
+    echo "For ROM/GApps/firmware zips the system will be empty — reboot to recovery first: spes to-recovery"
+    exit 1
+  fi
+  # destination = /sdcard/ root (empty system) per request
+  local dest="/sdcard/$(basename "$zip")"
+  echo "→ push $(basename "$zip") → $dest  ($s)"
+  # prefer /sdcard root; fallback via /data/local/tmp
+  if ! adb push "$zip" "$dest" 2>&1 | tail -1; then
+    adb push "$zip" "/data/local/tmp/$(basename "$zip")" && adb shell "su -c 'cp \"/data/local/tmp/$(basename "$zip")\" \"$dest\" && chown media_rw:media_rw \"$dest\"'" 2>&1 | tail -2
+  fi
+  adb shell "ls -lh \"$dest\" 2>&1 | head -1; su -c 'ls -lh \"$dest\" 2>&1 | head -1'" 2>&1 | head -2
+  echo
+  echo "Done: on the phone at $dest"
+  echo "Next (manual, as requested): open OrangeFox → Install → select $dest → add more zips to queue if needed → Swipe to flash."
+  echo "      Order for new install: ROM → (Firmware) → GApps → (Magisk/APatch-reflow). For dirty GApps: just NikGapps Core."
+}
+
+cmd_extract_boot() {
+  exec "$SCRIPT_DIR/extract-boot" "$@"
+}
+
+cmd_setup() {
+  echo "spes setup — dependency check (same logic as extract-boot)"
+  bash "$SCRIPT_DIR/extract-boot" --help 2>&1 | head -20 || true
+  local missing=() msgs=()
+  command -v payload-dumper-go &>/dev/null || { missing+=("payload-dumper-go-bin"); msgs+=("  payload-dumper-go  →  yay -S payload-dumper-go-bin  (AUR)"); }
+  command -v unzip &>/dev/null || { missing+=("unzip"); msgs+=("  unzip            →  sudo pacman -S unzip"); }
+  command -v adb &>/dev/null || missing+=("android-tools")
+  command -v fastboot &>/dev/null || missing+=("android-tools")
+  if ! command -v adb &>/dev/null || ! command -v fastboot &>/dev/null; then
+    [[ " ${missing[*]} " == *" android-tools "* ]] || true
+    msgs+=("  adb / fastboot   →  sudo pacman -S android-tools")
+  fi
+  command -v fzf &>/dev/null || echo "  (optional) fzf → sudo pacman -S fzf  (nice picker, fallback select works without it)"
+  if (( ${#missing[@]} )); then
+    echo "Missing:"; printf '%s\n' "${msgs[@]}"
+    echo
+    read -rp "Install now? [y/N] " ans
+    if [[ "$ans" =~ ^[yY] ]]; then
+      for pkg in "${missing[@]}"; do
+        if [[ "$pkg" == "payload-dumper-go-bin" ]]; then
+          if command -v yay &>/dev/null; then yay -S --noconfirm "$pkg"
+          elif command -v paru &>/dev/null; then paru -S --noconfirm "$pkg"
+          else echo "No yay/paru — install $pkg manually" >&2; exit 1; fi
+        else
+          sudo pacman -S --noconfirm "$pkg"
+        fi
+      done
+    else exit 1; fi
+  else
+    echo "All required tools present."
+  fi
+}
+
+# --- dispatch ---
+cmd="${1:-}"; shift 2>/dev/null || true
+case "$cmd" in
+  status)       cmd_status "$@" ;;
+  to-recovery)  cmd_to_recovery "$@" ;;
+  to-fastboot)  cmd_to_fastboot "$@" ;;
+  to-system)    cmd_to_system "$@" ;;
+  push)         cmd_push "$@" ;;
+  apatch-push)  cmd_apatch_push "$@" ;;
+  flash-recovery) cmd_flash_recovery "$@" ;;
+  flash-zip)    cmd_flash_zip "$@" ;;
+  extract-boot) cmd_extract_boot "$@" ;;
+  setup)        cmd_setup "$@" ;;
+  -h|--help|help|"") usage ;;
+  *) die "Unknown subcommand: $cmd (try: spes help)" ;;
+esac
