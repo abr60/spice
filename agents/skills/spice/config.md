@@ -66,7 +66,10 @@ require("default.hypr.toggles")
 | `SUPER + N` | Comic translate CJK (`comic-translate cjk`) |
 | `SUPER + Alt_L` | Toggle overview (`omarchy-shell shell toggle overview`) |
 | `SUPER + A` | Launch default AI agent (`omarchy-agent` → opencode) |
-| `ALT + Z` / `F9` | Voxtype dictation (only if `voxtype` command exists) |
+
+Note: dictation keys are Omarchy defaults — `ALT + SPACE` toggles and
+`ALT + Alt_R` is push-to-talk (`omarchy-dictation`, backend `voxtype`). No
+personal dictation binds.
 
 Note: the overview binding unbinds the Omarchy default (`hl.unbind`) before
 rebinding, and calls `toggle overview` (the **short** plugin id — a previous
@@ -280,6 +283,14 @@ Desktop entries and icons shipped by spice:
 
 - `cliamp.desktop` — desktop entry for the CLI audio player
 - `icons/` — bundled icons
+
+## Deep dives (`lessons/`)
+
+Long-form notes for machines set up by spice — read these before debugging:
+
+- `lessons/waydroid.md` — Waydroid: system-python wrapper, image init, "no internet /
+  no WiFi" (virt_wifi + emulated Ethernet), hidden launcher entries, diagnostics.
+- `lessons/custom-rom Installation Guide` — Redmi Note 11 (spes) flashing workflow.
 
 ## Common Tasks
 

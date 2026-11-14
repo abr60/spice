@@ -51,6 +51,21 @@ pick_video_dir() {
   done
 }
 
+# ── Best-effort subtitle fetch (never fails the download) ───────────────────
+fetch_subs() {
+  yt-dlp --cookies-from-browser "$COOKIE_SPEC" --no-warnings --skip-download \
+    --write-subs --write-auto-subs --sub-langs en --sleep-subtitles 5 \
+    "$@" >/dev/null 2>&1 || log_info "Subtitles skipped (rate limited)"
+}
+
+# ── Single-line progress renderer (clears line, trims to terminal width) ────
+progress_line() {
+  local cols; cols=$(tput cols 2>/dev/null || echo 80)
+  while IFS= read -r line; do
+    printf "\r\033[2K  %s" "${line:0:$((cols-4))}"
+  done
+}
+
 # ── URL Input ───────────────────────────────────────────────────────────────
 clip_url=$(wl-paste 2>/dev/null | tr -d '\0' || true)
 [[ "$clip_url" != http* ]] && clip_url=""
@@ -149,24 +164,23 @@ if [[ "$type" == "Video" ]]; then
 
   sub_dir="$download_dir/.subtitles"
   mkdir -p "$sub_dir"
-  sub_flags="--write-subs --write-auto-subs --sub-langs en"
 
-  # Download
+  # Download (subtitles are fetched separately, after the video)
   echo
   dl_log=$(mktemp)
   dl_out=$(mktemp)
   dl_cmd() {
-    yt-dlp --cookies-from-browser "$COOKIE_SPEC" --no-warnings -f "$format_spec" $sub_flags "$@"
+    yt-dlp --cookies-from-browser "$COOKIE_SPEC" --no-warnings -f "$format_spec" "$@"
   }
   if $is_playlist; then
-    log_step "Downloading playlist: $playlist_title ($playlist_count videos @ $quality) [en subs]..."
+    log_step "Downloading playlist: $playlist_title ($playlist_count videos @ $quality)..."
     echo
     dl_cmd --yes-playlist --ignore-errors --newline --progress \
-      --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      --progress-template "download:[%(info.playlist_index)s/$playlist_count] %(info.title).25s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       --print "after_move:DLFILE:%(filepath)s" \
       -o "$download_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url" 2>"$dl_log" \
       | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
-      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+      | progress_line
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
@@ -176,11 +190,11 @@ if [[ "$type" == "Video" ]]; then
       dl_out=$(mktemp)
       sleep 5
       dl_cmd --yes-playlist --ignore-errors --newline --progress \
-        --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+        --progress-template "download:[%(info.playlist_index)s/$playlist_count] %(info.title).25s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         --print "after_move:DLFILE:%(filepath)s" \
         -o "$download_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url" 2>"$dl_log" \
         | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
-        | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+        | progress_line
       dl_exit=${PIPESTATUS[0]}
     fi
 
@@ -193,16 +207,18 @@ if [[ "$type" == "Video" ]]; then
     elif [[ $n_downloaded -gt 0 ]]; then
       log_success "Playlist saved to $download_dir ($n_downloaded items downloaded)"
       [[ $dl_exit -ne 0 ]] && gum style --foreground 11 "  Note: some items were skipped (unavailable, private, or geo-blocked)."
+      log_step "Fetching English subtitles (best effort)..."
+      fetch_subs --yes-playlist --ignore-errors -o "$sub_dir/%(playlist_index)s - %(title)s.%(ext)s" "$url"
     else
       log_success "Playlist saved to $download_dir"
     fi
   else
-    log_step "Downloading video ($quality) [en subs]..."
+    log_step "Downloading video ($quality)..."
     dl_cmd --playlist-items 1 --newline --progress \
       --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       -o "$download_dir/%(title)s.%(ext)s" "$url" 2>"$dl_log" \
       | grep --line-buffered "%" \
-      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+      | progress_line
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
@@ -214,7 +230,7 @@ if [[ "$type" == "Video" ]]; then
         --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         -o "$download_dir/%(title)s.%(ext)s" "$url" 2>"$dl_log" \
         | grep --line-buffered "%" \
-        | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+        | progress_line
       dl_exit=${PIPESTATUS[0]}
     fi
 
@@ -228,6 +244,8 @@ if [[ "$type" == "Video" ]]; then
     fi
     mv "$download_dir"/*.vtt "$sub_dir/" 2>/dev/null || true
     log_success "Video saved to $download_dir"
+    log_step "Fetching English subtitles (best effort)..."
+    fetch_subs --playlist-items 1 -o "$sub_dir/%(title)s.%(ext)s" "$url"
   fi
   rm -f "$dl_log" "$dl_out"
 
@@ -263,11 +281,11 @@ elif [[ "$type" == "Music" ]]; then
     log_step "Downloading playlist: $playlist_title ($playlist_count items @ $audio_label)..."
     echo
     dl_audio --yes-playlist --ignore-errors --newline --progress \
-      --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+      --progress-template "download:[%(info.playlist_index)s/$playlist_count] %(info.title).25s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       --print "after_move:DLFILE:%(filepath)s" \
       -o "$out_template" "$url" 2>"$dl_log" \
       | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
-      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+      | progress_line
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
@@ -277,11 +295,11 @@ elif [[ "$type" == "Music" ]]; then
       dl_out=$(mktemp)
       sleep 5
       dl_audio --yes-playlist --ignore-errors --newline --progress \
-        --progress-template "download:[%(info.playlist_index)s/%(playlist_count)s] %(info.title).40s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
+        --progress-template "download:[%(info.playlist_index)s/$playlist_count] %(info.title).25s | %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         --print "after_move:DLFILE:%(filepath)s" \
         -o "$out_template" "$url" 2>"$dl_log" \
         | tee "$dl_out" | grep --line-buffered -v "^DLFILE:" \
-        | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+        | progress_line
       dl_exit=${PIPESTATUS[0]}
     fi
 
@@ -303,7 +321,7 @@ elif [[ "$type" == "Music" ]]; then
       --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
       -o "$out_template" "$url" 2>"$dl_log" \
       | grep --line-buffered "%" \
-      | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+      | progress_line
     dl_exit=${PIPESTATUS[0]}
 
     if [[ $dl_exit -ne 0 ]]; then
@@ -315,7 +333,7 @@ elif [[ "$type" == "Music" ]]; then
         --progress-template "download: %(progress._percent_str)s | %(progress._speed_str)s | ETA %(progress._eta_str)s" \
         -o "$out_template" "$url" 2>"$dl_log" \
         | grep --line-buffered "%" \
-        | while IFS= read -r line; do printf "\r  %s        " "$line"; done
+        | progress_line
       dl_exit=${PIPESTATUS[0]}
     fi
 

@@ -57,7 +57,7 @@
           "label": "Sonarr",
           "monitorMode": "all",
           "qualityProfileId": 6,
-          "rootFolderPath": "/tv",
+          "rootFolderPath": "/media/tv",
           "seasonFolder": true,
           "url": "http://localhost:8989"
         },
@@ -117,7 +117,7 @@
           "interval": 60,
           "label": "Radarr",
           "qualityProfileId": 4,
-          "rootFolderPath": "/movies",
+          "rootFolderPath": "/media/movies",
           "url": "http://localhost:7878"
         },
         {

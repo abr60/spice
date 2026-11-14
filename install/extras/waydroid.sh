@@ -16,6 +16,51 @@ fi
 
 ok "Waydroid detected"
 
+# ─── System-python wrapper ────────────────────────────────────────────────────
+# /usr/bin/waydroid starts with '#!/usr/bin/env python3'. When a mise/uv/conda
+# python sits earlier in PATH it wins over Arch's /usr/bin/python3 (3.14), which
+# is the only one with python-dbus installed, so waydroid dies with:
+#   ModuleNotFoundError: No module named 'dbus'
+# /usr/local/bin comes before /usr/bin in PATH and pacman never overwrites it,
+# so this pins waydroid to the system interpreter for good.
+WRAPPER="/usr/local/bin/waydroid"
+WRAPPER_BODY='#!/bin/sh
+# Managed by spice (install/extras/waydroid.sh) — do not edit.
+# /usr/bin/waydroid uses "#!/usr/bin/env python3", which can resolve to a
+# mise/uv/conda python without python-dbus. Force Arch system python.
+exec /usr/bin/python3 /usr/bin/waydroid "$@"'
+
+if [[ -x "$WRAPPER" ]] && [[ "$(cat "$WRAPPER")" == "$WRAPPER_BODY" ]]; then
+    ok "waydroid system-python wrapper already installed"
+else
+    printf '%s\n' "$WRAPPER_BODY" | sudo tee "$WRAPPER" >/dev/null
+    sudo chmod 0755 "$WRAPPER"
+    ok "waydroid system-python wrapper installed ($WRAPPER)"
+fi
+
+# ─── virt_wifi kernel module ──────────────────────────────────────────────────
+# Waydroid's Android side expects the virt_wifi module to exist at boot. Without
+# it wificond logs "Can't get wlan0 index: No such device", WifiService stays
+# disabled, and netd never brings up the default network — the container gets an
+# IP but no default route, so every app reports "no internet".
+# (Note: even with the module loaded, this kernel/packaging has no working wifi
+# HAL — Android uses an emulated *Ethernet* network. That is fine: internet works,
+# the Wifi toggle stays grey by design.)
+MODULES_CONF="/etc/modules-load.d/waydroid.conf"
+if ! lsmod | grep -q '^virt_wifi'; then
+    sudo modprobe virt_wifi
+    ok "virt_wifi module loaded"
+else
+    ok "virt_wifi module already loaded"
+fi
+
+if [[ -f "$MODULES_CONF" ]] && grep -qx 'virt_wifi' "$MODULES_CONF"; then
+    ok "virt_wifi persistence already configured ($MODULES_CONF)"
+else
+    echo 'virt_wifi' | sudo tee "$MODULES_CONF" >/dev/null
+    ok "virt_wifi will be loaded at boot ($MODULES_CONF)"
+fi
+
 # ─── UFW rules ────────────────────────────────────────────────────────────────
 if is_installed ufw; then
     if ! sudo ufw status | grep -q "Status: active"; then

@@ -4,7 +4,7 @@ o.bind("XF86NotificationCenter", "WhatsApp", { webapp = "https://web.whatsapp.co
 o.bind("XF86Favorites", "Calibre", { launch = "ebook-viewer '/home/$USER/Calibre Library'" })
 
 o.bind("ALT + C", "RMPC Music", "[float; center] foot --title=rmpc-full -e rmpc")
-o.bind("ALT + X", "Study",      "[float; size 700 200; center] foot --override=class=Yazi --title=Yazi -e timeout 30s yazi \"~/media/tv/Breaking Bad/Season 3/\"")
+o.bind("ALT + X", "Study",      "[float; size 700 200; center] foot --override=class=Yazi --title=Yazi -e timeout 30s yazi \"~/media/tv/The Eminence in Shadow/Season 01/\"")
 
 o.bind("SUPER + M", "Comic (Latin)", "comic-translate lat")
 o.bind("SUPER + N", "Comic (Asian)", "comic-translate cjk")
@@ -17,12 +17,6 @@ o.bind("SUPER + A", "AI Agent", "omarchy-agent")
 hl.unbind("SUPER + SHIFT + A")
 o.bind("SUPER + SHIFT + A", "Local OpenCode", "foot --title=OpenCode-Local -e opencode-local")
 
-if o.cmd_present("voxtype") then
-  o.bind("ALT + Z", "Toggle dictation", "voxtype record toggle")
-  o.bind("F9", "Start dictation (push-to-talk)", "voxtype record start")
-  o.bind("F9", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
-end
-
 hl.unbind("SUPER + SHIFT + C")
 o.bind("SUPER + SHIFT + C", "Claude", { webapp = "https://claude.ai/new" })
 
@@ -30,41 +24,6 @@ hl.unbind("SUPER + SPACE")
 hl.unbind("SUPER + ALT + SPACE")
 o.bind("SUPER + SPACE", "Apps menu", "omarchy-menu toggle apps")
 o.bind("SUPER + ALT + SPACE", "Omarchy menu", "omarchy-menu toggle")
-
-hl.unbind("SUPER + SHIFT + CTRL + SPACE")
-o.bind("ALT + SPACE", "Theme menu", "omarchy-menu toggle theme")
-o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
-o.bind("switch:off:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
-
-o.bind("switch:off:Lid Switch", "Howdy Lid Close", "omarchy-shell lock howdyRetry")
-
 
 -- face.howdy: lid-open face unlock
 o.bind("switch:on:Lid Switch", "Howdy Lid Open", "omarchy-shell lock howdyRetry")
