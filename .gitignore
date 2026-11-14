@@ -37,3 +37,9 @@ config/calibre/viewer/annots/
 
 # Zsh shell history (live runtime data, never commit)
 zshrc/.zsh_history
+
+# Editor/manual backups
+*.bak
+
+# Generated runtime data (multi-GB)
+install/extras/ai/open-webui-data/
